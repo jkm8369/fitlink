@@ -43,6 +43,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<!--jdbc-->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<!--//jdbc-->
+		
 		<!-- Tomcat을 provided로 설정 -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
@@ -112,6 +119,7 @@
 			<scope>runtime</scope>
 		</dependency>
 		
+
 		<!--devtools-->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
