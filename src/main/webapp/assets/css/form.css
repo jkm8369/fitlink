@@ -1,0 +1,232 @@
+@charset "UTF-8";
+
+/* ====================== 공통 ========================== */
+:root {
+    --primary: #0a74ff;
+    --line: #e5e7eb;
+    --text: #1f2937;
+    --muted: #94a3b8;
+}
+
+/* 페이지 센터링 */
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background: #fff;
+}
+
+/* 카드(547x711) */
+.card {
+    width: 547px;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* 로고(113x32) */
+.card img {
+    width: 113px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: .2px;
+    color: #0b2b43;
+    margin: 28px 0 22px 10px;
+    user-select: none;
+}
+
+
+
+/* 폼 스택 */
+.form {
+    width: 418px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    /* 필드 간격 */
+    transform: translateX(12px);
+    /* +면 오른쪽, -면 왼쪽. 값만 조절하면 됨 */
+}
+
+/* //====================== 공통 ========================== */
+
+/* ========================= joinform ========================== */
+/* joinform 필드 래퍼 (330x51) */
+.field {
+    width: 412px;
+    height: 51px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+/* 아이콘(17x17) */
+.icon {
+    width: 17px;
+    height: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    /* 폰트어썸은 16px이 17px아이콘과 거의 일치 */
+    color: #6b7280;
+    flex: 0 0 17px;
+}
+
+/* 입력형(테두리 박스) */
+.field-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0 14px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.field-box input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.field-box input::placeholder,
+.field-line input::placeholder {
+    color: #9aa3ad;
+}
+
+/* 밑줄형(회색 라인) */
+.field-line {
+    width: 412px;
+    border-bottom: 1px solid var(--line);
+    padding: 0  0 4px 15px;
+    color: #9aa3ad;
+    /* 플레이스홀더처럼 보이게 */
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* 아이디 + 중복확인 한 줄 */
+.row-id {
+    width: 435px;
+    /* 330 + 14(간격) + 74 */
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.btn-dup {
+    width: 74px;
+    height: 32px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #334155;
+    cursor: pointer;
+}
+
+/* 라디오 그룹 줄(밑줄형에 라디오만 배치) */
+.radios {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #334155;
+    font-size: 14px;
+}
+
+.radios label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.radios input {
+    accent-color: var(--primary);
+}
+
+/* 회원가입 버튼(412x50) */
+.btn-submit {
+    width: 412px;
+    height: 51px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 32px 0px 28px 20px;
+}
+/* //========================= joinform ========================== */
+
+/* ========================= loginform ========================== */
+.form-login {
+    width: 418px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    /* 필드 간격 */
+    transform: translateX(12px);
+    /* +면 오른쪽, -면 왼쪽. 값만 조절하면 됨 */
+}
+
+.field-login {
+    margin-left: -10px;
+    width: 412px;
+    height: 51px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+/* 하단 링크(폭 412, 가운데 정렬 간격) */
+.links {
+    width: 412px;
+    margin-left: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    color: #9aa3ad;
+    font-size: 13px;
+}
+
+.links a {
+    color: #9aa3ad;
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.btn-login {
+    width: 412px;
+    height: 51px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 32px 0px 28px 0px;
+}
+
+/* //========================= loginform ========================== */

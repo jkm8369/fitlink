@@ -1,0 +1,242 @@
+@charset "UTF-8";
+
+:root {
+    --primary: #2A94D6;
+    --gray: #6b7280;
+    --light-bg: #f9fbfc;
+    --border-radius: 10px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ===================전체 틀============================ */
+body {
+    display: flex;
+    justify-content: center;
+}
+
+#wrap {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+}
+
+/* ///===================전체 틀============================ */
+
+/* ======================= header ================ */
+header {
+    display: flex;
+    /* 로고와 버튼 나란히 */
+    justify-content: space-between;
+    /* 양쪽 끝 정렬 */
+    align-items: center;
+    /* 세로 정렬 */
+    padding: 10px 0px;
+    /* 안쪽 여백 */
+    border-bottom: 1px solid #B9B9B9;
+    /* 아래 테두리 */
+}
+
+/* --- 로고 스타일 (수정된 부분) --- */
+header .btn-logout img {
+    /* === 요청사항 1: 로고 크기 키우기 === */
+    /* 로고 이미지의 높이를 원하는 크기로 직접 지정합니다. */
+    height: 40px;
+    /* 예시로 40px로 설정, 원하시면 더 조절 가능합니다. */
+    display: block;
+    /* 이미지 하단의 불필요한 여백 제거 */
+}
+
+/* --- 로그아웃 버튼 스타일 --- */
+header .btn-logout .logout-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #6b7280;
+    border: 1px solid #dcdcdc;
+    padding: 6px 12px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+header .btn-logout .logout-link:hover {
+    background-color: #f3f4f6;
+}
+
+/* ///======================= header ================ */
+
+
+/* =================Content --> aside + main=====================*/
+#content {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+}
+
+
+/* =========================aside =============================*/
+aside {
+    width: 200px;
+    padding: 20px;
+    border-right: 1px solid #B9B9B9;
+    flex-shrink: 0;
+    /* 사이드바 찌그러짐 방지 */
+
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 30px;
+    margin-right: 40px;
+}
+
+.user-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dumbell-icon {
+    width: 78px;
+    height: 74px;
+}
+
+.user-name {
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.user-name small {
+    font-size: 12px;
+    padding-top: 3px;
+    color: #aaa;
+    display: block;
+}
+
+.trainer-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2px;
+    margin-left: 30px;
+}
+
+.trainer-info span {
+    cursor: pointer;
+}
+
+.check-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.aside-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.aside-menu ul li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* 아이콘과 텍스트 간격 */
+    padding: 8px 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.aside-menu ul li img {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+.aside-menu ul li:hover,
+.trainer-info span:hover {
+    background-color: #f0f4f8;
+    color: var(--primary);
+}
+
+/* [추가] */
+.menu-item {
+    display: block;
+    /* 링크를 한 줄씩 차지하도록 설정 */
+    margin-bottom: 15px;
+    /* 메뉴 아이템 간의 간격 */
+    font-size: 18px;
+    color: #333;
+    text-decoration: none;
+}
+
+/* 아이콘에 대한 스타일 */
+.menu-item i {
+    /* 1. 아이콘을 담을 공간의 너비를 고정합니다. */
+    /* 가장 넓은 아이콘보다 약간 더 넓게 잡는 것이 좋습니다. */
+    width: 30px;
+
+    /* 2. 고정된 공간 안에서 아이콘이 가운데 오도록 설정합니다. */
+    text-align: center;
+
+    /* 3. 아이콘과 글씨 사이에 간격을 줍니다. */
+    margin-right: 10px;
+
+    /* 4. width 속성을 적용하기 위해 display 속성을 변경합니다. */
+    display: inline-block;
+}
+
+/* //=========================aside =============================*/
+
+
+/* ========main========== */
+main {
+    width: auto;
+    display: flex;
+    flex: 1 1 0;
+    /* 남는 영역을 유동적으로 차지 */
+    flex-direction: column;
+    /* 아이템을 세로로 쌓음 */
+    align-items: center;
+    /* 가로 중앙 정렬 */
+    padding: 40px 0;
+    /* 위쪽 여백 추가 */
+    box-sizing: border-box;
+    /* 패딩이 크기에 영향을 주지 않도록 설정 */
+    position: relative;
+    background-color: #E7F0F3;
+    /* 진한 하늘색 (CornflowerBlue) */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* 그림자 효과를 추가하여 눈에 잘 띄게 합니다. */
+}
+
+/* ////=================Content --> aside + main=====================*/
+
+/* ================== footer =========================== */
+footer p {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray);
+    padding: 16px 0px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 100px;
+    padding-top: 30px;
+    padding-bottom: 10px;
+}
+
+/* ///================== footer =========================== */

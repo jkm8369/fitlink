@@ -1,0 +1,72 @@
+
+@charset "UTF-8";
+/****************************************
+         전체초기화
+*****************************************/
+/* 초기화 */ 
+/*
+줄 바꿈할때 같이 쓰는 선택자끼리 모아서 줄 바꾸는게 좋다
+나중에 font-size도 0으로 맞춰서 h1~h6 사이즈를 변경 가능
+*/
+body, div, ul, li, dl, dt, ol,
+h1, h2, h3, h4, h5, h6, 
+form, input, select, textarea, button, fieldset, legend,
+p, table, th, td, tr{
+    margin: 0; padding: 0;
+}
+
+html, body, div, span, h1, h2, h3, h4, h5, h6, p,
+a, ul, ol, li, table, th, td, input, textarea, button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: border-box;
+}
+
+body {
+  line-height: 1.5;
+  font-family: 'Pretendard', sans-serif;
+  background-color: #fff;
+  color: #1f1f1f;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* clearfix */
+/* .clearfix{*zoom:1;} ->익스플로어에 적용 */
+.clearfix::before, .clearfix::after{
+    display: block;
+    content: "";
+    line-height: 0;
+}
+
+.clearfix::after{
+    clear: both;
+}
+
