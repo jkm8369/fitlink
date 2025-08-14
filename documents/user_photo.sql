@@ -2,7 +2,7 @@
 user_photo
 *******************************************************/
 -- 데이터 베이스 사용
-use project_db;
+use fitlink_db;
 
 -- 테이블 목록 조회
 show tables;
