@@ -2,85 +2,81 @@
 /* -----------------------제목*/
 /* 페이지 헤더 컨테이너 */
 .page-header {
-  text-align: center;
-  /* 내부 텍스트들을 중앙 정렬 */
-  margin-bottom: 40px;
-  /* 헤더와 아래 리스트 박스 사이의 간격 */
+	text-align: center;
+	/* 내부 텍스트들을 중앙 정렬 */
+	margin-bottom: 40px;
+	/* 헤더와 아래 리스트 박스 사이의 간격 */
 }
 
 /* 제목 스타일 */
 .page-title {
-  font-size: 42px;
-  font-weight: 600;
-  /* Semi-bold */
-  color: #526b80;
-  /* 이미지와 유사한 차분한 파란색 */
-  margin: 0 0 10px 0;
-  /* 위/좌우 여백 없음, 아래쪽만 10px 여백 */
+	font-size: 42px;
+	font-weight: 600;
+	/* Semi-bold */
+	color: #526b80;
+	/* 이미지와 유사한 차분한 파란색 */
+	margin: 0 0 10px 0;
+	/* 위/좌우 여백 없음, 아래쪽만 10px 여백 */
 }
 
 /* 날짜 스타일 */
 .page-subtitle {
-  font-size: 18px;
-  color: #8a9aaa;
-  /* 제목보다 옅은 회색빛 파란색 */
-  margin: 0;
-  /* 기본 p 태그의 여백 제거 */
+	font-size: 18px;
+	color: #8a9aaa;
+	/* 제목보다 옅은 회색빛 파란색 */
+	margin: 0;
+	/* 기본 p 태그의 여백 제거 */
 }
 
 /* ====테이블 공통====== */
-
-.table th.nowrap,
-.table td.nowrap {
-  white-space: nowrap;
+.table th.nowrap, .table td.nowrap {
+	white-space: nowrap;
 }
 
 .w-60 {
-  width: 60px;
+	width: 60px;
 }
 
 .w-70 {
-  width: 70px;
+	width: 70px;
 }
 
 .w-80 {
-  width: 80px;
+	width: 80px;
 }
 
 .w-90 {
-  width: 90px;
+	width: 90px;
 }
 
 .w-100 {
-  width: 100px;
+	width: 100px;
 }
 
 .w-110 {
-  width: 110px;
+	width: 110px;
 }
 
 .w-120 {
-  width: 120px;
+	width: 120px;
 }
 
 .w-140 {
-  width: 140px;
+	width: 140px;
 }
 
 .w-160 {
-  width: 160px;
+	width: 160px;
 }
 
 .list-area {
-  width: 900px;
-  margin: 0 auto;
+	width: 900px;
+	margin: 0 auto;
 }
 
 .list-area+.list-area {
-  margin-top: 24px;
+	margin-top: 24px;
 }
-
-
 
 /* 테이블에서 줄바꿈 방지용 */
 
@@ -90,159 +86,235 @@
 
 /* -----------------------리스트*/
 .member-list {
-  width: 859px;
-  /* --- 테두리 관련 스타일 추가 --- */
-  background-color: #ffffff;
-  border: 2px solid #b9b9b9;
-  /* 옅은 회색 테두리 */
-  border-radius: 12px;
-  /* 모서리를 부드럽게 (12px) */
-  padding: 5px 20px 5px 20px;
-  box-sizing: border-box;
-  /* 패딩과 테두리가 너비에 영향을 주지 않도록 설정 */
+	width: 859px;
+	/* --- 테두리 관련 스타일 추가 --- */
+	background-color: #ffffff;
+	border: 2px solid #b9b9b9;
+	/* 옅은 회색 테두리 */
+	border-radius: 12px;
+	/* 모서리를 부드럽게 (12px) */
+	padding: 5px 20px 5px 20px;
+	box-sizing: border-box;
+	/* 패딩과 테두리가 너비에 영향을 주지 않도록 설정 */
 }
 
 .list-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 25px;
-  /* 제목과 테이블 사이 여백 */
+	font-size: 20px;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 25px;
+	/* 제목과 테이블 사이 여백 */
 }
 
 /* 제목과 표 간격 증가 */
 .list-card .card-header {
-  margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 
 .card-header {
-  margin-bottom: 8px;
+	margin-bottom: 8px;
 }
 
 .member-table {
-  width: 100%;
-  border-collapse: separate;
-  /* 테이블 셀 간의 경계가 겹치지 않도록 설정 */
-  border-spacing: 0 10px;
-  /* 셀 간의 수직 간격을 10px로 설정 */
-  text-align: center;
-  /* 기본 텍스트 정렬을 중앙으로 */
+	width: 100%;
+	border-collapse: separate;
+	/* 테이블 셀 간의 경계가 겹치지 않도록 설정 */
+	border-spacing: 0 10px;
+	/* 셀 간의 수직 간격을 10px로 설정 */
+	text-align: center;
+	/* 기본 텍스트 정렬을 중앙으로 */
 }
 
 /* 테이블 헤더(th)와 데이터(td) 공통 스타일 */
-.member-table th,
-.member-table td {
-  padding: 18px 10px;
-  /* 셀 내부 여백 */
-  font-size: 16px;
-  font-weight: 500;
-  vertical-align: middle;
-  /* 세로 중앙 정렬 */
+.member-table th, .member-table td {
+	padding: 18px 10px;
+	/* 셀 내부 여백 */
+	font-size: 16px;
+	font-weight: 500;
+	vertical-align: middle;
+	/* 세로 중앙 정렬 */
 }
 
 /* 테이블 헤더(제목) 스타일 */
 .member-table th {
-  padding: 5px 10px;
-  font-size: 16px;
-  vertical-align: middle;
-  font-weight: bold;
-  color: #222;
-  border: none;
-  /* 제목(th)의 텍스트가 길어도 줄바꿈되지 않도록 설정합니다. */
-  white-space: nowrap;
+	padding: 5px 10px;
+	font-size: 16px;
+	vertical-align: middle;
+	font-weight: bold;
+	color: #222;
+	border: none;
+	/* 제목(th)의 텍스트가 길어도 줄바꿈되지 않도록 설정합니다. */
+	white-space: nowrap;
 }
 
 /* 이름에만 적용된 링크 스타일 */
 .member-table td a {
-  text-decoration: none;
-  /* 밑줄 표시 */
+	text-decoration: none;
+	/* 밑줄 표시 */
 }
 
 .member-table thead th:last-child {
-  width: 80px;
+	width: 80px;
 }
 
 /* tbody의 각 셀(td)에 테두리를 적용하여 카드 모양을 만듭니다. */
 .member-table tbody td {
-  color: #555;
-  border: 1px solid #b9b9b9;
-  border-right: none;
-  border-left: none;
-  font-size: 16px;
-  /* th와 일관성을 위해 폰트 사이즈 추가 */
-  vertical-align: middle;
-  /* th와 일관성을 위해 수직 정렬 추가 */
+	color: #555;
+	border: 1px solid #b9b9b9;
+	border-right: none;
+	border-left: none;
+	font-size: 16px;
+	/* th와 일관성을 위해 폰트 사이즈 추가 */
+	vertical-align: middle;
+	/* th와 일관성을 위해 수직 정렬 추가 */
 }
 
 /* 각 행의 첫 번째와 마지막 셀에 둥근 모서리를 적용합니다. */
 .member-table tbody td:first-child {
-  border-left: 1px solid #b9b9b9;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+	border-left: 1px solid #b9b9b9;
+	border-top-left-radius: 8px;
+	border-bottom-left-radius: 8px;
 }
 
 .member-table tbody td:last-child {
-  border-right: 1px solid #b9b9b9;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-left: none;
-  /* 셀 사이의 중복되는 세로선을 제거 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  /* 아이콘 버튼 사이의 간격 */
+	border-right: 1px solid #b9b9b9;
+	border-top-right-radius: 8px;
+	border-bottom-right-radius: 8px;
+	border-left: none;
+	/* 셀 사이의 중복되는 세로선을 제거 */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	/* 아이콘 버튼 사이의 간격 */
 }
 
 /* ----------------------- 구분선 */
 .line {
-  width: 910px;
-  height: 1px;
-  background-color: #ababab;
-  margin: 30px 0;
+	width: 910px;
+	height: 1px;
+	background-color: #ababab;
+	margin: 30px 0;
 }
 
 /* //----------------------- 구분선 */
 
 /* 카테고리 제목 (가슴, 등, 어깨) */
 .category-title {
-  font-size: 30px;
-  font-weight: 700;
-  color: #333;
-  margin: 0 0 15px 0;
+	font-size: 30px;
+	font-weight: 700;
+	color: #333;
+	margin: 0 0 15px 0;
 }
 
 /* 아이콘 버튼 기본 스타일 */
 .action-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  height: 100%;
-  /* td 높이에 맞춤 */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	height: 100%;
+	/* td 높이에 맞춤 */
 }
 
 .icon-btn {
-  color: #6c757d;
-  /* 기본 아이콘 색상 */
-  border: none;
-  cursor: pointer;
+	color: #6c757d;
+	/* 기본 아이콘 색상 */
+	border: none;
+	cursor: pointer;
 }
 
 /* //-----------------------------공통--------------------------- */
 
 /* -----------------------------main--------------------------- */
 /* ----------------------- 1. 달력 */
-.calendar {
-  width: 859px;
-  height: 720px;
-  background-color: #ffffff;
-  border: 2px solid #b9b9b9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #aaa;
-  font-size: 24px;
+.calendar-card {
+	width: 859px; /* 기존 카드 폭 느낌 유지 */
+	background: #fff;
+	border: 2px solid #b9b9b9;
+	border-radius: 12px;
+	padding: 20px; /* 카드 안쪽 여백 */
+	margin: 0 0 20px 0;
+	box-shadow: 0 2px 6px rgba(31, 41, 55, .05);
+	overflow: hidden; /* 둥근 모서리로 내부를 깔끔히 */
+}
+
+/* FullCalendar가 그리는 그리드의 기본 외곽 테두리 제거(중복 박스 느낌 방지) */
+.calendar-card .fc-theme-standard .fc-scrollgrid {
+	border: 0 !important;
+	background: transparent;
+}
+
+/* 헤더 툴바 간격/정렬 */
+.calendar-card .fc .fc-toolbar.fc-header-toolbar {
+	margin: 0 !important;
+	padding: 0 0 12px 0;
+	justify-content: space-between;
+}
+
+/* 버튼 톤 통일 */
+.calendar-card .fc .fc-button {
+	background-color: #495057 !important;
+	border-color: #495057 !important;
+	border-radius: 8px;
+	padding: 6px 10px;
+}
+
+.calendar-card .fc .fc-button:focus {
+	box-shadow: none;
+}
+
+/* 표 보더 컬러 톤다운 */
+.calendar-card .fc-theme-standard td, .calendar-card .fc-theme-standard th
+	{
+	border-color: #e9ecef;
+}
+
+/* 오늘 셀 강조, 이벤트 모양 */
+.calendar-card .fc-day-today {
+	background-color: #fff3cd !important;
+}
+
+.calendar-card .fc-event {
+	border: 0;
+	border-radius: 6px;
+	padding: 2px 6px;
+	font-size: 12px;
+}
+
+/* ================== FullCalendar: 요일 색상 ================== */
+/* 헤더 요일명 색 */
+.calendar-card .fc-col-header .fc-day-sun .fc-col-header-cell-cushion {
+	color: #e03131 !important; /* 일요일 빨강 */
+}
+
+.calendar-card .fc-col-header .fc-day-sat .fc-col-header-cell-cushion {
+	color: #1c7ed6 !important; /* 토요일 파랑 */
+}
+
+/* 월간(dayGrid)에서 날짜 숫자 색 */
+.calendar-card .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number {
+	color: #e03131; /* 일요일 빨강 */
+}
+
+.calendar-card .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number {
+	color: #1c7ed6; /* 토요일 파랑 */
+}
+
+/* (선택) 다른 달 날짜는 회색 유지 */
+.calendar-card .fc-daygrid-day.fc-day-other .fc-daygrid-day-number {
+	color: #d1d5db;
+}
+
+/* (주/일 뷰 헤더에도 반영—timeGrid 공통) */
+.calendar-card .fc-timegrid .fc-col-header .fc-day-sun .fc-col-header-cell-cushion
+	{
+	color: #e03131 !important;
+}
+
+.calendar-card .fc-timegrid .fc-col-header .fc-day-sat .fc-col-header-cell-cushion
+	{
+	color: #1c7ed6 !important;
 }
 
 /* //-----------------------1. 달력 */
@@ -255,42 +327,42 @@
 /* -----------------------2. 회원/비회원 리스트*/
 /* 회원 등록 버튼 (디자인 전면 수정) */
 .add-member-btn {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 170px;
-  margin-left: auto;
-  gap: 8px;
-  /* 아이콘과 텍스트 사이 간격 */
-  background-color: #ffffff;
-  border: 1px solid #dcdcdc;
-  /* 옅은 회색 테두리 */
-  border-radius: 5px;
-  /* 둥근 모서리 */
-  padding: 6px 12px;
-  /* 버튼 내부 여백 */
-  font-size: 14px;
-  font-weight: 500;
-  font-family: inherit;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  /* 부드러운 전환 효과 */
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+	margin-bottom: 170px;
+	margin-left: auto;
+	gap: 8px;
+	/* 아이콘과 텍스트 사이 간격 */
+	background-color: #ffffff;
+	border: 1px solid #dcdcdc;
+	/* 옅은 회색 테두리 */
+	border-radius: 5px;
+	/* 둥근 모서리 */
+	padding: 6px 12px;
+	/* 버튼 내부 여백 */
+	font-size: 14px;
+	font-weight: 500;
+	font-family: inherit;
+	color: #6b7280;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	/* 부드러운 전환 효과 */
 }
 
 /* 버튼 아이콘 스타일 */
 .add-member-btn i {
-  font-size: 17px;
+	font-size: 17px;
 }
 
 /* 마우스를 올렸을 때 버튼 스타일 */
 .add-member-btn:hover {
-  background-color: #f8f9fa;
-  border-color: #c0c0c0;
-  /* 테두리를 약간 더 진하게 */
-  transform: translateY(-1px);
-  /* 살짝 위로 뜨는 효과 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	background-color: #f8f9fa;
+	border-color: #c0c0c0;
+	/* 테두리를 약간 더 진하게 */
+	transform: translateY(-1px);
+	/* 살짝 위로 뜨는 효과 */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* //-----------------------2. 회원/비회원 리스트*/
@@ -300,212 +372,211 @@
 /* -----------------------------exercise--------------------------- */
 /* 운동 종류 리스트 전체 컨테이너 */
 .exercise-container {
-  width: 859px;
-  background-color: #fdfdff;
-  /* 살짝 푸른빛이 도는 흰색 */
-  border: 2px solid #b9b9b9;
-  /* 밝은 파란색 테두리 */
-  border-radius: 10px;
-  padding: 30px 40px;
+	width: 859px;
+	background-color: #fdfdff;
+	/* 살짝 푸른빛이 도는 흰색 */
+	border: 2px solid #b9b9b9;
+	/* 밝은 파란색 테두리 */
+	border-radius: 10px;
+	padding: 30px 40px;
 }
 
 /* 운동종류 수정 버튼이 있는 헤더 */
 .exercise-header {
-  display: flex;
-  justify-content: flex-end;
-  /* 버튼을 오른쪽으로 정렬 */
-  margin-bottom: 20px;
+	display: flex;
+	justify-content: flex-end;
+	/* 버튼을 오른쪽으로 정렬 */
+	margin-bottom: 20px;
 }
 
 /* 운동종류 수정 버튼 */
 .btn-edit-exercises {
-  display: flex;
-  align-items: center;
-  margin-top: -10px;
-  margin-right: -20px;
-  gap: 8px;
-  /* 아이콘과 텍스트 사이 간격 */
-  background-color: #ffffff;
-  border: 1px solid #dcdcdc;
-  /* 옅은 회색 테두리 */
-  border-radius: 5px;
-  /* 둥근 모서리 */
-  padding: 6px 12px;
-  /* 버튼 내부 여백 */
-  font-size: 14px;
-  font-weight: 500;
-  font-family: inherit;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  /* 부드러운 전환 효과 */
+	display: flex;
+	align-items: center;
+	margin-top: -10px;
+	margin-right: -20px;
+	gap: 8px;
+	/* 아이콘과 텍스트 사이 간격 */
+	background-color: #ffffff;
+	border: 1px solid #dcdcdc;
+	/* 옅은 회색 테두리 */
+	border-radius: 5px;
+	/* 둥근 모서리 */
+	padding: 6px 12px;
+	/* 버튼 내부 여백 */
+	font-size: 14px;
+	font-weight: 500;
+	font-family: inherit;
+	color: #6b7280;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+	/* 부드러운 전환 효과 */
 }
 
 .btn-edit-exercises:hover {
-  background-color: #f3f4f6;
+	background-color: #f3f4f6;
 }
 
 /* 각 운동 카테고리 (가슴, 등, 어깨) */
 .exercise-category {
-  margin-bottom: 30px;
-  /* 구분선과의 간격 */
+	margin-bottom: 30px;
+	/* 구분선과의 간격 */
 }
 
 /* 운동 항목들을 담는 그리드 컨테이너 */
 .exercise-grid {
-  /* ul 태그의 기본 스타일 초기화 */
-  list-style: none;
-  /* 목록 앞의 점 제거 */
-  padding: 0;
-  /* 왼쪽 기본 여백 제거 */
-  margin: 0 0 50px 0;
-  /* 기본 마진 제거 */
-
-  /* 기존 Grid 스타일 유지 */
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px 40px;
+	/* ul 태그의 기본 스타일 초기화 */
+	list-style: none;
+	/* 목록 앞의 점 제거 */
+	padding: 0;
+	/* 왼쪽 기본 여백 제거 */
+	margin: 0 0 50px 0;
+	/* 기본 마진 제거 */
+	/* 기존 Grid 스타일 유지 */
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 25px 40px;
 }
 
 /* 개별 운동 항목 */
 .exercise-item {
-  font-size: 17px;
-  color: #444;
+	font-size: 17px;
+	color: #444;
 }
 
 /*************************exercise*************************/
 /*************************exercise-list*************************/
 /* --- 2. 운동종류 탭 메뉴 --- */
 .category-tabs {
-  width: 910px;
-  display: flex;
-  justify-content: space-around;
-  background-color: #fff;
-  border: 2px solid #ababab;
-  border-radius: 12px;
-  padding: 10px 5px;
-  margin-bottom: 20px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+	width: 910px;
+	display: flex;
+	justify-content: space-around;
+	background-color: #fff;
+	border: 2px solid #ababab;
+	border-radius: 12px;
+	padding: 10px 5px;
+	margin-bottom: 20px;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
 }
 
 .tab {
-  padding: 8px 15px;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  border-bottom: 3px solid transparent;
+	padding: 8px 15px;
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--text-secondary);
+	border-bottom: 3px solid transparent;
 }
 
 /* --- 3. 버튼 --- */
 .category-buttons {
-  display: flex;
-  margin-left: auto;
-  margin-right: 24px;
-  gap: 10px;
+	display: flex;
+	margin-left: auto;
+	margin-right: 24px;
+	gap: 10px;
 }
 
 .category-btn {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background-color: #fff;
-  color: var(--text-secondary);
-  border-color: #ced4da;
+	padding: 8px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 6px;
+	border: 1px solid transparent;
+	background-color: #fff;
+	color: var(--text-secondary);
+	border-color: #ced4da;
 }
 
 /* --- 5. 내가 선택한 리스트 --- */
 .select-box {
-  width: 896px;
-  justify-content: space-around;
-  background-color: #fff;
-  border: 2px solid #ababab;
-  border-radius: 12px;
-  padding: 20px 5px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+	width: 896px;
+	justify-content: space-around;
+	background-color: #fff;
+	border: 2px solid #ababab;
+	border-radius: 12px;
+	padding: 20px 5px;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
 }
 
 /* 제목을 중앙 정렬합니다. */
 .select-box p {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 25px 0;
+	text-align: center;
+	font-size: 20px;
+	font-weight: 600;
+	margin: 0 0 25px 0;
 }
 
 /* 운동 목록 그리드 (기존 스타일) */
 .category-grid {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px 20px;
-  color: #495057;
+	list-style: none;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 20px 20px;
+	color: #495057;
 }
 
 .category-grid li {
-  text-align: center;
-  font-size: 15px;
+	text-align: center;
+	font-size: 15px;
 }
 
 /* --- 6. 전체 운동 리스트 (커스텀 체크박스) --- */
 .list-box {
-  margin: 30px 0 0 5px;
+	margin: 30px 0 0 5px;
 }
 
 .checkbox-grid {
-  list-style: none;
-  margin-right: 4px;
-  display: grid;
-  grid-template-columns: repeat(3, 287px);
-  gap: 24px;
+	list-style: none;
+	margin-right: 4px;
+	display: grid;
+	grid-template-columns: repeat(3, 287px);
+	gap: 24px;
 }
 
 .checkbox-item {
-  background-color: #fff;
-  border: #b9b9b9 solid 1px;
-  border-radius: 8px;
+	background-color: #fff;
+	border: #b9b9b9 solid 1px;
+	border-radius: 8px;
 }
 
 .checkbox-item label {
-  display: flex;
-  align-items: center;
-  margin: 10px 10px;
-  gap: 10px;
-  font-size: 16px;
+	display: flex;
+	align-items: center;
+	margin: 10px 10px;
+	gap: 10px;
+	font-size: 16px;
 }
 
 .checkbox-item input[type="checkbox"] {
-  display: none;
+	display: none;
 }
 
 .checkbox-item .custom-checkbox {
-  width: 17px;
-  height: 17px;
-  border: 2px solid #adb5bd;
-  border-radius: 4px;
-  display: inline-block;
-  position: relative;
-  flex-shrink: 0;
+	width: 17px;
+	height: 17px;
+	border: 2px solid #adb5bd;
+	border-radius: 4px;
+	display: inline-block;
+	position: relative;
+	flex-shrink: 0;
 }
 
 /* 'checked' 속성이 있는 input 다음에 오는 span에만 스타일 적용 */
 .checkbox-item input[type="checkbox"]:checked+.custom-checkbox {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+	background-color: var(--primary-color);
+	border-color: var(--primary-color);
 }
 
 .checkbox-item input[type="checkbox"]:checked+.custom-checkbox::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 4px;
-  height: 9px;
-  border: solid rgb(0, 0, 0);
-  border-width: 0 2.5px 2.5px 0;
-  transform: rotate(45deg);
+	content: "";
+	position: absolute;
+	left: 5px;
+	top: 1px;
+	width: 4px;
+	height: 9px;
+	border: solid rgb(0, 0, 0);
+	border-width: 0 2.5px 2.5px 0;
+	transform: rotate(45deg);
 }
 
 /*************************exercise-list*************************/
