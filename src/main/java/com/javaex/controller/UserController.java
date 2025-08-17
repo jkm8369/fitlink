@@ -36,7 +36,7 @@ public class UserController {
 		session.setAttribute("authUser", authUser);
 		
 		
-		return "";
+		return "redirect:/";
 	}
 	
 	//로그아웃

@@ -11,6 +11,8 @@ public class WorkoutService {
 	@Autowired
 	private WorkoutRepository workoutRepository;
 	
-	
+	public void exeGetWorkoutList() {
+		
+	}
 	
 }

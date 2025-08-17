@@ -14,7 +14,10 @@ public class WorkoutController {
 	private WorkoutService workoutService;
 	
 	@RequestMapping(value="/workout", method= {RequestMethod.GET, RequestMethod.POST})
-	public String login() {
+	public String workout() {
+		System.out.println("WorkoutController.workout()");
+		
+		
 		
 		
 		return "";
