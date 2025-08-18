@@ -3,9 +3,11 @@
 <configuration>
     <typeAliases>
     	<typeAlias alias="UserVO" type="com.javaex.vo.UserVO" />
+    	<typeAlias alias="WorkoutVO" type="com.javaex.vo.WorkoutVO" />
     </typeAliases>
     <mappers>
       <mapper resource="mybatis/mappers/user.xml" />
+      <mapper resource="mybatis/mappers/workout.xml" />
         
     </mappers>
 </configuration>

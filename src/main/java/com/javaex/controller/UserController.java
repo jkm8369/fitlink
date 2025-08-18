@@ -33,10 +33,15 @@ public class UserController {
 		
 		UserVO authUser = userService.exeLogin(userVO);
 		
-		session.setAttribute("authUser", authUser);
+		if(authUser != null) {
+			System.out.println("로그인 성공: " + authUser);
+			session.setAttribute("authUser", authUser);
+			return "member/workout";
+		} else {
+			System.out.println("로그인 실패");
+			return "redirect:/";
+		}
 		
-		
-		return "redirect:/";
 	}
 	
 	//로그아웃

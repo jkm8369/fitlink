@@ -1,6 +1,6 @@
 package com.javaex.vo;
 
-public class WokroutVO {
+public class WorkoutVO {
 
 	private int logId;
 	private int userId;
@@ -11,13 +11,15 @@ public class WokroutVO {
 	private int reps;
 	private String createdAt;
 	private String logType;
+	private String exerciseName;
+	private String bodyPart;
 	
-	public WokroutVO() {
+	public WorkoutVO() {
 		super();
 	}
 
-	public WokroutVO(int logId, int userId, int userExerciseId, int writerId, String logDate, int weight, int reps,
-			String createdAt, String logType) {
+	public WorkoutVO(int logId, int userId, int userExerciseId, int writerId, String logDate, int weight, int reps,
+			String createdAt, String logType, String exerciseName, String bodyPart) {
 		super();
 		this.logId = logId;
 		this.userId = userId;
@@ -28,6 +30,8 @@ public class WokroutVO {
 		this.reps = reps;
 		this.createdAt = createdAt;
 		this.logType = logType;
+		this.exerciseName = exerciseName;
+		this.bodyPart = bodyPart;
 	}
 
 	public int getLogId() {
@@ -102,12 +106,30 @@ public class WokroutVO {
 		this.logType = logType;
 	}
 
+	public String getExerciseName() {
+		return exerciseName;
+	}
+
+	public void setExerciseName(String exerciseName) {
+		this.exerciseName = exerciseName;
+	}
+
+	public String getBodyPart() {
+		return bodyPart;
+	}
+
+	public void setBodyPart(String bodyPart) {
+		this.bodyPart = bodyPart;
+	}
+
 	@Override
 	public String toString() {
-		return "WokroutVO [logId=" + logId + ", userId=" + userId + ", userExerciseId=" + userExerciseId + ", writerId="
+		return "WorkoutVO [logId=" + logId + ", userId=" + userId + ", userExerciseId=" + userExerciseId + ", writerId="
 				+ writerId + ", logDate=" + logDate + ", weight=" + weight + ", reps=" + reps + ", createdAt="
-				+ createdAt + ", logType=" + logType + "]";
+				+ createdAt + ", logType=" + logType + ", exerciseName=" + exerciseName + ", bodyPart=" + bodyPart
+				+ "]";
 	}
+	
 	
 	
 	

@@ -9,6 +9,7 @@
 		<![CDATA[
 			select user_id as userId,
 		   		   user_name as userName,
+		   		   login_id as loginId,
 		   		   role
 			from users
 			where login_id = #{loginId}
