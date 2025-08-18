@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <typeAliases>
-    	<typeAlias alias="UserVO" type="com.javaex.vo.UserVO" />
-    </typeAliases>
-    <mappers>
-      <mapper resource="mybatis/mappers/user.xml" />
-        
-    </mappers>
+
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<!-- ★ 콘솔 SQL 로그 출력 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+	
+	<typeAliases>
+		<typeAlias alias="UserVO" type="com.javaex.vo.UserVO" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="mybatis/mappers/user.xml" />
+
+		<!-- 근무시간 매퍼 XML 추가 -->
+		<mapper resource="mybatis/mappers/schedule.xml" />
+	</mappers>
+	
 </configuration>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ⚠ namespace 문자열은 자바에서 그대로 사용할 거라 꼭 동일하게! -->
+<mapper namespace="trainer.schedule">
+
+	<select id="selectHoursByDate" resultType="int">
+		SELECT work_hour
+		FROM trainer_availability
+		WHERE trainer_id = #{trainerId}
+		AND work_date = #{workDate,jdbcType=DATE}
+		ORDER BY work_hour
+	</select>
+
+	<delete id="deleteByDate">
+		DELETE FROM trainer_availability
+		WHERE trainer_id = #{trainerId}
+		AND work_date = #{workDate,jdbcType=DATE}
+	</delete>
+
+	<insert id="insertHours">
+		INSERT INTO trainer_availability (trainer_id, work_date, work_hour)
+		VALUES
+		<foreach collection="hours" item="h" separator=",">
+			(#{trainerId}, #{workDate,jdbcType=DATE}, #{h,jdbcType=TINYINT})
+		</foreach>
+	</insert>
+
+</mapper>

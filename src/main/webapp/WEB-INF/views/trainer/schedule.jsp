@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="ko">
 
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Workout Log - FitLink</title>
+<title>Schedule - FitLink</title>
 
 <link rel="stylesheet" href="../../assets/css/reset.css" />
 <link rel="stylesheet" href="../../assets/css/include.css" />
@@ -18,6 +19,7 @@
 
 <!-- trainer.css 마지막 (오버라이드 포함) -->
 <link rel="stylesheet" href="../../assets/css/trainer.css" />
+<link rel="stylesheet" href="../../assets/css/schedule_modal.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
@@ -169,43 +171,77 @@
 			<p>Copyright © 2025. FitLink All rights reserved.</p>
 		</footer>
 
+		<div id="scheduleModal" class="modal-overlay">
+			<div class="modal-container">
+				<iframe id="modalFrame" class="modal-iframe" title="근무시간 등록" src="about:blank"></iframe>
+			</div>
+		</div>
+
+
 		<!-- ----------------------------------------------------------------------- -->
 		<script>
-		  document.addEventListener('DOMContentLoaded', function () {
-		    const calendarEl = document.getElementById('calendar'); // ← id 이름 체크!
-		    const calendar = new FullCalendar.Calendar(calendarEl, {
-		      initialView: 'dayGridMonth',
-		      locale: 'ko',
-		      headerToolbar: {
-		        left: 'prev,next today',
-		        center: 'title',
-		        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-		      },
-		      buttonText: {
-		        today: 'today',
-		        month: 'month',
-		        week: 'week',
-		        day: 'day'
-		      },
-		      dayCellContent(arg) {
-		    	    // '7일' 같은 텍스트에서 '일' 제거 → '7'
-		    	    const text = arg.dayNumberText.replace(/일/g, '');
-		    	    return { html: text }; // 또는: arg.dayNumberText = text; return { html: text };
-	    	  },
-		      height: 'auto',
-		      weekends: true,
-		      events: [
-		        { title: 'PT - 조강민', start: '2025-08-14T14:00:00', backgroundColor: '#007bff' },
-		        { title: 'PT - 김동민', start: '2025-08-15T15:00:00', backgroundColor: '#28a745' }
-		      ],
-		      eventClick(info) {
-		        alert('수업 정보: ' + info.event.title);
-		      }
-		      
-		    });
-		
-		    calendar.render();
-		  });
+		document.addEventListener('DOMContentLoaded', function () {
+			  const CTX = '<%=request.getContextPath()%>';
+
+			  // ===== 모달 열기/닫기 유틸 =====
+			  const overlay = document.getElementById('scheduleModal');   // ②에서 추가한 오버레이
+			  const frame   = document.getElementById('modalFrame');      // ②에서 추가한 iframe
+
+			  function openModal(dateStr) {
+				  const d = encodeURIComponent(dateStr);
+				  frame.src = CTX + '/trainer/schedule-insert?date=' + d;
+				  overlay.classList.add('show');
+				  document.body.classList.add('noscroll');
+				}
+
+				function closeModal() {
+				  frame.src = 'about:blank';
+				  overlay.classList.remove('show');
+				  document.body.classList.remove('noscroll');
+				}
+
+				// 배경 클릭 시 닫기
+				overlay.addEventListener('click', (e) => {
+				  if (e.target === overlay) closeModal();
+				});
+
+				// ESC 키로 닫기
+				document.addEventListener('keydown', (e) => {
+				  if (e.key === 'Escape') closeModal();
+				});
+				
+			  	window.addEventListener('message', (e) => {if (e.data && e.data.type === 'modal-close') {closeModal();}});
+			  	
+			  // ===== FullCalendar =====
+			  const calendarEl = document.getElementById('calendar');
+			  const calendar = new FullCalendar.Calendar(calendarEl, {
+			    initialView: 'dayGridMonth',
+			    locale: 'ko',
+			    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+			    buttonText: { today: 'today', month: 'month', week: 'week', day: 'day' },
+			    dayCellContent(arg) {
+			      const text = arg.dayNumberText.replace(/일/g, '');
+			      return { html: text };
+			    },
+			    height: 'auto',
+			    weekends: true,
+
+			    // 모달 열기
+			    dateClick(info) {
+			      openModal(info.dateStr);
+			    },
+
+			    events: [
+			      { title: 'PT - 조강민', start: '2025-08-14T14:00:00', backgroundColor: '#007bff' },
+			      { title: 'PT - 김동민', start: '2025-08-15T15:00:00', backgroundColor: '#28a745' }
+			    ],
+			    eventClick(info) {
+			      alert('수업 정보: ' + info.event.title);
+			    }
+			  });
+
+			  calendar.render();
+			});
 		</script>
 	</div>
 </body>
