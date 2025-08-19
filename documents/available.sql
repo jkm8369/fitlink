@@ -1,6 +1,10 @@
-/*******************************************************
-availability
-*******************************************************/
+/* =========================================================
+  1) 트레이너 근무시간 (trainer_availability)
+     - "어느 트레이너가, 어느 날짜에, 몇 시에" 근무하는지
+       1시간 단위로 저장하는 테이블
+     - 이 테이블의 한 행(=근무칸)이 예약의 대상이 됨
+========================================================= */
+
 -- 데이터 베이스 사용
 use fitlink_db;
 
@@ -12,18 +16,22 @@ DROP TABLE IF EXISTS trainer_availability;
 
 -- 테이블 생성
 CREATE TABLE trainer_availability (
+  /* 근무칸 고유 번호 (PK). 예약에서 availability_id로 참조함 */
   avail_id   INT PRIMARY KEY AUTO_INCREMENT,
+  /* 근무를 하는 트레이너의 사용자 ID (users.user_id) */
   trainer_id INT NOT NULL,     -- users.user_id 를 FK로 참조
+  /* 근무 날짜 (예: 2025-07-09) */
   work_date  DATE NOT NULL,    -- 예: 2025-07-09
+  /* 근무 시작 시각(시단위, 0~23). 예: 14 -> 14:00~15:00 */
   work_hour  TINYINT NOT NULL, -- 0~23 (예: 14 → 14:00~15:00)
 
-  -- 같은 트레이너가 같은 날짜 같은 시간대를 중복 저장 못 하게
+  /* 같은 트레이너가 같은 날짜/시간대를 중복 등록 못 하도록 */
   UNIQUE KEY uk_trainer_date_hour (trainer_id, work_date, work_hour),
 
-  -- 조회 성능 및 조인 편의
+  /* (트레이너, 날짜)로 자주 조회하므로 인덱스 */
   INDEX idx_trainer_date (trainer_id, work_date),
 
-  -- FK: users(user_id) 를 참조 (무결성 보장)
+  /* FK: 실제 존재하는 사용자만 트레이너로 등록 가능 */
   CONSTRAINT fk_ta_user
     FOREIGN KEY (trainer_id) REFERENCES users(user_id)
 );
@@ -54,7 +62,7 @@ WHERE u.login_id = 'trainer1' AND u.role = 'trainer';
 SELECT work_hour
 FROM trainer_availability
 WHERE trainer_id = 1
-  AND work_date  = '2025-07-09'
+  AND work_date  = '2025-08-19'
 ORDER BY work_hour;
 
 -- 로그인아이디로 내 근무시간 조회(조인 사용)
@@ -78,14 +86,14 @@ ORDER BY u.user_name, ta.work_date, ta.work_hour;
 SELECT * 
 FROM trainer_availability
 WHERE trainer_id = 1
-  AND work_date  = '2025-07-09'
+  AND work_date  = '2025-08-12'
 ORDER BY work_hour;
 
 -- 모달
 -- 1) 삭제
 DELETE FROM trainer_availability
 WHERE trainer_id = 1
-  AND work_date  = '2025-07-10';
+  AND work_date  = '2025-07-19';
 
 -- 2) 새로 저장
 INSERT INTO trainer_availability (trainer_id, work_date, work_hour)

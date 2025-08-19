@@ -1,6 +1,10 @@
-/*******************************************************
-booking_status
-*******************************************************/
+/* =========================================================
+  3) 예약 (reservation)
+     - "어떤 회원이(pt_member.member_id) 어떤 근무칸(trainer_availability.avail_id)을
+        예약했는가"를 저장
+     - 근무시간 외 예약 금지: availability_id FK로 보장
+     - 같은 근무칸에 중복 예약 금지: UNIQUE(availability_id)
+========================================================= */
 -- 데이터 베이스 사용
 use fitlink_db;
 
@@ -8,20 +12,48 @@ use fitlink_db;
 show tables;
 
 -- 테이블 삭제
-drop table booking_status;
+drop table reservation;
 
 -- 테이블 생성
-create table booking_status(
-	booking_id	int		primary key		auto_increment
-    ,status		enum('scheduled', 'completed', 'canceled')
-);
+CREATE TABLE reservation (
+  /* 예약 PK */
+  reservation_id  BIGINT PRIMARY KEY AUTO_INCREMENT,
 
--- 추가
-insert into booking_status
-value(null, 'scheduled')
-;
+  /* 예약한 회원 (users.user_id) */
+  member_id       INT NOT NULL,                -- FK: users(user_id)
+
+  /* 예약된 근무칸 (trainer_availability.avail_id)
+     → 여기서 트레이너/날짜/시간을 조인으로 항상 일관되게 가져옴 */
+  availability_id INT NOT NULL,                -- FK: trainer_availability(avail_id)
+
+  /* 상태:
+       BOOKED    = 예약됨(미진행)
+       ATTENDED  = 출석/수업 완료
+       CANCELLED = 예약 취소
+       NOSHOW    = 노쇼 (정책에 따라 차감 포함/제외 선택)
+  */
+  status ENUM('BOOKED','ATTENDED','CANCELLED','NOSHOW') NOT NULL DEFAULT 'BOOKED',
+
+  /* 메모(선택) */
+  memo VARCHAR(255) NULL,
+
+  /* 같은 근무칸은 1명만 예약 허용 (중복 예약 방지) */
+  UNIQUE KEY uq_one_booking_per_slot (availability_id),
+
+  /* 조회 최적화 */
+  INDEX idx_member (member_id),
+  INDEX idx_avail  (availability_id),
+
+  /* FK: 존재하는 회원/근무칸만 참조 가능 */
+  CONSTRAINT fk_resv_member FOREIGN KEY (member_id)       REFERENCES users(user_id),
+  CONSTRAINT fk_resv_avail  FOREIGN KEY (availability_id) REFERENCES trainer_availability(avail_id)
+);
 
 -- 조회
 select 	*
-from 	booking_status
+from 	reservation
+;
+
+DELETE FROM reservation
+WHERE reservation_id = 15
 ;

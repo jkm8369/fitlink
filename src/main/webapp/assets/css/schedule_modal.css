@@ -1,140 +1,366 @@
 @charset "UTF-8";
-
-/* ====================== reset ====================== */
-body { font-family: "Pretendard", sans-serif; margin: 0; background-color: #f0f2f5; }
-* { box-sizing: border-box; }
-
-/* iframe 문서(자식)에서도 100% 채우기 위해 필요 */
-html, body { height: 100%; }
-
 /* ====================== modal common ====================== */
 /* 오버레이 */
 .modal-overlay {
-  position: fixed; inset: 0; z-index: 9999;
-  background: rgba(0,0,0,.6);
-  display: none; justify-content: center; align-items: center;
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	background: rgba(0, 0, 0, .6);
+	display: none;
+	justify-content: center;
+	align-items: center;
 }
-.modal-overlay.show { display: flex; }
+
+.modal-overlay.show {
+	display: flex;
+}
 
 /* 모달 공통 박스(★ 여기엔 width/height 지정하지 않음) */
 .modal-container {
-  max-width: 95vw; max-height: 90vh;
-  background-color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  animation: modalIn .18s ease-out;
+	max-width: 95vw;
+	max-height: 90vh;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	animation: modalIn .18s ease-out;
 }
 
 /* 헤더/바디/푸터 */
-.modal-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #eee; }
-.modal-title { font-size:20px; font-weight:700; margin:0; }
-.modal-close-btn { background:none; border:0; font-size:24px; color:#888; cursor:pointer; line-height:1; padding:4px 6px; }
+.modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	border-bottom: 1px solid #eee;
+}
 
-.modal-body { padding:16px; overflow:auto; flex:1 1 auto; }
-.modal-footer { display:flex; flex-direction:column; gap:10px; padding:12px 16px 16px; border-top:1px solid #eee; }
+.modal-title {
+	font-size: 20px;
+	font-weight: 700;
+	margin: 0;
+}
+
+.modal-close-btn {
+	background: none;
+	border: 0;
+	font-size: 24px;
+	color: #888;
+	cursor: pointer;
+	line-height: 1;
+	padding: 4px 6px;
+}
+
+.modal-body {
+	padding: 16px;
+	overflow: auto;
+	flex: 1 1 auto;
+}
+
+.modal-footer {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 12px 16px 16px;
+	border-top: 1px solid #eee;
+}
 
 /* 버튼 */
-.submit-btn, .delete-btn { width:100%; height:52px; border:none; border-radius:8px; font-size:18px; font-weight:700; cursor:pointer; transition:background-color .2s; }
-.submit-btn { background-color:#0080ff; color:#fff; }
-.submit-btn:hover { background-color:#0073e6; }
-.delete-btn { background-color:#bdbdbd; color:#fff; }
-.delete-btn:hover { background-color:#a9a9a9; }
+.submit-btn, .delete-btn {
+	width: 100%;
+	height: 52px;
+	border: none;
+	border-radius: 8px;
+	font-size: 18px;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color .2s;
+}
 
-body.noscroll { overflow: hidden; }
+.submit-btn {
+	background-color: #0080ff;
+	color: #fff;
+}
+
+.submit-btn:hover {
+	background-color: #0073e6;
+}
+
+.delete-btn {
+	background-color: #bdbdbd;
+	color: #fff;
+}
+
+.delete-btn:hover {
+	background-color: #a9a9a9;
+}
+
+body.noscroll {
+	overflow: hidden;
+}
 
 /* iframe */
-.modal-iframe { width:100%; height:100%; border:0; display:block; flex:1 1 auto; }
+.modal-iframe {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+	flex: 1 1 auto;
+}
 
 /* 진입 애니메이션 */
-@keyframes modalIn { from { opacity:0; transform: translateY(8px) scale(.98); } to { opacity:1; transform:none; } }
+@keyframes modalIn {from { opacity:0;
+	transform: translateY(8px) scale(.98);
+}
+
+to {
+	opacity: 1;
+	transform: none;
+}
+
+}
 
 /* ====================== schedule (모달 내부 콘텐츠 공통) ====================== */
-.modal-calendar { width:100%; height:300px; background:#f9f9f9; border:#9f9f9f solid 2px; border-radius:8px; padding:16px; }
-.time-selector { text-align:center; }
-.time-selector-title { font-size:1.125rem; font-weight:700; margin:0 0 8px; }
-.time-selector-date { font-size:.875rem; color:#555; margin:0 0 20px; }
+.modal-calendar {
+	width: 100%;
+	height: 300px;
+	background: #f9f9f9;
+	border: #9f9f9f solid 2px;
+	border-radius: 8px;
+	padding: 16px;
+}
 
-.time-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-.time-slot { width:100%; height:40px; border:1px solid #ddd; background:#fff; color:#333; border-radius:8px; cursor:pointer; font-size:.875rem; transition:all .2s ease; }
-.time-slot:hover { border-color:#007bff; color:#007bff; }
-.time-slot.disabled { background:#e9ecef; border-color:#e9ecef; color:#aaa; cursor:not-allowed; }
-.time-slot.selected { background:#007bff; border-color:#007bff; color:#fff; font-weight:600; }
+.time-selector {
+	text-align: center;
+}
 
-.legend { display:flex; justify-content:center; gap:16px; margin-top:24px; font-size:.75rem; color:#555; }
-.legend-item { display:flex; align-items:center; gap:6px; }
-.legend-color { width:12px; height:12px; border-radius:3px; }
-.legend-color.available { border:1px solid #ddd; background:#fff; }
-.legend-color.disabled  { background:#e9ecef; }
-.legend-color.selected  { background:#007bff; }
+.time-selector-title {
+	font-size: 1.125rem;
+	font-weight: 700;
+	margin: 0 0 8px;
+}
+
+.time-selector-date {
+	font-size: .875rem;
+	color: #555;
+	margin: 0 0 20px;
+}
+
+.time-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
+}
+
+.time-slot {
+	width: 100%;
+	height: 40px;
+	border: 1px solid #ddd;
+	background: #fff;
+	color: #333;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: .875rem;
+	transition: all .2s ease;
+}
+
+.time-slot:hover {
+	border-color: #007bff;
+	color: #007bff;
+}
+
+.time-slot.disabled {
+	background: #e9ecef;
+	border-color: #e9ecef;
+	color: #aaa;
+	cursor: not-allowed;
+}
+
+.time-slot.selected {
+	background: #007bff;
+	border-color: #007bff;
+	color: #fff;
+	font-weight: 600;
+}
+
+.legend {
+	display: flex;
+	justify-content: center;
+	gap: 16px;
+	margin-top: 24px;
+	font-size: .75rem;
+	color: #555;
+}
+
+.legend-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.legend-color {
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+}
+
+.legend-color.available {
+	border: 1px solid #ddd;
+	background: #fff;
+}
+
+.legend-color.disabled {
+	background: #e9ecef;
+}
+
+.legend-color.selected {
+	background: #007bff;
+}
 
 /* ====================== 부모 전용 크기 (스케줄 화면) ====================== */
 #scheduleModal .modal-container {
-  width: 520px;  /* ← 원하는 가로 */
-  height: 760px; /* ← 원하는 세로 */
-  padding: 0;    /* 내부 여백 제거 → iframe이 꽉 차게 */
+	width: 520px; /* ← 원하는 가로 */
+	height: 760px; /* ← 원하는 세로 */
+	padding: 0; /* 내부 여백 제거 → iframe이 꽉 차게 */
 }
-@media (max-width: 560px) {
-  #scheduleModal .modal-container { width:95vw; height:88vh; }
+
+@media ( max-width : 560px) {
+	#scheduleModal .modal-container {
+		width: 95vw;
+		height: 88vh;
+	}
 }
 
 /* ====================== 자식(iframe) 전용: 박스를 100% 채우기 ====================== */
 /* 자식 문서에서 .modal-container 에 'is-inner' 클래스를 추가해 사용 */
 .modal-container.is-inner {
-  width: 100%;
-  height: 100%;
-  max-width: none !important;
-  max-height: none !important;
-  padding: 0;        /* 내부 여백은 여기서 조절 */
-  box-shadow: none;    /* 부모에 그림자 있으니 자식은 제거(원하면 주석 처리) */
-  border-radius: 0;    /* 부모 둥근모서리만 보이게(원하면 16px 등으로 변경) */
+	width: 100%;
+	height: 100%;
+	max-width: none !important;
+	max-height: none !important;
+	padding: 0; /* 내부 여백은 여기서 조절 */
+	box-shadow: none; /* 부모에 그림자 있으니 자식은 제거(원하면 주석 처리) */
+	border-radius: 0; /* 부모 둥근모서리만 보이게(원하면 16px 등으로 변경) */
 }
 
 /* ====================== 시간버튼 ====================== */
 /* 그리드는 그대로 사용 */
 .time-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 8px;
 }
 
 /* 실제 체크박스는 화면에서 숨김(접근성 유지용) */
 .time-chk {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
 }
 
 /* 라벨을 버튼처럼 */
 .time-label {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  border: 1px solid #ddd;
-  background: #fff;
-  color: #333;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: all .2s ease;
-  user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 40px;
+	border: 1px solid #ddd;
+	background: #fff;
+	color: #333;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 0.875rem;
+	transition: all .2s ease;
+	user-select: none;
 }
 
-.time-label:hover { border-color: #007bff; color: #007bff; }
+.time-label:hover {
+	border-color: #007bff;
+	color: #007bff;
+}
 
 /* ✔ 체크됐을 때(선택 상태) */
-.time-chk:checked + .time-label {
-  background: #007bff;
-  border-color: #007bff;
-  color: #fff;
-  font-weight: 600;
+.time-chk:checked+.time-label {
+	background: #007bff;
+	border-color: #007bff;
+	color: #fff;
+	font-weight: 600;
 }
 
 /* 포커스 접근성 */
-.time-chk:focus-visible + .time-label {
-  outline: 2px solid #66aaff;
-  outline-offset: 2px;
+.time-chk:focus-visible+.time-label {
+	outline: 2px solid #66aaff;
+	outline-offset: 2px;
 }
 
+/* -------------------------------------------
+   member 예약 모달: 시간/상태 표시 오버라이드
+   ------------------------------------------- */
+
+/* 혹시 before/after로 가짜 텍스트 넣는 규칙이 있다면 끈다 */
+.time-grid .time-label::before, .time-grid .time-label::after {
+	content: none !important;
+}
+
+/* 라벨(버튼) 기본 모양 보강 */
+.time-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 48px;
+	width: 100%;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	background: #fff;
+	color: #111827;
+	font-weight: 600;
+	user-select: none;
+	transition: all .15s ease-in-out;
+}
+
+/* 시간 숫자 보이게(앞자리 사라지는 것 방지) */
+.time-label .hh {
+	display: inline-block !important;
+	font-variant-numeric: tabular-nums;
+	min-width: 2ch;
+	text-align: right;
+	opacity: 1 !important;
+}
+
+.time-label .mm {
+	opacity: .8;
+	margin-left: 2px;
+}
+
+/* 상태별 색상 (등록 가능 / 불가 / 선택됨) */
+.time-label.available {
+	background: #eef6ff !important;
+	border-color: #60a5fa !important;
+	color: #1e40af !important;
+	cursor: pointer;
+}
+
+.time-chk:disabled+.time-label, .time-label.disabled {
+	background: #f3f4f6 !important;
+	border-color: #e5e7eb !important;
+	color: #9ca3af !important;
+	cursor: not-allowed;
+}
+
+.time-chk:checked+.time-label, .time-label.selected {
+	background: #2563eb !important;
+	border-color: #1d4ed8 !important;
+	color: #fff !important;
+}
+
+/* 혹시 가상요소로 텍스트를 덮는 규칙이 있었다면 제거 */
+.time-label::before, .time-label::after {
+	content: none !important;
+}
+
+/* 시간 숫자가 가려지지 않도록 보장 */
+.time-label {
+	font-size: 0.9rem;
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace: 레포지토리에서 이 문자열로 쿼리를 찾습니다 -->
+<mapper namespace="booking">
+
+	<!-- [A] 회원의 담당 트레이너 찾기 (회원 1명 ↔ 트레이너 1명 전제) 입력: memberId(int) 반환: trainer_id(int) -->
+	<select id="selectTrainerIdByMemberId" parameterType="int" resultType="int">
+		SELECT trainer_id
+		FROM pt_member
+		WHERE member_id = #{value}
+	</select>
+
+	<!-- [B] 특정 날짜의 근무칸 목록 (시간 + avail_id) 입력: trainerId, workDate(java.sql.Date) 반환: map(hour, availabilityId) 리스트 -->
+	<resultMap id="SlotMap" type="map">
+		<result column="work_hour" property="hour" />
+		<result column="avail_id" property="availabilityId" />
+	</resultMap>
+
+	<select id="selectSlotsByTrainerAndDate" parameterType="map" resultMap="SlotMap">
+		SELECT
+		work_hour,
+		avail_id
+		FROM trainer_availability
+		WHERE trainer_id = #{trainerId}
+		AND work_date = #{workDate}
+		ORDER BY work_hour
+	</select>
+
+	<!-- [C] 해당 날짜에 이미 예약된 근무칸(avail_id) 목록 정책: BOOKED/ATTENDED는 '이미 잡힌 칸'으로 간주 -->
+	<select id="selectBookedAvailabilityIds" parameterType="map" resultType="int">
+		SELECT r.availability_id
+		FROM reservation r
+		JOIN trainer_availability ta ON
+		ta.avail_id = r.availability_id
+		WHERE ta.trainer_id = #{trainerId}
+		AND ta.work_date = #{workDate}
+		AND r.status IN ('BOOKED','ATTENDED')
+	</select>
+
+	<!-- [D-1] 예약 INSERT(단건) 입력: memberId, availabilityId, memo -->
+	<insert id="insertReservation">
+		INSERT INTO reservation (member_id, availability_id, status, memo)
+		VALUES (#{memberId}, #{availabilityId}, 'BOOKED', #{memo})
+	</insert>
+
+	<!-- [D-2] 예약 INSERT(여러 개: 체크박스 선택해서 한 번에) 입력: memberId, availabilityIds(List<Integer>), memo 주의: 하나라도 중복/잘못되면 전체가 실패(트랜잭션 롤백) -->
+	<insert id="insertReservationBatch">
+		INSERT INTO reservation (member_id, availability_id, status, memo)
+		VALUES
+		<foreach collection="availabilityIds" item="aid" separator=",">
+			(#{memberId}, #{aid}, 'BOOKED', #{memo})
+		</foreach>
+	</insert>
+
+	<!-- (선택) 잔여 PT 확인용 쿼리 -->
+	<select id="selectTotalSessions" parameterType="int" resultType="int">
+		SELECT total_sessions FROM pt_member WHERE member_id = #{memberId}
+	</select>
+
+	<select id="countUsedByMember" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM reservation
+		WHERE member_id = #{memberId}
+		AND status IN
+		('BOOKED','ATTENDED')
+	</select>
+
+</mapper>
