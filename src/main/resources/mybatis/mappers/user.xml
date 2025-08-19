@@ -8,13 +8,15 @@
 	<select id="selectOneByIdPw" parameterType="com.javaex.vo.UserVO" resultType="com.javaex.vo.UserVO">
 		<![CDATA[
 			select user_id as userId,
-				   login_id as loginId,
 		   		   user_name as userName,
+		   		   login_id as loginId,
 		   		   role
 			from users
 			where login_id = #{loginId}
 			and password = #{password}
 		]]>
 	</select>
+	
+	
 
 </mapper>
