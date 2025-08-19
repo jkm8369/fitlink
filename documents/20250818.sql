@@ -26,157 +26,74 @@ select *
 from pt_members;
 
 
--- 테이블 삭제
-DROP TABLE workout_log, user_photo;
-
--- fk로 묶여있을 때 삭제
-SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE workout_log, user_photo;
-SET FOREIGN_KEY_CHECKS = 1;
-
-ALTER TABLE workout_log
-ADD COLUMN user_id INT  NOT NULL;
-
-ALTER TABLE workout_log
-ADD COLUMN user_exercise_id INT  NOT NULL;
-
-ALTER TABLE workout_log
-ADD COLUMN writer_id INT  NOT NULL;
-
-ALTER TABLE user_photo
-ADD COLUMN user_id INT  NOT NULL;
-
-ALTER TABLE user_photo
-ADD COLUMN writer_id INT  NOT NULL;
-
-ALTER TABLE user_photo
-ADD UNIQUE KEY uq_user_photo_writer_id (writer_id);
-
-ALTER TABLE selected_exercises
-ADD COLUMN user_id INT  NOT NULL;
-
-ALTER TABLE selected_exercises
-ADD COLUMN exercise_id INT  NOT NULL;
-
-ALTER TABLE pt_members
-ADD COLUMN trainer_id INT  NOT NULL;
-
-ALTER TABLE pt_members
-ADD COLUMN member_id INT  NOT NULL;
-  
--- workout_log에 user_id fk 추가
-ALTER TABLE workout_log
-ADD CONSTRAINT fk_users_workout_log
-FOREIGN KEY (user_id) REFERENCES users(user_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
--- workout_log에 user_exercise_id fk 추가
-ALTER TABLE workout_log
-ADD CONSTRAINT fk_selected_exercises_workout_log
-FOREIGN KEY (user_exercise_id) REFERENCES selected_exercises(user_exercise_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
--- workout_log에 writer_id fk 추가
-ALTER TABLE workout_log
-ADD CONSTRAINT fk_user_photo_writer_id
-FOREIGN KEY (writer_id) REFERENCES user_photo(writer_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
--- user_photo에 user_id fk 추가
-ALTER TABLE user_photo
-ADD CONSTRAINT fk_users_user_photo
-FOREIGN KEY (user_id) REFERENCES users(user_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
-ALTER TABLE selected_exercises
-ADD CONSTRAINT fk_users_selected_exercises
-FOREIGN KEY (user_id) REFERENCES users(user_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
-
-ALTER TABLE selected_exercises
-ADD CONSTRAINT fk_exercise_selected_exercises
-FOREIGN KEY (exercise_id) REFERENCES exercise(exercise_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE;
+-- 1. pt_members 테이블: 트레이너와 회원을 users 테이블과 연결합니다.
+ALTER TABLE `pt_members`
+ADD COLUMN `trainer_id` INT NOT NULL AFTER `fitness_goal`,
+ADD COLUMN `member_id` INT NOT NULL AFTER `trainer_id`,
+ADD CONSTRAINT `fk_pt_trainer_to_users`
+FOREIGN KEY (`trainer_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_pt_member_to_users`
+FOREIGN KEY (`member_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-insert into users
-values(null, 'jkm8369', 'whrkdals', '조강민', '01047461667', '950808', 'male', 'member', now());
-
-insert into users
-values(null, 'chzh8369', 'whrkdals', '마동석', '01012345678', '800921', 'male', 'trainer', now());
-
-insert into workout_log
-values(null, '20250817', '100.23', '10', now(), 'normal', '1', '1', '1');
-
-insert into exercise
-values(null, '가슴', '벤치프레스');
-
-insert into exercise
-values(null, '가슴', '푸시업');
-
-insert into exercise
-values(null, '가슴', '헤머 벤치프레스');
-
-insert into exercise
-values(null, '등', '스미스머신 로우');
-
-insert into exercise
-values(null, '등', '인클라인 덤벨 로우');
-
-insert into exercise
-values(null, '등', '플로어 시티드 케이블 로우');
-
-insert into exercise
-values(null, '어깨', '시티드 덤벨 숄더 프레스');
-
-insert into exercise
-values(null, '어깨', '오버헤드 프레스');
-
-insert into exercise
-values(null, '어깨', '핸드스탠드 푸시업');
-
-insert into selected_exercises
-values(null, '1', '1');
-
-insert into user_photo
-values(null, now(), 'body', '', '1', '1');
+-- 2. user_photo 테이블: 사진의 소유자와 작성자를 users 테이블과 연결합니다.
+ALTER TABLE `user_photo`
+ADD COLUMN `user_id` INT NOT NULL AFTER `photo_url`,
+ADD COLUMN `writer_id` INT NOT NULL AFTER `user_id`,
+ADD CONSTRAINT `fk_photo_user_to_users`
+FOREIGN KEY (`user_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_photo_writer_to_users`
+FOREIGN KEY (`writer_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-select log_id as logId,
-	   log_date as logDate,
-       weight,
-       reps,
-       created_at as createdAt,
-       log_type as logType,
-       user_id as userId,
-       user_exercise_id as userExerciseId,
-       writer_id as writerId
-from workout_log
-order by logId asc;
+-- 3. inbody 테이블: 인바디 정보의 소유자를 users 테이블과 연결합니다.
+ALTER TABLE `inbody`
+ADD COLUMN `user_id` INT NOT NULL AFTER `dinner_fat_g`,
+ADD CONSTRAINT `fk_inbody_to_users`
+FOREIGN KEY (`user_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE;
 
-select w.log_id as logId,
-	   w.log_date as logDate,
-       w.weight,
-       w.reps,
-       w.created_at as createdAt,
-       w.log_type as logType,
-       u.user_id as userId,
-       w.user_exercise_id as userExerciseId,
-       p.writer_id as writerId,
-       u.user_name as userName,
-       u.login_id as loginId
-from users u, workout_log w, user_photo p
-where u.user_id = w.user_id
-and w.writer_id = p.writer_id
-;
 
-delete
-from workout_log
-where logId = 1
-;
+-- 4. selected_exercises 테이블: 사용자와 운동 종류를 각 테이블과 연결합니다.
+ALTER TABLE `selected_exercises`
+ADD COLUMN `user_id` INT NOT NULL AFTER `user_exercise_id`,
+ADD COLUMN `exercise_id` INT NOT NULL AFTER `user_id`,
+ADD CONSTRAINT `fk_se_to_users`
+FOREIGN KEY (`user_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_se_to_exercise`
+FOREIGN KEY (`exercise_id`)
+REFERENCES `exercise` (`exercise_id`)
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+-- 5. workout_log 테이블: 운동 기록의 소유자, 작성자, 운동 종류를 각 테이블과 연결합니다.
+ALTER TABLE `workout_log`
+ADD COLUMN `user_id` INT NOT NULL AFTER `log_type`,
+ADD COLUMN `user_exercise_id` INT NOT NULL AFTER `user_id`,
+ADD COLUMN `writer_id` INT NOT NULL AFTER `user_exercise_id`,
+ADD CONSTRAINT `fk_log_to_users`
+FOREIGN KEY (`user_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_log_to_selected_exercises`
+FOREIGN KEY (`user_exercise_id`)
+REFERENCES `selected_exercises` (`user_exercise_id`)
+ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `fk_log_to_writer`
+FOREIGN KEY (`writer_id`)
+REFERENCES `users` (`user_id`)
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+

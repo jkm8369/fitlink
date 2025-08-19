@@ -25,31 +25,66 @@
 		]]>
 	</select>
 	
+	<!-- 특정 날짜의 운동일지 리스트 가져오기 -->
+	<select id="workoutSelectListByDate" parameterType="map" resultType="com.javaex.vo.WorkoutVO">
+		<![CDATA[
+			select wl.log_id as logId,
+				   wl.user_id as userId,
+				   wl.user_exercise_id as userExerciseId,
+				   e.exercise_name as exerciseName,
+				   e.body_part as bodyPart,
+				   wl.weight,
+				   wl.reps,
+				   wl.log_date as logDate
+			from workout_log wl
+			left join selected_exercises se
+				   on wl.user_exercise_id = se.user_exercise_id
+			left join exercise e
+				   on se.exercise_id = e.exercise_id
+			where wl.user_id = #{userId}
+			  and wl.log_date = #{logDate}
+			order by wl.log_id desc
+		]]>
+	</select>
+
 	<!-- 운동 1개 조회 -->
 	<select id="workoutSelectOne" parameterType="com.javaex.vo.WorkoutVO" resultType="com.javaex.vo.WorkoutVO">
 		select wl.log_id as logId,
-			   wl.user_id as userId,
-			   wl.user_exercise_id as userExerciseId,
-			   e.exercise_name as exerciseName,
-			   e.body_part as bodyPart,
-			   wl.weight,
-			   wl.reps,
-			   wl.log_date as logDate
+		wl.user_id as userId,
+		wl.user_exercise_id as userExerciseId,
+		e.exercise_name as exerciseName,
+		e.body_part as bodyPart,
+		wl.weight,
+		wl.reps,
+		wl.log_date as logDate
 		from workout_log wl
 		left join selected_exercises se
-			   on wl.user_exercise_id = se.user_exercise_id
+		on wl.user_exercise_id = se.user_exercise_id
 		left join exercise e
-			   on se.exercise_id = e.exercise_id
+		on se.exercise_id = e.exercise_id
 		where wl.log_id = #{logId}
 	</select>
-	
-	
+
+	<!-- 현재 로그인한 유저가 선택한 운동 목록 전체 가져오기 (select 박스 채우기용) -->
+	<select id="selectUserExercises" parameterType="int" resultType="com.javaex.vo.WorkoutVO">
+		<![CDATA[
+			select se.user_exercise_id as userExerciseId,
+				   e.exercise_id as exerciseId,
+				   e.body_part as bodyPart,
+				   e.exercise_name as exerciseName
+			from selected_exercises se, exercise e
+			where se.exercise_id = e.exercise_id
+			and se.user_id = #{userId}
+			order by e.body_part, e.exercise_name
+		]]>
+	</select>
+
 	<!-- 운동 기록 추가 키 가져오기 -->
 	<insert id="insertKey" parameterType="com.javaex.vo.WorkoutVO">
 		<![CDATA[
 			insert into workout_log
 			(log_date, weight, reps, created_at, log_type, user_id, user_exercise_id, writer_id)
-			values(null, 
+			values( 
 				   #{logDate}, 
 				   #{weight}, 
 				   #{reps}, 
@@ -59,23 +94,23 @@
 				   #{userExerciseId},
 				   #{writerId})
 		]]>
-		
+
 		<selectKey keyProperty="logId" resultType="int" order="AFTER">
 			<![CDATA[
 				select last_insert_id()
 			]]>
 		</selectKey>
-	
+
 	</insert>
-	
-	
+
+
 	<!-- 운동 기록 삭제 -->
 	<delete id="workoutRemove" parameterType="int">
-		delete 
+		delete
 		from workout_log
 		where log_Id = #{logId}
 	</delete>
-	
-	
+
+
 
 </mapper>

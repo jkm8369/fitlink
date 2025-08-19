@@ -30,7 +30,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 		// 3. 로그인 여부를 확인합니다.
 		if(authUser == null) {
 			// --- 로그인하지 않은 경우 ---
-			System.out.println("인증되지 않은 사용자 접근");
+			System.out.println("로그인이 필요합니다.");
 			
 			// 로그인 페이지로 리다이렉트(강제 이동)시킵니다.
 			response.sendRedirect(request.getContextPath() + "/user/loginform");

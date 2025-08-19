@@ -13,13 +13,14 @@ public class WorkoutVO {
 	private String logType;
 	private String exerciseName;
 	private String bodyPart;
+	private int exerciseId;
 	
 	public WorkoutVO() {
 		super();
 	}
 
 	public WorkoutVO(int logId, int userId, int userExerciseId, int writerId, String logDate, int weight, int reps,
-			String createdAt, String logType, String exerciseName, String bodyPart) {
+			String createdAt, String logType, String exerciseName, String bodyPart, int exerciseId) {
 		super();
 		this.logId = logId;
 		this.userId = userId;
@@ -32,6 +33,7 @@ public class WorkoutVO {
 		this.logType = logType;
 		this.exerciseName = exerciseName;
 		this.bodyPart = bodyPart;
+		this.exerciseId = exerciseId;
 	}
 
 	public int getLogId() {
@@ -122,15 +124,21 @@ public class WorkoutVO {
 		this.bodyPart = bodyPart;
 	}
 
+	public int getExerciseId() {
+		return exerciseId;
+	}
+
+	public void setExerciseId(int exerciseId) {
+		this.exerciseId = exerciseId;
+	}
+
 	@Override
 	public String toString() {
 		return "WorkoutVO [logId=" + logId + ", userId=" + userId + ", userExerciseId=" + userExerciseId + ", writerId="
 				+ writerId + ", logDate=" + logDate + ", weight=" + weight + ", reps=" + reps + ", createdAt="
 				+ createdAt + ", logType=" + logType + ", exerciseName=" + exerciseName + ", bodyPart=" + bodyPart
-				+ "]";
+				+ ", exerciseId=" + exerciseId + "]";
 	}
-	
-	
 	
 	
 	
