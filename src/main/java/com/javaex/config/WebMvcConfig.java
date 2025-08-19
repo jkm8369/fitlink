@@ -29,7 +29,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     
     /**
 	 * 인터셉터를 등록하는 메소드입니다.
-	 */
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		
@@ -43,4 +43,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 						"/assets/**"       //    - css, js, image 같은 리소스 파일들
 				);
 	}
+	*/
+
 }

@@ -284,6 +284,7 @@ h4 {
     box-shadow: 0 2px 6px rgba(31, 41, 55, 0.05);
     padding: 16px 18px;
     margin-top: 10px;
+    box-sizing: border-box;
 }
 
 /* 제목과 표 간격 증가 */
