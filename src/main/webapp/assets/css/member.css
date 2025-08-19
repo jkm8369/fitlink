@@ -265,16 +265,6 @@ h4 {
 }
 
 .card2 {
-<<<<<<< HEAD
-	max-width: 860px;
-	background: #fff;
-	border: 2px solid #b9b9b9;
-	/* 옅은 회색 테두리 */
-	border-radius: 12px;
-	box-shadow: 0 2px 6px rgba(31, 41, 55, 0.05);
-	padding: 16px 18px;
-	margin-top: 10px;
-=======
     max-width: 860px;
     background: #fff;
     border: 2px solid #b9b9b9;
@@ -284,7 +274,6 @@ h4 {
     padding: 16px 18px;
     margin-top: 10px;
     box-sizing: border-box;
->>>>>>> branch 'master' of https://github.com/jkm8369/fitlink.git
 }
 
 /* 제목과 표 간격 증가 */
