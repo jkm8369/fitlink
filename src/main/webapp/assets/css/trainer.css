@@ -229,7 +229,7 @@
 /* -----------------------------main--------------------------- */
 /* ----------------------- 1. 달력 */
 .calendar-card {
-	width: 859px; /* 기존 카드 폭 느낌 유지 */
+	width: 860px; /* 기존 카드 폭 느낌 유지 */
 	background: #fff;
 	border: 2px solid #b9b9b9;
 	border-radius: 12px;
