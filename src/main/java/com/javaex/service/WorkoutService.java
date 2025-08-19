@@ -1,8 +1,5 @@
 package com.javaex.service;
 
-<<<<<<< HEAD
-import org.springframework.stereotype.Service;
-=======
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.javaex.repository.WorkoutRepository;
 import com.javaex.vo.WorkoutVO;
->>>>>>> branch 'master' of https://github.com/jkm8369/fitlink.git
+
 
 @Service
 public class WorkoutService {

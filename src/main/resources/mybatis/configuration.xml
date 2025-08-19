@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
-<configuration>
-<<<<<<< HEAD
 
+<configuration>
 	<settings>
 		<setting name="mapUnderscoreToCamelCase" value="true" />
 		<!-- ★ 콘솔 SQL 로그 출력 -->
 		<setting name="logImpl" value="STDOUT_LOGGING" />
 	</settings>
-	
+
 	<typeAliases>
 		<typeAlias alias="UserVO" type="com.javaex.vo.UserVO" />
+		<typeAlias alias="WorkoutVO" type="com.javaex.vo.WorkoutVO" />
 	</typeAliases>
 
 	<mappers>
 		<mapper resource="mybatis/mappers/user.xml" />
-
-		<!-- 근무시간 매퍼 XML 추가 -->
+		<mapper resource="mybatis/mappers/workout.xml" />
 		<mapper resource="mybatis/mappers/schedule.xml" />
 	</mappers>
-	
-=======
-    <typeAliases>
-    	<typeAlias alias="UserVO" type="com.javaex.vo.UserVO" />
-    	<typeAlias alias="WorkoutVO" type="com.javaex.vo.WorkoutVO" />
-    </typeAliases>
-    <mappers>
-      <mapper resource="mybatis/mappers/user.xml" />
-      <mapper resource="mybatis/mappers/workout.xml" />
-        
-    </mappers>
->>>>>>> branch 'master' of https://github.com/jkm8369/fitlink.git
+
 </configuration>
