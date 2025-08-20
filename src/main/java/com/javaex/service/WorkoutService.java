@@ -48,6 +48,19 @@ public class WorkoutService {
 		return workoutList;
 	}
 	
+	//-- 특정 월에 운동 기록이 있는 날짜 목록 조회
+	public List<String> exeLoggedDates(int userId, String yearMonth) {
+		//System.out.println("WorkoutService.exeGetLoggedDates()");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("userId", userId);
+		params.put("yearMonth", yearMonth);
+		
+		List<String> loggedDateList = workoutRepository.selectLoggedDates(params);
+		
+		return loggedDateList;
+	}
+	
 	
 	//-- 운동 추가
 	public WorkoutVO exeWorkoutAddKey(WorkoutVO workoutVO) {

@@ -265,15 +265,15 @@ h4 {
 }
 
 .card2 {
-    max-width: 860px;
-    background: #fff;
-    border: 2px solid #b9b9b9;
-    /* 옅은 회색 테두리 */
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(31, 41, 55, 0.05);
-    padding: 16px 18px;
-    margin-top: 10px;
-    box-sizing: border-box;
+	max-width: 860px;
+	background: #fff;
+	border: 2px solid #b9b9b9;
+	/* 옅은 회색 테두리 */
+	border-radius: 12px;
+	box-shadow: 0 2px 6px rgba(31, 41, 55, 0.05);
+	padding: 16px 18px;
+	margin-top: 10px;
+	box-sizing: border-box;
 }
 
 /* 제목과 표 간격 증가 */
@@ -1405,6 +1405,13 @@ h4 {
 	cursor: pointer;
 	user-select: none;
 	font-size: 14px;
+	color: #9ca3af;
+	font-weight: 400;
+}
+
+.cal-day.has-log {
+	color: #111827; /* 기본 검정색 */
+	font-weight: 600; /* 굵게 */
 }
 
 .cal-day.out {
@@ -1419,11 +1426,13 @@ h4 {
 .cal-day.today {
 	outline: 2px solid #60a5fa;
 	outline-offset: -2px;
+	border-color: #3b82f6;
+	color: #3b82f6;
 }
 
 .cal-day.selected {
-	background: #5AA8D9;
-	color: #fff;
+	background-color: #3b82f6;
+	color: #ffffff !important; /* 다른 스타일보다 우선 적용 */
 }
 
 .cal-footer {

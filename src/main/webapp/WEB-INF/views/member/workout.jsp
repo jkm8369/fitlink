@@ -63,7 +63,7 @@
 								<button type="button" class="cal-nav" id="calNext" aria-label="다음 달">&#10095;</button>
 							</div>
 							<div class="cal-grid">
-								<!-- ▼ [수정] 요일 표시를 위한 컨테이너 추가 -->
+								<!-- 요일 표시를 위한 컨테이너 추가 -->
 								<div class="cal-weekdays">
 									<div class="cal-dow">일</div>
 									<div class="cal-dow">월</div>
@@ -147,23 +147,24 @@
 
 					<section class="rm-weight">
 						<h4>1RM 무게</h4>
-						<form id="form-add-1rm" class="set-form">
-							<select id="select-body-part-1rm" name="bodyPart" >
-								<option value="">부위</option>>
-							</select> 
-							<select id="select-exercise-name-1rm" name="userExerciseId">
-								<option value="">운동</option>
-							</select> 
-							<span>무게</span> <input id="input-weight-1rm" name="weight" type="text" placeholder="숫자" /> 
-							<span>kg</span> 
-							<span>×</span> <input id="input-reps-1rm" name="reps" type="text" placeholder="숫자" /> 
-							<span>회</span>
-
+						<form id="form-save-1rm" class="set-form">
+							<div class="rm-input-group">
+								<label>벤치프레스</label>
+								<input type="number" class="rm-input" data-exercise-name="벤치프레스" placeholder="kg">
+							</div>
+							<div class="rm-input-group">
+								<label>데드리프트</label>
+								<input type="number" class="rm-input" data-exercise-name="데드리프트" placeholder="kg">
+							</div>
+							<div class="rm-input-group">
+								<label>스쿼트</label>
+								<input type="number" class="rm-input" data-exercise-name="스쿼트" placeholder="kg">
+							</div>
 							<button type="submit" class="btn-plus">+</button>
 						</form>
 
 						<!-- -- + 클릭시 추가되는 폼 (js)-- -->
-						<div class="set-list">
+						<div id="1rmLogList" class="set-list">
 							
 						</div>	
 					</section>
@@ -184,7 +185,7 @@
 				selected : null
 			}; // 달력 상태(연/월/선택일)
 			
-			var userExerciseList = [];
+			let userExerciseList = [];
 	
 			// 숫자를 두 자리 문자열로 변환 (예: 1 -> "01")
 			function pad(n) {
@@ -196,10 +197,10 @@
 				return y + "-" + pad(m + 1) + "-" + pad(d);
 			}
 	
-			// ▼ [추가] YYYY년 M월 D일 형식으로 날짜 포맷하는 함수
+			// ▼YYYY년 M월 D일 형식으로 날짜 포맷하는 함수
 			function formatKoreanDate(dateStr) {
 				let parts = dateStr.split("-");
-				if (parts.length === 3) {
+				if (parts.length == 3) {
 					return parts[0] + "년 " + parseInt(parts[1], 10) + "월 "
 							+ parseInt(parts[2], 10) + "일";
 				}
@@ -211,7 +212,7 @@
 			let _now = new Date();
 			let _today = fmt(_now.getFullYear(), _now.getMonth(), _now.getDate());
 			$("#pickDate").val(_today);
-			$("#currentDateLabel").text(formatKoreanDate(_today)); // ▼ [수정] 한국식 날짜 포맷으로 표시
+			$("#currentDateLabel").text(formatKoreanDate(_today)); // 한국식 날짜 포맷으로 표시
 			
 			// 페이지 로딩 시 오늘 날짜의 기록을 불러옴
 			loadLogs(_today);
@@ -269,19 +270,56 @@
 				renderCalendar();
 			});
 	
+			// 오늘 버튼 클릭
 			$("#calToday").on("click", function(e) {
 				e.stopPropagation();
-				let d = new Date();
-				state.y = d.getFullYear();
-				state.m = d.getMonth();
-				renderCalendar();
+				
+				// 1. 오늘 날짜로 상태를 업데이트합니다.
+				state.selected = _today;
+				$("#pickDate").val(_today);
+				$("#currentDateLabel").text(formatKoreanDate(_today));
+	
+				// 2. 오늘 날짜의 로그를 불러옵니다.
+				loadLogs(_today);
+	
+				// 3. 달력을 닫습니다.
+				$("#inlineCalendar").hide();
 			});
 	
 			// ================== 달력 그리기 ==================
 			function renderCalendar() {
 				let y = state.y, m = state.m;
 				$("#calTitle").text(y + "년 " + (m + 1) + "월");
+				
+				// AJAX로 현재 달력의 운동 기록 날짜 목록을 먼저 받아옵니다.
+				$.ajax({
+					url: "${pageContext.request.contextPath}/api/workout/logged-dates",
+					type: "get",
+					data: { year: y, month: m + 1 }, // month는 1~12월로 보냅니다.
+					dataType: "json",
+					success: function(jsonResult) {
+						let loggedDates = [];
+						if (jsonResult.result === "success") {
+							loggedDates = jsonResult.apiData; // ["2025-08-10", "2025-08-12", ...]
+						} else {
+							console.error("운동 기록 날짜 로딩 실패:", jsonResult.message);
+						}
+						// 날짜 데이터를 가지고 달력 DOM을 그리는 함수 호출
+						buildCalendarDOM(loggedDates);
+					},
+					error: function(xhr, status, error) {
+						console.error("AJAX 에러:", error);
+						// 에러가 발생해도 달력은 그려주되, 기록 표시는 못함
+						buildCalendarDOM([]);
+					}
+				});
 	
+			}
+			
+			// 실제 달력의 HTML을 만드는 함수
+			function buildCalendarDOM(loggedDates) {
+				let y = state.y, m = state.m;
+				
 				let first = new Date(y, m, 1);
 				let startDay = first.getDay(); // 0(일)~6(토)
 				let lastDate = new Date(y, m + 1, 0).getDate(); // 이번 달 마지막 일
@@ -301,10 +339,19 @@
 				for (d = 1; d <= lastDate; d++) {
 					dateStr = fmt(y, m, d);
 					cls = "cal-day";
-					if (dateStr === _today)
+					if (dateStr == _today) {
 						cls += " today";
-					if (dateStr === state.selected)
+					}
+					
+					if (dateStr == state.selected) { 
 						cls += " selected";
+					}
+					
+					// 운동 기록이 있는 날짜에 'has-log' 클래스 추가
+					if (loggedDates.includes(dateStr)) {
+						cls += " has-log";
+					}
+					
 					html += '<button type="button" class="'+cls+'" data-date="'+dateStr+'">'
 							+ d + '</button>';
 				}
@@ -326,7 +373,7 @@
 					state.selected = picked;
 	
 					$("#pickDate").val(picked);
-					$("#currentDateLabel").text(formatKoreanDate(picked)); // ▼ [수정] 한국식 날짜 포맷으로 표시
+					$("#currentDateLabel").text(formatKoreanDate(picked)); // 한한국식 날짜 포맷으로 표시
 	
 					$("#calDays .cal-day").removeClass("selected");
 					$(this).addClass("selected");
@@ -352,7 +399,7 @@
 					type: "get",
 					dataType: "json",
 					success: function(jsonResult) {
-						if (jsonResult.result === "success") {
+						if (jsonResult.result == "success") {
 							userExerciseList = jsonResult.apiData;
 							// 두 폼의 select 박스를 각각 초기화
 							setupExerciseSelects("#select-body-part", "#select-exercise-name");
@@ -371,23 +418,23 @@
 			 * @param {string} exerciseSelector - 운동 select 박스의 ID
 			 */
 			function setupExerciseSelects(bodyPartSelector, exerciseSelector) {
-				var $bodyPartSelect = $(bodyPartSelector);
-				var $exerciseSelect = $(exerciseSelector);
+				let $bodyPartSelect = $(bodyPartSelector);
+				let $exerciseSelect = $(exerciseSelector);
 				
 				// 1. 부위 select 박스 채우기
 				$bodyPartSelect.empty().append('<option value="">부위 선택</option>');
-				var bodyParts = [...new Set(userExerciseList.map(item => item.bodyPart))]; 
+				let bodyParts = [...new Set(userExerciseList.map(item => item.bodyPart))]; 
 				bodyParts.forEach(function(part) {
 					$bodyPartSelect.append('<option value="' + part + '">' + part + '</option>');
 				});
 				
 				// 2. 부위 선택 시, 운동 select 박스 내용 변경
 				$bodyPartSelect.on("change", function() {
-					var selectedPart = $(this).val();
+					let selectedPart = $(this).val();
 					$exerciseSelect.empty().append('<option value="">운동 선택</option>');
 					if (selectedPart) {
 						userExerciseList.forEach(function(exercise) {
-							if (exercise.bodyPart === selectedPart) {
+							if (exercise.bodyPart == selectedPart) {
 								$exerciseSelect.append('<option value="' + exercise.userExerciseId + '">' + exercise.exerciseName + '</option>');
 							}
 						});
@@ -395,55 +442,101 @@
 				});
 			}
 
-			/**
-			 * 폼 제출(운동 기록 추가)을 처리하는 공통 함수
-			 * @param {string} formSelector - 제출할 폼의 ID
-			 * @param {string} logType - 저장할 로그 타입 ('NORMAL' 또는 '1RM')
-			 */
-			function handleLogSubmit(formSelector, logType) {
-				$(formSelector).on("submit", function(e) {
-					e.preventDefault();
+			// '오늘의 운동' 추가 로직
+			$("#form-add-log").on("submit", function(e) {
+				e.preventDefault();
+				var workoutData = {
+					userExerciseId: $("#select-exercise-name").val(),
+					weight: $("#input-weight").val(),
+					reps: $("#input-reps").val(),
+					logDate: $("#pickDate").val(),
+					logType: 'NORMAL'
+				};
 
-					var workoutData = {
-						userExerciseId: $(formSelector + " [name=userExerciseId]").val(),
-						weight: $(formSelector + " [name=weight]").val(),
-						reps: $(formSelector + " [name=reps]").val(),
-						logDate: $("#pickDate").val(),
-						logType: logType // 파라미터로 받은 logType 사용
-					};
+				if (!workoutData.userExerciseId || !workoutData.weight || !workoutData.reps) {
+					alert("운동, 무게, 횟수를 모두 입력해주세요.");
+					return;
+				}
+				
+				// 공통 저장 함수 호출
+				saveWorkoutLog(workoutData, "#form-add-log");
+			});
+			
+			// 1RM 저장 폼 제출 이벤트
+			$("#form-save-1rm").on("submit", function(e) {
+				e.preventDefault();
+				
+				var requests = []; // 여러 개의 Ajax 요청을 담을 배열
+				
+				// 각 1RM 입력 필드를 순회합니다.
+				$(".rm-input").each(function() {
+					var $input = $(this);
+					var weight = $input.val();
+					var exerciseName = $input.data("exercise-name");
 
-					if (!workoutData.userExerciseId || !workoutData.weight || !workoutData.reps) {
-						alert("운동, 무게, 횟수를 모두 입력해주세요.");
-						return;
+					// 무게가 입력된 필드만 처리합니다.
+					if (weight) {
+						// 운동 이름으로 userExerciseList에서 해당 운동 정보를 찾습니다.
+						var exercise = userExerciseList.find(function(ex) {
+							return ex.exerciseName === exerciseName;
+						});
+						
+						if (exercise) {
+							var workoutData = {
+								userExerciseId: exercise.userExerciseId,
+								weight: weight,
+								reps: 1, // 1RM은 항상 1회입니다.
+								logDate: $("#pickDate").val(),
+								logType: '1RM'
+							};
+							// 생성된 저장 요청을 배열에 추가합니다.
+							requests.push(saveWorkoutLog(workoutData));
+						} else {
+							// 사용자가 해당 3대 운동을 'selected_exercises'에 추가하지 않았을 경우를 대비한 경고
+							console.warn("'" + exerciseName + "' 운동이 사용자의 운동 목록에 없습니다. DB에 추가 후 시도해주세요.");
+						}
 					}
+				});
 
-					$.ajax({
-						url: "${pageContext.request.contextPath}/api/workout/add",
-						type: "post",
-						contentType: "application/json",
-						data: JSON.stringify(workoutData),
-						dataType: "json",
-						success: function(jsonResult) {
-							if (jsonResult.result === "success") {
+				// 저장할 기록이 있을 경우에만 실행
+				if (requests.length > 0) {
+					// Promise.all: 배열 안의 모든 Ajax 요청이 완료되기를 기다립니다.
+					Promise.all(requests).then(function() {
+						alert("1RM 기록이 저장되었습니다.");
+						loadLogs($("#pickDate").val()); // 전체 목록 새로고침
+						$(".rm-input").val(""); // 입력 필드 비우기
+					});
+				} else {
+					alert("저장할 1RM 기록이 없습니다.");
+				}
+			});
+			
+			/**
+			 * 운동 기록 저장을 위한 공통 Ajax 함수
+			 */
+			function saveWorkoutLog(workoutData, formSelector) {
+				return $.ajax({
+					url: "${pageContext.request.contextPath}/api/workout/add",
+					type: "post",
+					contentType: "application/json",
+					data: JSON.stringify(workoutData),
+					dataType: "json",
+					success: function(jsonResult) {
+						if (jsonResult.result === "success") {
+							if (formSelector) { // 폼 셀렉터가 있을 경우에만 폼을 초기화하고 목록을 다시 로드합니다.
 								loadLogs($("#pickDate").val());
-								// 제출된 폼만 초기화
 								$(formSelector)[0].reset();
 								$(formSelector + " [name=userExerciseId]").empty().append('<option value="">운동 선택</option>');
-							} else {
-								alert(jsonResult.message);
 							}
-						},
-						error: function(xhr, status, error) { console.error("운동 기록 추가 실패:", error); }
-					});
+						} else {
+							alert(jsonResult.message);
+						}
+					},
+					error: function(xhr, status, error) { console.error("운동 기록 저장 실패:", error); }
 				});
 			}
-			
-			// 각 폼에 대한 제출 이벤트 핸들러 등록
-			handleLogSubmit("#form-add-log", 'NORMAL'); // '오늘의 운동' 폼
-			handleLogSubmit("#form-add-1rm", '1RM');    // '1RM 무게' 폼
 
-
-			// 운동 기록 삭제(—) 버튼 클릭 이벤트
+			// 삭제 이벤트 핸들러 (이제 '오늘의 운동' 목록만 대상으로 합니다)
 			$("#workoutLogList").on("click", ".remove-btn", function() {
 				var $item = $(this).closest(".set-item");
 				var logId = $item.data("log-id");
@@ -503,68 +596,79 @@
 			// ================== 운동 기록 목록 렌더링 ==================
 			function renderLogList(logList) {
 				//변수 이름 앞에 $ 붙이는건 jQuery 객체라는 걸 표시하려는 코딩 관례
-				let $listContainer = $('#workoutLogList');
-				$listContainer.empty(); //기존 목록 비우기
+				let $normalListContainer = $('#workoutLogList');
 				
+				//기존 목록 비우기
+				$normalListContainer.empty(); 
 				
+				let normalLogs = logList.filter(function(log) {
+					return log.logType == 'NORMAL';
+				});
 				
-				for (var i = 0; i < logList.length; i++) {
-					var log = logList[i];
-					var str = 
-						'<div class="set-item" data-log-id="' + log.logId + '">' +
-							'<span>' + (log.bodyPart || '-') + '</span> ' +
-							'<span>' + (log.exerciseName || '-') + '</span> ' +
-							'<span>' + (log.weight || 0) + '</span> ' +
-							'<span>kg</span> ' +
-							'<span>✕</span> ' +
-							'<span>' + (log.reps || 0) + '</span> ' +
-							'<span>회</span>' +
-							'<button class="remove-btn">—</button>' +
-						'</div>';
-						
-					$listContainer.append(str);
+				for (let i = 0; i < normalLogs.length; i++) {
+					let log = normalLogs[i];
+					let str = '<div class="set-item" data-log-id="' + log.logId + '">' +
+								'<span>' + (log.bodyPart || '-') + '</span> ' +
+								'<span>' + (log.exerciseName || '-') + '</span> ' +
+								'<span>' + (log.weight || 0) + '</span> ' + '<span>kg</span> ' +
+								'<span>✕</span> ' + '<span>' + (log.reps || 0) + '</span> ' + '<span>회</span>' +
+								'<button class="remove-btn">—</button>' + 
+							  '</div>';
+					$normalListContainer.append(str);
 				}
+				
 				
 			}
 	
 			// ================== 요약 박스(최고중량/총반복/총볼륨/1RM) ==================
 			function renderSummary(rows) {
 				let maxW = 0, repsSum = 0, volumeSum = 0;
-				let i, w, rep, one;
+				
+				let normalLogs = rows.filter(function(log){
+					return log.logType == 'NORMAL';
+				});
+				
+				$('#summaryCount').text(normalLogs.length + '개 운동 등록 수행');
 	
-				for (i = 0; i < rows.length; i++) {
-					w = Number(rows[i].weight || 0);
-					rep = Number(rows[i].reps || 0);
-					if (w > maxW)
-						maxW = w;
+				
+				for (let i = 0; i < normalLogs.length; i++) {
+					let w = Number(normalLogs[i].weight || 0);
+					let rep = Number(normalLogs[i].reps || 0);
+					
+					if (w > maxW) maxW = w;
 					repsSum += rep;
 					volumeSum += (w * rep);
 				}
 	
-				$("#summaryCount").text((rows.length || 0) + "개 운동 등록 수행");
 				$("#maxWeight").text(maxW);
 				$("#totalReps").text(repsSum);
 				$("#totalVolume").text(volumeSum);
 	
+				
 				$("#rm-bench").text(calc1RM(rows, "벤치프레스"));
 				$("#rm-dead").text(calc1RM(rows, "데드리프트"));
 				$("#rm-squat").text(calc1RM(rows, "스쿼트"));
 			}
 	
-			// Epley 공식으로 1RM 근사값 계산
+			
 			function calc1RM(rows, name) {
-				let best = 0;
-				let i, w, rep, one;
-				for (i = 0; i < rows.length; i++) {
-					if (rows[i].exerciseName === name) {
-						w = Number(rows[i].weight || 0);
-						rep = Number(rows[i].reps || 0);
-						one = Math.round(w * (1 + rep / 30));
-						if (one > best)
-							best = one;
-					}
+				
+				let actual1RMLogs = rows.filter(function(log) { 
+					return log.exerciseName == name && log.logType == '1RM'; 
+				});
+
+				if (actual1RMLogs.length > 0) {
+					actual1RMLogs.sort(function(a,b){
+						if(a.createdAt > b.createdAt) return -1;
+						if(a.createdAt < b.createdAt) return 1;
+						return 0;
+					});
+					
+					// 가장 최신 기록의 무게를 반환
+					return actual1RMLogs[0].weight;
 				}
-				return best;
+				// 1RM 기록이 없으면 0을 반환
+				return 0;
 			}
 			
 	});

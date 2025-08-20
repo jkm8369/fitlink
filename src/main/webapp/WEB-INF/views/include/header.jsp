@@ -12,7 +12,7 @@
       </h1>
       <!-- 오른쪽: 사용자 메뉴 -->
       <div class="btn-logout">
-        <a href="localhost:8888/main/index" class="logout-link">
+        <a href="${pageContext.request.contextPath}/user/logout" class="logout-link">
           <i class="fa-solid fa-right-from-bracket"></i>
           로그아웃
         </a>

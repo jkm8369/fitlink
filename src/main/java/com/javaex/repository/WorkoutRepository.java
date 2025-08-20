@@ -42,6 +42,16 @@ public class WorkoutRepository {
 		return workoutList;
 	}
 	
+	// -- 특정 월 운동 기록 있는 날짜 리스트
+	public List<String> selectLoggedDates(Map<String, Object> params) {
+		//System.out.println("WorkoutRepository.selectLoggedDates()");
+		
+		List<String> loggedDateList= sqlSession.selectList("workout.selectLoggedDates", params);
+		
+		return loggedDateList;
+	}
+	
+	
 	// -- logId로 회원 리스트 조회
 	public WorkoutVO workoutSelectOne(int logId) {
 		//System.out.println("WorkoutRepository.workoutSelectOne()");

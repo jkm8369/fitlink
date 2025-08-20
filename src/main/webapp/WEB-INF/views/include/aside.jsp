@@ -22,7 +22,7 @@
           </c:if>
         </div>
         <div class="aside-menu">
-          <a href="#" class="menu-item">
+          <a href="${pageContext.request.contextPath}/workout" class="menu-item">
             <i class="fa-solid fa-book"></i>
             <span>운동일지</span>
           </a>

@@ -91,7 +91,22 @@ public class WorkoutApiController {
 		return JsonResult.success(workoutList);
 	}
 	
-	
+	// -- 특정 월 운동 기록이 있는 날짜 리스트
+	@GetMapping(value="/logged-dates")
+	public JsonResult loggedDates(@RequestParam("year") int year,
+								  @RequestParam("month") int month,
+								  HttpSession session) {
+		
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		int userId = authUser.getUserId();
+		
+		// "2025-08" 형식으로 문자열 조합
+		String yearMonth = year + "-" + String.format("%02d", month);
+		
+		List<String> loggedDateList = workoutService.exeLoggedDates(userId, yearMonth);
+		
+		return JsonResult.success(loggedDateList);
+	}
 	
 	
 }

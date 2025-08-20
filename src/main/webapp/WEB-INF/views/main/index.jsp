@@ -22,7 +22,7 @@
               </div>
             </div>
             <div class="btn-login">
-              <a href=""> 
+              <a href="${pageContext.request.contextPath}/user/loginform"> 
                 <span class="text-wrapper-5">로그인</span>
               </a>
             </div>
