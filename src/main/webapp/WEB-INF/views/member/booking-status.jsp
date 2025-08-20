@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -87,6 +89,9 @@
 				<!-- //3. 구분선 -->
 
 				<!-- 4. 회원수업 리스트 섹션 -->
+				<jsp:useBean id="now" class="java.util.Date" />
+				<c:set var="MILLIS_24H" value="${24*60*60*1000}" />
+
 				<section class="card2 list-card">
 					<div class="card-header">
 						<h4 class="card-title list-title">PT 리스트</h4>
@@ -125,20 +130,33 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr>
-									<td>1</td>
-									<td>2025.07.01</td>
-									<td>14:00</td>
-									<td class="truncate" title="조강민">조강민</td>
-									<td>30회</td>
-									<td>1회</td>
-									<td>29회</td>
-									<td class="actions">
-										<button class="icon-btn" aria-label="취소">
-											<i class="fa-solid fa-xmark"></i>
-										</button>
-									</td>
-								</tr>
+								<c:forEach var="row" items="${rows}" varStatus="s">
+									<!-- ① 수업 시작 시각으로 파싱 (date: yyyy.MM.dd, time: HH:mm) -->
+									<fmt:parseDate value="${row.date} ${row.time}" pattern="yyyy.MM.dd HH:mm" var="startDt" />
+
+									<tr>
+										<td>${s.count}</td>
+										<td>${row.date}</td>
+										<td>${row.time}</td>
+										<td class="truncate" title="${row.name}">${row.name}</td>
+										<td>${row.total}회</td>
+										<td class="js-used" data-used="${empty row.used ? 0 : row.used}"><c:out value="${row.used}" default="0" />회</td>
+										<td class="js-remain" data-remain="${empty row.remain ? 0 : row.remain}"><c:out value="${row.remain}" default="0" />회</td>
+
+										<!-- ② 24시간 전까지만 취소 버튼 보이기 -->
+										<td class="actions"><c:if test="${startDt.time - now.time >= MILLIS_24H}">
+												<button type="button" class="icon-btn js-cancel" data-id="${row.no}" aria-label="취소">
+													<i class="fa-solid fa-xmark"></i>
+												</button>
+											</c:if></td>
+									</tr>
+								</c:forEach>
+
+								<c:if test="${empty rows}">
+									<tr>
+										<td class="pt-list-empty" colspan="8">예약이 없습니다.</td>
+									</tr>
+								</c:if>
 							</tbody>
 						</table>
 					</div>
@@ -146,7 +164,7 @@
 				<!-- //4. 회원수업 리스트 섹션 -->
 			</main>
 		</div>
-		
+
 		<footer>
 			<p>Copyright © 2025. FitLink All rights reserved.</p>
 		</footer>
@@ -160,13 +178,14 @@
 				<iframe id="modalFrame" class="modal-iframe" title="PT예약" src="about:blank"></iframe>
 			</div>
 		</div>
-		
+
 		<!------------------------------------------ script ------------------------------------------>
 		<script>
+			const CTX = '<%=request.getContextPath()%>';
+			let calendar;
+			  
 			document.addEventListener('DOMContentLoaded', function () {
-			  // JSP 컨텍스트 루트 (예: "", "/fitlink")
-			  const CTX = '<%=request.getContextPath()%>';
-			
+						
 			  /* ======================
 			     모달 열기/닫기 유틸
 			     ====================== */
@@ -212,7 +231,7 @@
 			     FullCalendar 설정
 			     ====================== */
 			  const calendarEl = document.getElementById('calendar');
-			  const calendar = new FullCalendar.Calendar(calendarEl, {
+			  calendar = new FullCalendar.Calendar(calendarEl, {
 			    initialView: 'dayGridMonth',
 			    locale: 'ko',
 			    headerToolbar: {
@@ -228,20 +247,120 @@
 			    },
 			    height: 'auto',
 			    weekends: true,
-			
+			    
+			    // ✅ 24시간제 시간 표시 형식 (14:00)
+			    eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+
+			    // ✅ 이벤트를 "시간만" 보이게 커스텀 렌더
+			    eventContent(arg) {
+			      // arg.timeText 예: "14:00"
+			      const el = document.createElement('span');
+			      el.className = 'only-time';
+			      el.textContent = arg.timeText || ''; // 제목 없이 시간만
+			      return { domNodes: [el] };
+			    },
+
+			    // ✅ 달력에 "내 예약" 불러오기
+			    //    FullCalendar가 start, end를 쿼리로 넘겨줍니다 (ISO-8601)
+			    events: function(info, success, failure) {
+		    	 const url = CTX + '/api/member/booking/events'
+		    	     + '?start=' + encodeURIComponent(info.startStr)
+		    	     + '&end='   + encodeURIComponent(info.endStr);
+		     	 fetch(url, { credentials: 'same-origin' })
+			        .then(r => r.json())
+			        .then(data => success(data))
+			        .catch(err => failure(err));
+			    },
 			    // 날짜 클릭 → 모달 오픈
 			    dateClick(info) { openModal(info.dateStr); },
-			
-			    // [유지] 이벤트는 나중에 API 붙일 때 교체
-			    events: [],
-			
+						
 			    // (선택) 이벤트 클릭시 행동
 			    eventClick(info) {
-			      alert('수업 정보: ' + info.event.title);
-			    }
+		    	  const t = info.event.start;
+		    	  alert('수업 시간: ' + t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
+		    	}
 			  });
-			
 			  calendar.render();
+			  
+			  window.calendar = calendar;
+			});
+			
+			// ✅ 예약 취소(행 삭제 + 수업/잔여 실시간 갱신)
+			document.addEventListener('click', async (e) => {
+			  const btn = e.target.closest('button.js-cancel[data-id]');
+			  if (!btn) return;
+
+			  if (!confirm('이 예약을 취소할까요? (수업 시작 24시간 전까지만 가능)')) return;
+
+			  // 중복 클릭 방지
+			  if (btn.dataset.busy === '1') return;
+			  btn.dataset.busy = '1';
+			  btn.disabled = true;
+
+			  const reservationId = Number(btn.dataset.id);
+			  const headers = { 'Content-Type': 'application/json' };
+			  const token  = document.querySelector('meta[name="_csrf"]')?.content;
+			  const header = document.querySelector('meta[name="_csrf_header"]')?.content;
+			  if (token && header) headers[header] = token;
+
+			  try {
+			    const res = await fetch(`${CTX}/api/member/booking/cancel`, {
+			      method: 'POST',
+			      headers,
+			      credentials: 'same-origin',
+			      body: JSON.stringify({ reservationId })
+			    });
+			    if (!res.ok) throw new Error('network');
+			    const data = await res.json();
+
+			    if (!data.success) {
+			      alert(data.message || '취소할 수 없습니다.');
+			      btn.disabled = false;
+			      delete btn.dataset.busy;
+			      return;
+			    }
+
+			    // 1) 테이블 행 제거
+			    btn.closest('tr')?.remove();
+
+			    // 2) 수업/잔여 숫자 갱신 (모든 행에 동일 값 표시되는 구조)
+				const usedEls   = [...document.querySelectorAll('td.js-used')];
+				const remainEls = [...document.querySelectorAll('td.js-remain')];
+				
+				if (usedEls.length && remainEls.length) {
+				  const normalize = (td, attr) => {
+				    // 1) data-* 우선, 2) 텍스트 파싱, 3) 둘 다 없으면 0
+				    const fromData = td?.dataset?.[attr];
+				    if (fromData != null && fromData !== '') return parseInt(fromData, 10) || 0;
+				    const m = String(td?.textContent || '').match(/\d+/);
+				    return m ? parseInt(m[0], 10) : 0;
+				  };
+				
+				  const curUsed   = normalize(usedEls[0], 'used');     // data-used 지원
+				  const curRemain = normalize(remainEls[0], 'remain'); // data-remain 지원
+				
+				  const newUsed   = Math.max(0, curUsed - 1);
+				  const newRemain = curRemain + 1;
+				
+				  usedEls.forEach(td   => { td.dataset.used   = newUsed;   td.textContent = `${newUsed}회`; });
+				  remainEls.forEach(td => { td.dataset.remain = newRemain; td.textContent = `${newRemain}회`; });
+				}
+
+			    // 3) 순번 재정렬(보기 좋게)
+			    document.querySelectorAll('.table tbody tr').forEach((row, i) => {
+			      const first = row.querySelector('td:first-child');
+			      if (first) first.textContent = String(i + 1);
+			    });
+
+			    // 4) 달력 이벤트만 새로고침 (있으면)
+			    window.calendar?.refetchEvents?.();
+
+			  } catch (err) {
+			    console.error(err);
+			    alert('서버 통신 중 오류가 발생했습니다.');
+			    btn.disabled = false;
+			    delete btn.dataset.busy;
+			  }
 			});
 		</script>
 	</div>

@@ -10,7 +10,8 @@
 		SELECT work_hour
 		FROM trainer_availability
 		WHERE trainer_id = #{trainerId}
-		AND work_date = #{workDate,jdbcType=DATE}
+		AND work_date =
+		#{workDate,jdbcType=DATE}
 		ORDER BY work_hour
 	</select>
 
@@ -27,5 +28,32 @@
 			(#{trainerId}, #{workDate,jdbcType=DATE}, #{h,jdbcType=TINYINT})
 		</foreach>
 	</insert>
+
+	<!-- 리스트 -->
+	<select id="selectScheduleRowsForTrainer" parameterType="int" resultType="com.javaex.vo.ScheduleRowVO">
+	  <![CDATA[
+	    SELECT
+	      r.reservation_id AS no,
+	      DATE_FORMAT(TIMESTAMP(ta.work_date, MAKETIME(ta.work_hour, 0, 0)), '%Y.%m.%d') AS date,
+	      DATE_FORMAT(TIMESTAMP(ta.work_date, MAKETIME(ta.work_hour, 0, 0)), '%H:%i')     AS time,
+	      um.name AS name,
+	      r.member_id AS memberId,
+	      pm.total_sessions AS total,
+	      (SELECT COUNT(*) FROM reservation
+	         WHERE member_id = r.member_id
+	           AND status IN ('BOOKED','ATTENDED')) AS used,
+	      GREATEST(pm.total_sessions - (SELECT COUNT(*) FROM reservation
+	         WHERE member_id = r.member_id
+	           AND status IN ('BOOKED','ATTENDED')), 0) AS remain
+	    FROM reservation r
+	    JOIN trainer_availability ta ON ta.avail_id = r.availability_id
+	    JOIN users um ON um.user_id = r.member_id
+	    JOIN pt_member pm ON pm.member_id = r.member_id
+	    WHERE ta.trainer_id = #{value}
+	      AND r.status IN ('BOOKED','ATTENDED')
+	    ORDER BY ta.work_date DESC, ta.work_hour DESC
+	  ]]>
+	</select>
+
 
 </mapper>

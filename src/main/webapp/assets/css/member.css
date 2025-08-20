@@ -1447,3 +1447,43 @@ h4 {
 /* //---------------------캘린더------------------------------ */
 /* //=================main ======================*/
 /* ///====================content (aside + main) ===================== */
+
+/* === Booking Status: 최소 추가 (교체본) === */
+
+/* 1) 리스트 비었을 때 메시지 */
+.pt-list-empty {
+  text-align: center;
+  color: #777;
+}
+
+/* 2) 모든 셀 높이/정렬 통일 */
+.table tbody td {
+  text-align: center;
+  padding: 12px 10px;          /* 살짝 여유 */
+  border-bottom: 1px solid #F0F4F8;
+  color: #374151;
+  vertical-align: middle;      /* ★ 행 높이 튐 방지 */
+  line-height: 1.4;            /* ★ 텍스트 라인 높이 고정 */
+}
+
+/* 3) 이름 말줄임 처리
+   - td 자체에 class="truncate" 인 경우 */
+.table td.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;          /* ★ display 지정하지 마! (td는 table-cell) */
+}
+
+/*   - td 안의 span 등에 class="truncate" 를 준 경우 */
+.table .truncate:not(td) {
+  display: inline-block;
+  max-width: 140px;             /* 필요시 120~200px 조절 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 4) 폭 유틸 (없으면 추가) */
+.w-110 { width: 110px; }
+.w-100 { width: 100px; }
+.w-80  { width: 80px;  }
