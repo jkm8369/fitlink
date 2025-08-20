@@ -1,6 +1,7 @@
 package com.javaex.service;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.javaex.repository.BookingRepository;
+import com.javaex.vo.CalendarEventVO;
+import com.javaex.vo.ScheduleRowVO;
 
 /**
  * Service = 화면 요구를 달성하기 위해 Repository들을 조합하고 검증/계산/트랜잭션을 담당.
@@ -166,6 +169,20 @@ public class BookingService {
 		}
 	}
 
+	/* 달력내 시간 표기 */
+	public List<CalendarEventVO> getMemberEvents(int memberId, LocalDateTime start, LocalDateTime end) {
+	    return repo.selectMemberEventsByRange(memberId, start, end);
+	}
+
+	/* 리스트 */
+	public List<ScheduleRowVO> listRowsForMember(int memberId) {
+	    return repo.selectScheduleRowsForMember(memberId);
+	}
+	public List<ScheduleRowVO> listRowsForTrainer(int trainerId) {
+	    return repo.selectScheduleRowsForTrainer(trainerId);
+	}
+
+
 	// ===================== 유틸 메서드 =====================
 
 	/** "YYYY-MM-DD" 간단 형식 체크(정규식). 숫자 자릿수만 확인(존재하지 않는 날짜 검증은 생략). */
@@ -189,4 +206,18 @@ public class BookingService {
 			return null;
 		}
 	}
+	
+	/**
+	 * 회원 본인의 예약을 취소한다.
+	 * - DB에서 다음을 모두 만족해야 취소됨:
+	 *   (1) 해당 예약이 이 memberId의 것
+	 *   (2) 현재 상태가 BOOKED
+	 *   (3) 수업 시작 시간이 지금으로부터 24시간 이후
+	 * @return 1건 업데이트되면 true, 아니면 false
+	 */
+	public boolean cancelReservationForMember(int reservationId, int memberId) {
+	    int updated = repo.cancelReservationOfMember(reservationId, memberId);
+	    return updated == 1;
+	}
+
 }

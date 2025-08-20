@@ -54,6 +54,17 @@ select 	*
 from 	reservation
 ;
 
+-- 삭제
 DELETE FROM reservation
-WHERE reservation_id = 15
+WHERE reservation_id = 32
 ;
+
+ALTER TABLE reservation
+ DROP INDEX uq_one_booking_per_slot;
+ 
+ALTER TABLE reservation
+ADD UNIQUE KEY uq_active_slot
+  (
+    (CASE WHEN status IN ('BOOKED','ATTENDED') THEN availability_id ELSE NULL END)
+  );
+

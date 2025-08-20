@@ -282,6 +282,18 @@
 	font-size: 12px;
 }
 
+/* 시간만 보이는 예약칩 스타일 */
+.fc .only-time {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgb(255, 128, 192); /* 연보라 */
+  border: 1px solid rgb(128, 128, 128);
+}
+
 /* ================== FullCalendar: 요일 색상 ================== */
 /* 헤더 요일명 색 */
 .calendar-card .fc-col-header .fc-day-sun .fc-col-header-cell-cushion {
