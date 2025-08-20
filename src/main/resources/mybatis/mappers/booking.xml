@@ -109,17 +109,18 @@
 	</select>
 
 	<!-- [G] 예약 취소 (회원 본인 + BOOKED + 시작 24시간 이전) -->
-	<update id="cancelReservationOfMember" parameterType="map">
-	 	<![CDATA[
-		    UPDATE reservation r
-		    JOIN trainer_availability ta ON ta.avail_id = r.availability_id
-		    SET r.status = 'CANCELLED'
-		    WHERE r.reservation_id = #{reservationId}
-		      AND r.member_id      = #{memberId}
-		      AND r.status = 'BOOKED'
-		      AND TIMESTAMP(ta.work_date, MAKETIME(ta.work_hour, 0, 0)) > DATE_ADD(NOW(), INTERVAL 24 HOUR)
-		]]>
-	</update>
+	<delete id="deleteReservationOfMember" parameterType="map">
+		DELETE r
+		FROM reservation r
+		JOIN trainer_availability ta ON ta.avail_id = r.availability_id
+		WHERE
+		r.reservation_id = #{reservationId}
+		AND r.member_id = #{memberId}
+		AND r.status = 'BOOKED'
+		AND TIMESTAMP(CONCAT(ta.work_date,'
+		',LPAD(ta.work_hour,2,'0'),':00:00'))
+		> NOW() + INTERVAL 24 HOUR
+	</delete>
 
 	<!-- (선택) 잔여 PT 확인용 쿼리 -->
 	<select id="selectTotalSessions" parameterType="int" resultType="int">
@@ -132,5 +133,29 @@
 		AND status IN
 		('BOOKED','ATTENDED')
 	</select>
+
+	<!-- 트레이너 달력 이벤트: BOOKED/ATTENDED만 노출 -->
+	<select id="selectTrainerEventsByRange" parameterType="map" resultType="com.javaex.vo.CalendarEventVO">
+	  <![CDATA[
+	  SELECT
+	      r.reservation_id AS id,
+	      ta.trainer_id    AS trainerId,
+	      r.member_id      AS memberId,
+	      m.user_name      AS title,       -- ✅ 제목 채움
+	      m.user_name      AS memberName,  -- (계속 사용)
+	      TIMESTAMP(CONCAT(ta.work_date,' ', LPAD(ta.work_hour,2,'0'),':00:00')) AS start,
+	      DATE_ADD(TIMESTAMP(CONCAT(ta.work_date,' ', LPAD(ta.work_hour,2,'0'),':00:00')), INTERVAL 1 HOUR) AS end,
+	      0 AS allDay
+	  FROM reservation r
+	  JOIN trainer_availability ta ON ta.avail_id = r.availability_id
+	  JOIN users m ON m.user_id = r.member_id
+	  WHERE ta.trainer_id = #{trainerId}
+	    AND r.status IN ('BOOKED','ATTENDED')
+	    AND TIMESTAMP(CONCAT(ta.work_date,' ', LPAD(ta.work_hour,2,'0'),':00:00')) >= #{start}
+	    AND TIMESTAMP(CONCAT(ta.work_date,' ', LPAD(ta.work_hour,2,'0'),':00:00')) <  #{end}
+	  ORDER BY start
+	  ]]>
+	</select>
+
 </mapper>
 

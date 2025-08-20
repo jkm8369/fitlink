@@ -189,125 +189,171 @@
 			</div>
 		</div>
 
-		<!-- ===== 페이지 스크립트 (DOM이 모두 그려진 후 실행) ===== -->
+		<!-- ============================= script ============================= -->
 		<script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // JSP 컨텍스트 루트 (예: "/", "/fitlink" 등)
-        const CTX = '<%=request.getContextPath()%>';
+      	document.addEventListener('DOMContentLoaded', function () {
+	        // JSP 컨텍스트 루트 (예: "/", "/fitlink" 등)
+	        const CTX = '<%=request.getContextPath()%>';
+	
+	        // -----------------------------
+	        //  모달 열기/닫기 관련 유틸 함수
+	        // -----------------------------
+	        const overlay = document.getElementById('scheduleModal'); // 모달 전체 배경(오버레이)
+	        const frame   = document.getElementById('modalFrame');    // 모달 내부 iframe
+	
+	        // 특정 날짜(dateStr = "YYYY-MM-DD")를 쿼리로 주어 모달을 연다.
+	        function openModal(dateStr) {
+	          // dateStr을 URL에 넣을 때 안전하게 전달하기 위해 인코딩
+	          const d = encodeURIComponent(dateStr);
+	          // 모달에 띄울 페이지 경로: /trainer/schedule-insert?date=YYYY-MM-DD
+	          // - 이 페이지는 "근무시간 등록" 전용 화면(체크박스 그리드 등)을 제공
+	          frame.src = CTX + '/trainer/schedule-insert?date=' + d;
+	
+	          // 오버레이 보이기 + 스크롤 방지
+	          overlay.classList.add('show');
+	          document.body.classList.add('noscroll');
+	        }
+	
+	        // 모달 닫기: iframe 비우고, 오버레이 숨기기 + 스크롤 재허용
+	        function closeModal() {
+	          frame.src = 'about:blank';
+	          overlay.classList.remove('show');
+	          document.body.classList.remove('noscroll');
+	        }
+	
+	        // (UX) 오버레이의 빈 배경을 클릭하면 모달 닫기
+	        // - e.target이 overlay 자체일 때만 닫음 (안쪽 컨테이너 클릭은 무시)
+	        overlay.addEventListener('click', (e) => {
+	          if (e.target === overlay) closeModal();
+	        });
+	
+	        // (UX) 키보드 ESC로 모달 닫기
+	        document.addEventListener('keydown', (e) => {
+	          if (e.key === 'Escape') closeModal();
+	        });
+	
+	        // iframe 내부(모달 콘텐츠)에서 부모에게 postMessage로 "modal-close"를 보내면 닫기
+	        // - iframe 안쪽 JS: window.parent.postMessage({ type: 'modal-close' }, origin)
+	        window.addEventListener('message', (e) => {
+	          if (e.data && e.data.type === 'modal-close') {
+	            closeModal();
+	          }
+	        });
+	
+	        // -----------------------------
+	        //  FullCalendar 초기화/설정
+	        // -----------------------------
+	        const calendarEl = document.getElementById('calendar');
+	
+	        // FullCalendar 인스턴스 생성
+	        const calendar = new FullCalendar.Calendar(calendarEl, {
+	          // 초기 표시는 "월" 단위 그리드
+	          initialView: 'dayGridMonth',
+	
+	          // 한글 로케일 적용 (요일/월 이름 등 한글화)
+	          locale: 'ko',
+	
+	          // 상단 툴바 버튼 배치
+	          headerToolbar: {
+	            left: 'prev,next today',                // 왼쪽: 이전/다음/오늘
+	            center: 'title',                        // 가운데: 현재 달 제목
+	            right: 'dayGridMonth,timeGridWeek,timeGridDay' // 오른쪽: 보기 전환
+	          },
+	
+	          // 버튼에 표시될 텍스트(영문 토큰을 원하는 텍스트로)
+	          // - locale을 ko로 설정했기 때문에 한국어가 기본 적용되지만,
+	          //   여기서 직접 텍스트를 지정하면 그것이 우선 적용됨.
+	          buttonText: {
+	            today: 'today',
+	            month: 'month',
+	            week: 'week',
+	            day: 'day'
+	          },
+	
+	          // 월 셀에 표시되는 날짜 텍스트 커스터마이즈
+	          // - arg.dayNumberText에는 "1일", "2일"처럼 '일'이 붙어올 수 있어 이를 제거
+	          dayCellContent(arg) {
+	            const text = arg.dayNumberText.replace(/일/g, '');
+	            return { html: text };
+	          },
+	
+	          // 높이를 자동으로(부모 컨테이너 크기에 맞춤)
+	          height: 'auto',
+	
+	          // 주말(토/일) 표시 여부 (true면 표시)
+	          weekends: true,
+	
+	          // 달력에서 특정 날짜를 클릭했을 때 실행
+	          // - 사용자가 클릭한 날짜 문자열(info.dateStr = "YYYY-MM-DD")로 모달을 연다
+	          dateClick(info) {
+	            openModal(info.dateStr);
+	          },
+	
+	          // 데모용 이벤트(수업 일정) - 실제 프로젝트에서는 서버에서 받아온 데이터를 사용
+	          // - start에 ISO 날짜/시간 문자열을 지정
+			  // 예약 이벤트 소스 + title 보정
+			  events: function (info, success, failure) {
+				const params = new URLSearchParams({
+				  start: info.startStr,      // FullCalendar가 주는 ISO 범위
+				  end: info.endStr,
+				  // 개발 중 세션이 없으면 trainerId 임시로 넘겨서 확인
+				  trainerId: 1
+				});
+				
+				fetch(CTX + '/api/member/booking/trainer-events?' + params.toString(), {
+				  method: 'GET',
+				  headers: { 'Accept': 'application/json' }
+				})
+				  .then(res => res.json())
+				  .then(list => {
+				    // 백엔드 JSON → FullCalendar 이벤트로 변환
+				    const events = (list || []).map(e => ({
+				      id: e.id,
+				      title: e.memberName || e.title || '(이름없음)',  // ✅ 제목 보정
+				      start: e.start,     // '2025-08-22T06:00:00' 형태면 그대로 OK
+				      end: e.end,
+				      allDay: false,      // 명시적으로 시간 이벤트로 표시
+				      extendedProps: { memberName: e.memberName }
+				    }));
+				    success(events);
+				  })
+				  .catch(err => {
+				    console.error('trainer-events fetch error', err);
+				    failure(err);
+				  });
+			  },
+			
+			// 시간은 24시간제로
+			  eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+			
+			// 셀에 보일 내용: "HH:mm 회원이름"
+			  eventContent(arg) {
+				const time = arg.timeText || '';
+				const name = arg.event.title || arg.event.extendedProps.memberName || '';
+				return { html: `<b>${time}</b> ${name}` };
+			  },
+			
+			  eventClick(info) {
+				alert(
+				  `예약번호: ${info.event.id}\n` +
+				  `회원: ${info.event.extendedProps.memberName || info.event.title || '(이름없음)'}\n` +
+				  `시간: ${info.timeText}`
+				  );
+			  },
 
-        // -----------------------------
-        //  모달 열기/닫기 관련 유틸 함수
-        // -----------------------------
-        const overlay = document.getElementById('scheduleModal'); // 모달 전체 배경(오버레이)
-        const frame   = document.getElementById('modalFrame');    // 모달 내부 iframe
-
-        // 특정 날짜(dateStr = "YYYY-MM-DD")를 쿼리로 주어 모달을 연다.
-        function openModal(dateStr) {
-          // dateStr을 URL에 넣을 때 안전하게 전달하기 위해 인코딩
-          const d = encodeURIComponent(dateStr);
-          // 모달에 띄울 페이지 경로: /trainer/schedule-insert?date=YYYY-MM-DD
-          // - 이 페이지는 "근무시간 등록" 전용 화면(체크박스 그리드 등)을 제공
-          frame.src = CTX + '/trainer/schedule-insert?date=' + d;
-
-          // 오버레이 보이기 + 스크롤 방지
-          overlay.classList.add('show');
-          document.body.classList.add('noscroll');
-        }
-
-        // 모달 닫기: iframe 비우고, 오버레이 숨기기 + 스크롤 재허용
-        function closeModal() {
-          frame.src = 'about:blank';
-          overlay.classList.remove('show');
-          document.body.classList.remove('noscroll');
-        }
-
-        // (UX) 오버레이의 빈 배경을 클릭하면 모달 닫기
-        // - e.target이 overlay 자체일 때만 닫음 (안쪽 컨테이너 클릭은 무시)
-        overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) closeModal();
-        });
-
-        // (UX) 키보드 ESC로 모달 닫기
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') closeModal();
-        });
-
-        // iframe 내부(모달 콘텐츠)에서 부모에게 postMessage로 "modal-close"를 보내면 닫기
-        // - iframe 안쪽 JS: window.parent.postMessage({ type: 'modal-close' }, origin)
-        window.addEventListener('message', (e) => {
-          if (e.data && e.data.type === 'modal-close') {
-            closeModal();
-          }
-        });
-
-        // -----------------------------
-        //  FullCalendar 초기화/설정
-        // -----------------------------
-        const calendarEl = document.getElementById('calendar');
-
-        // FullCalendar 인스턴스 생성
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-          // 초기 표시는 "월" 단위 그리드
-          initialView: 'dayGridMonth',
-
-          // 한글 로케일 적용 (요일/월 이름 등 한글화)
-          locale: 'ko',
-
-          // 상단 툴바 버튼 배치
-          headerToolbar: {
-            left: 'prev,next today',                // 왼쪽: 이전/다음/오늘
-            center: 'title',                        // 가운데: 현재 달 제목
-            right: 'dayGridMonth,timeGridWeek,timeGridDay' // 오른쪽: 보기 전환
-          },
-
-          // 버튼에 표시될 텍스트(영문 토큰을 원하는 텍스트로)
-          // - locale을 ko로 설정했기 때문에 한국어가 기본 적용되지만,
-          //   여기서 직접 텍스트를 지정하면 그것이 우선 적용됨.
-          buttonText: {
-            today: 'today',
-            month: 'month',
-            week: 'week',
-            day: 'day'
-          },
-
-          // 월 셀에 표시되는 날짜 텍스트 커스터마이즈
-          // - arg.dayNumberText에는 "1일", "2일"처럼 '일'이 붙어올 수 있어 이를 제거
-          dayCellContent(arg) {
-            const text = arg.dayNumberText.replace(/일/g, '');
-            return { html: text };
-          },
-
-          // 높이를 자동으로(부모 컨테이너 크기에 맞춤)
-          height: 'auto',
-
-          // 주말(토/일) 표시 여부 (true면 표시)
-          weekends: true,
-
-          // 달력에서 특정 날짜를 클릭했을 때 실행
-          // - 사용자가 클릭한 날짜 문자열(info.dateStr = "YYYY-MM-DD")로 모달을 연다
-          dateClick(info) {
-            openModal(info.dateStr);
-          },
-
-          // 데모용 이벤트(수업 일정) - 실제 프로젝트에서는 서버에서 받아온 데이터를 사용
-          // - start에 ISO 날짜/시간 문자열을 지정
-          events: [
-            { title: 'PT - 조강민', start: '2025-08-14T14:00:00', backgroundColor: '#007bff' },
-            { title: 'PT - 김동민', start: '2025-08-15T15:00:00', backgroundColor: '#28a745' }
-          ],
-
-          // 이벤트(수업)를 클릭했을 때 실행
-          // - 여기서는 간단히 알럿으로 제목만 표시(추후 상세 모달로 확장 가능)
-          eventClick(info) {
-            alert('수업 정보: ' + info.event.title);
-          }
-        });
-
-        // 달력 렌더링 시작 (이 호출 이후 실제 DOM에 달력이 그림)
-        calendar.render();
-      });
-    </script>
+	          eventClick(info) {
+				alert(
+				  `예약번호: ${info.event.id}\n` +
+				  `회원: ${info.event.extendedProps.memberName || '(이름없음)'}\n` +
+				  `시간: ${info.timeText}`
+				);
+	          }
+	        });
+	
+	        // 달력 렌더링 시작 (이 호출 이후 실제 DOM에 달력이 그림)
+	        calendar.render();
+	      });
+   		</script>
 	</div>
 </body>
-
 </html>

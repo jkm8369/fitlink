@@ -351,7 +351,19 @@
 			      const first = row.querySelector('td:first-child');
 			      if (first) first.textContent = String(i + 1);
 			    });
-
+				
+			   // 3-1) 남은 행이 하나도 없으면 "예약이 없습니다." 행 추가
+			    const tbody = document.querySelector('.table tbody');
+			    if (tbody && !tbody.querySelector('tr')) {
+			      const tr = document.createElement('tr');
+			      const td = document.createElement('td');
+			      td.className = 'pt-list-empty';
+			      td.colSpan = 8;                 // 헤더 컬럼 수와 동일 (지금은 8)
+			      td.textContent = '예약이 없습니다.';
+			      tr.appendChild(td);
+			      tbody.appendChild(tr);
+			    }
+			    
 			    // 4) 달력 이벤트만 새로고침 (있으면)
 			    window.calendar?.refetchEvents?.();
 

@@ -97,12 +97,20 @@ public class BookingRepository {
 	// import org.mybatis.spring.SqlSessionTemplate;
 	// 위 import 들은 파일 상단에 이미 있을 수도 있어요.
 
-	public int cancelReservationOfMember(int reservationId, int memberId) {
+	public int deleteReservationOfMember(int reservationId, int memberId) {
 		Map<String, Object> p = new HashMap<>();
 		p.put("reservationId", reservationId);
 		p.put("memberId", memberId);
-		// mybatis XML 의 <update id="cancelReservationOfMember"> 를 호출
-		return sql.update("booking.cancelReservationOfMember", p);
+		return sql.delete("booking.deleteReservationOfMember", p);
+	}
+
+	public java.util.List<CalendarEventVO> selectTrainerEventsByRange(int trainerId, java.time.LocalDateTime start,
+			java.time.LocalDateTime end) {
+		Map<String, Object> p = new HashMap<>();
+		p.put("trainerId", trainerId);
+		p.put("start", start);
+		p.put("end", end);
+		return sql.selectList("booking.selectTrainerEventsByRange", p);
 	}
 
 }

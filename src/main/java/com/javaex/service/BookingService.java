@@ -171,17 +171,17 @@ public class BookingService {
 
 	/* 달력내 시간 표기 */
 	public List<CalendarEventVO> getMemberEvents(int memberId, LocalDateTime start, LocalDateTime end) {
-	    return repo.selectMemberEventsByRange(memberId, start, end);
+		return repo.selectMemberEventsByRange(memberId, start, end);
 	}
 
 	/* 리스트 */
 	public List<ScheduleRowVO> listRowsForMember(int memberId) {
-	    return repo.selectScheduleRowsForMember(memberId);
-	}
-	public List<ScheduleRowVO> listRowsForTrainer(int trainerId) {
-	    return repo.selectScheduleRowsForTrainer(trainerId);
+		return repo.selectScheduleRowsForMember(memberId);
 	}
 
+	public List<ScheduleRowVO> listRowsForTrainer(int trainerId) {
+		return repo.selectScheduleRowsForTrainer(trainerId);
+	}
 
 	// ===================== 유틸 메서드 =====================
 
@@ -206,18 +206,21 @@ public class BookingService {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * 회원 본인의 예약을 취소한다.
-	 * - DB에서 다음을 모두 만족해야 취소됨:
-	 *   (1) 해당 예약이 이 memberId의 것
-	 *   (2) 현재 상태가 BOOKED
-	 *   (3) 수업 시작 시간이 지금으로부터 24시간 이후
+	 * 회원 본인의 예약을 취소한다. - DB에서 다음을 모두 만족해야 취소됨: (1) 해당 예약이 이 memberId의 것 (2) 현재 상태가
+	 * BOOKED (3) 수업 시작 시간이 지금으로부터 24시간 이후
+	 * 
 	 * @return 1건 업데이트되면 true, 아니면 false
 	 */
 	public boolean cancelReservationForMember(int reservationId, int memberId) {
-	    int updated = repo.cancelReservationOfMember(reservationId, memberId);
-	    return updated == 1;
+		int deleted = repo.deleteReservationOfMember(reservationId, memberId);
+		return deleted == 1;
+	}
+
+	public java.util.List<com.javaex.vo.CalendarEventVO> getTrainerEvents(int trainerId, java.time.LocalDateTime start,
+			java.time.LocalDateTime end) {
+		return repo.selectTrainerEventsByRange(trainerId, start, end);
 	}
 
 }

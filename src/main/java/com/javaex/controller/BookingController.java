@@ -1,6 +1,7 @@
 package com.javaex.controller;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,25 @@ public class BookingController {
 
 		// 4) 결과 반환
 		return ok ? Map.of("success", true) : Map.of("success", false, "message", "수업 시작 24시간 이내거나 취소할 수 없는 예약입니다.");
+	}
+
+	// 트레이너 달력 이벤트 (FullCalendar가 start/end를 ISO로 줌)
+	@GetMapping("/trainer-events")
+	public List<CalendarEventVO> trainerEvents(
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime start,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime end, HttpSession session,
+			@RequestParam(value = "trainerId", required = false) Integer trainerIdParam) {
+		Integer trainerId = (Integer) session.getAttribute("LOGIN_USER_ID");
+		if (trainerId == null)
+			trainerId = trainerIdParam;
+		if (trainerId == null)
+			return java.util.List.of();
+
+		// FC는 2025-08-01T00:00:00+09:00 형태로 보냄 → LDT로 변환
+		LocalDateTime s = start.toLocalDateTime();
+		LocalDateTime e = end.toLocalDateTime();
+
+		return service.getTrainerEvents(trainerId, s, e);
 	}
 
 }

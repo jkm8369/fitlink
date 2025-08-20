@@ -56,7 +56,7 @@ from 	reservation
 
 -- 삭제
 DELETE FROM reservation
-WHERE reservation_id = 32
+WHERE reservation_id = 40
 ;
 
 ALTER TABLE reservation
