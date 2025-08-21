@@ -167,3 +167,12 @@ WHERE user_id = 1
 AND log_date LIKE CONCAT('2025-08', '%')
 order by log_date asc
 ;
+
+select se.user_exercise_id as userExerciseId,
+	   se.user_id as userId,
+       se.exercise_id as exerciseId,
+       u.user_name as userName,
+       u.role
+from selected_exercises se, users u
+where se.user_id = u.user_id
+;
