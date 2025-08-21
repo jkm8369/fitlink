@@ -4,14 +4,31 @@
 
 <mapper namespace="booking">
 
-	<!-- [A] 회원의 담당 트레이너 찾기 -->
+	<!--
+	  [A] 회원의 담당 트레이너 찾기
+	  [기능] pt_member에서 특정 회원(member_id)의 담당 트레이너(trainer_id) 조회
+	  [파라미터] parameterType="int" → #{value}로 바인딩 (회원 ID)
+	  [결과] resultType="int" → trainer_id 정수 반환 (없으면 null)
+	  [용도] 회원 예약/달력 조회 시 담당 트레이너 식별
+	-->
 	<select id="selectTrainerIdByMemberId" parameterType="int" resultType="int">
 		SELECT trainer_id
 		FROM pt_member
 		WHERE member_id = #{value}
 	</select>
 
-	<!-- [B] 특정 날짜의 근무칸 목록 -->
+
+
+	<!--
+	  [B] 특정 날짜의 근무칸 목록
+	  [기능] 트레이너가 특정 날짜(work_date)에 등록한 근무 칸 목록 조회
+	  [파라미터] parameterType="map" → #{trainerId}, #{workDate}
+	  [결과 매핑] <resultMap id="SlotMap">
+	    - work_hour → hour (정수 시각 0~23)
+	    - avail_id  → availabilityId (근무칸 PK)
+	  [정렬] work_hour 오름차순
+	  [용도] 프론트에서 시간대 버튼/슬롯 렌더링용
+	-->
 	<resultMap id="SlotMap" type="map">
 		<result column="work_hour" property="hour" />
 		<result column="avail_id" property="availabilityId" />
@@ -25,7 +42,15 @@
 		ORDER BY work_hour
 	</select>
 
-	<!-- [C] 해당 날짜에 이미 예약된 근무칸 목록 -->
+
+
+	<!--
+	  [C] 해당 날짜에 이미 예약된 근무칸 목록
+	  [기능] 특정 트레이너/날짜의 예약 확정(BOOKED/ATTENDED)된 availability_id 목록 조회
+	  [파라미터] parameterType="map" → #{trainerId}, #{workDate}
+	  [결과] resultType="int" → 예약된 availability_id 리스트
+	  [용도] UI에서 이미 예약된 칸 Disable 처리
+	-->
 	<select id="selectBookedAvailabilityIds" parameterType="map" resultType="int">
 		SELECT r.availability_id
 		FROM reservation r
@@ -36,13 +61,27 @@
 		AND r.status IN ('BOOKED','ATTENDED')
 	</select>
 
-	<!-- [D-1] 예약 INSERT(단건) -->
+
+
+	<!--
+	  [D-1] 예약 INSERT(단건)
+	  [기능] 예약 1건 생성, 초기 상태는 'BOOKED'
+	  [파라미터] #{memberId}, #{availabilityId}, #{memo}
+	  [주의] 동일 availability_id 중복 예약 방지 위해 DB 제약(UNIQUE/외래키) 권장
+	-->
 	<insert id="insertReservation">
 		INSERT INTO reservation (member_id, availability_id, status, memo)
 		VALUES (#{memberId}, #{availabilityId}, 'BOOKED', #{memo})
 	</insert>
 
-	<!-- [D-2] 예약 INSERT(배치) -->
+
+
+	<!--
+	  [D-2] 예약 INSERT(배치)
+	  [기능] 다수 availability_id에 대해 일괄 예약 생성 ('BOOKED')
+	  [파라미터] #{memberId}, collection="availabilityIds", #{memo}
+	  [주의] 각 aid의 유효성/중복은 서비스 계층 또는 DB 제약으로 보장 필요
+	-->
 	<insert id="insertReservationBatch">
 		INSERT INTO reservation (member_id, availability_id, status, memo)
 		VALUES
@@ -51,7 +90,18 @@
 		</foreach>
 	</insert>
 
-	<!-- [E] 회원 달력 이벤트 -->
+
+
+	<!--
+	  [E] 회원 달력 이벤트 조회
+	  [기능] 특정 회원의 예약(BOOKED/ATTENDED) 이벤트를 기간[start, end)로 조회
+	  [파라미터] parameterType="map" → #{memberId}, #{start}, #{end}
+	  [시간] 각 이벤트는 시작시각 기준 1시간(end = start + 1h)
+	  [결과] resultType="com.javaex.vo.CalendarEventVO"
+	    - id, start, end, allDay(0), trainerId, memberId 매핑
+	  [정렬] start ASC
+	  [주의] CDATA 내부엔 주석 금지 (파싱 오류 방지)
+	-->
 	<select id="selectMemberEventsByRange" parameterType="map" resultType="com.javaex.vo.CalendarEventVO">
 	 	<![CDATA[
 		    SELECT
@@ -71,7 +121,25 @@
 		]]>
 	</select>
 
-	<!-- [F] 리스트 (cancelable 포함) ※ 이 쿼리는 파일에 '한 번만' 존재해야 합니다 -->
+
+
+	<!--
+	  [F] 회원 스케줄 리스트(취소 가능 여부 포함)
+	  [기능] 회원의 예약/출석 이력을 리스트로 반환, 잔여 세션 계산 및 24시간 이전 취소 가능 여부 표시
+	  [파라미터] parameterType="int" → #{value}로 회원 ID 바인딩
+	  [결과] resultType="com.javaex.vo.ScheduleRowVO"
+	    - no        : 예약 번호
+	    - date/time : 포맷된 시작 일시
+	    - name      : 트레이너 이름(ut.user_name)
+	    - memberId  : 회원 ID
+	    - total     : 총 세션 수 (pt_member.total_sessions)
+	    - used      : 윈도우 함수로 계산된 누적 사용 순번(해당 회원 기준, 시간 오름차순 누적)
+	    - remain    : GREATEST(total - used, 0)
+	    - cancelable: 시작 시각이 현재로부터 24시간 초과(>)면 1, 아니면 0
+	  [정렬] 최신(start_dt DESC)
+	  [참고] used는 내부 서브쿼리에서 시간 오름차순으로 누적 계산됨(표시는 DESC이지만 값 자체는 누적 순번)
+	  [성능] 대량 데이터 시 윈도우/조인 비용 고려
+	-->
 	<select id="selectScheduleRowsForMember" parameterType="int" resultType="com.javaex.vo.ScheduleRowVO">
 	  <![CDATA[
 		  SELECT
@@ -108,7 +176,15 @@
 	  ]]>
 	</select>
 
-	<!-- [G] 예약 취소 (회원 본인 + BOOKED + 시작 24시간 이전) -->
+
+
+	<!--
+	  [G] 예약 취소 (회원 본인 + BOOKED + 시작 24시간 이전)
+	  [기능] 본인 예약 중 상태가 'BOOKED'이며 시작 24시간 이전인 건만 삭제
+	  [파라미터] parameterType="map" → #{reservationId}, #{memberId}
+	  [시간 비교] TIMESTAMP(work_date + work_hour) > NOW() + 24h
+	  [보안] member_id 일치 검증 포함 → 타인 예약 취소 방지
+	-->
 	<delete id="deleteReservationOfMember" parameterType="map">
 		DELETE r
 		FROM reservation r
@@ -122,7 +198,14 @@
 		> NOW() + INTERVAL 24 HOUR
 	</delete>
 
-	<!-- (선택) 잔여 PT 확인용 쿼리 -->
+
+
+	<!--
+	  (선택) 잔여 PT 확인용 쿼리
+	  [기능] 총 세션 수/사용 수 개별 조회
+	  [파라미터] parameterType="int" → #{value}로 회원 ID 바인딩
+	  [주의] countUsedByMember는 BOOKED/ATTENDED 상태만 카운트
+	-->
 	<select id="selectTotalSessions" parameterType="int" resultType="int">
 		SELECT total_sessions FROM pt_member WHERE member_id = #{value}
 	</select>
@@ -134,15 +217,25 @@
 		('BOOKED','ATTENDED')
 	</select>
 
-	<!-- 트레이너 달력 이벤트: BOOKED/ATTENDED만 노출 -->
+
+
+	<!--
+	  트레이너 달력 이벤트 (BOOKED/ATTENDED만 노출)
+	  [기능] 트레이너가 보는 달력 이벤트를 기간[start, end)로 조회
+	  [파라미터] parameterType="map" → #{trainerId}, #{start}, #{end}
+	  [결과] resultType="com.javaex.vo.CalendarEventVO"
+	    - id, trainerId, memberId, title(회원명), memberName(회원명), start, end, allDay(0)
+	  [정렬] start ASC
+	  [표시] title/memberName에 회원 이름(user_name) 사용
+	-->
 	<select id="selectTrainerEventsByRange" parameterType="map" resultType="com.javaex.vo.CalendarEventVO">
 	  <![CDATA[
 	  SELECT
 	      r.reservation_id AS id,
 	      ta.trainer_id    AS trainerId,
 	      r.member_id      AS memberId,
-	      m.user_name      AS title,       -- ✅ 제목 채움
-	      m.user_name      AS memberName,  -- (계속 사용)
+	      m.user_name      AS title,
+	      m.user_name      AS memberName,
 	      TIMESTAMP(CONCAT(ta.work_date,' ', LPAD(ta.work_hour,2,'0'),':00:00')) AS start,
 	      DATE_ADD(TIMESTAMP(CONCAT(ta.work_date,' ', LPAD(ta.work_hour,2,'0'),':00:00')), INTERVAL 1 HOUR) AS end,
 	      0 AS allDay
@@ -156,6 +249,7 @@
 	  ORDER BY start
 	  ]]>
 	</select>
+
 
 </mapper>
 
