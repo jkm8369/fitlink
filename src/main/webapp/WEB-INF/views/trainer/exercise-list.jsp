@@ -103,19 +103,6 @@
           <h4 class="category-title">가슴</h4>
           <!-- //4.선택부위 -->
 
-          <!-- 5.내가 선택한 리스트 -->
-          <section class="select-box">
-            <p>내가 선택한 리스트</p>
-            <ul class="category-grid">
-              <li>벤치프레스</li>
-              <li>스미스머신 벤치프레스</li>
-              <li>푸시업</li>
-              <li>중량 푸시업</li>
-              <li>해머 벤치프레스</li>
-              <li>스포토 벤치프레스</li>
-            </ul>
-          </section>
-          <!-- //5.내가 선택한 리스트 -->
 
           <!-- 6.운동종류 리스트 -->
           <section class="list-box">

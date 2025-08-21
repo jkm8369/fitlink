@@ -2,6 +2,8 @@ use fitlink_db;
 
 show tables;
 
+SELECT user, host FROM mysql.user;
+
 truncate table users;
 truncate table workout_log;
 truncate table exercise;
@@ -24,6 +26,19 @@ from user_photo;
 
 select *
 from pt_members;
+
+select pm.contract_id,
+	   pm.total_sessions,
+       pm.job,
+       pm.consultation_date,
+       pm.fitness_goal,
+       pm.trainer_id,
+       pm.member_id,
+       u.user_name,
+       u.role
+from pt_members pm, users u
+where pm.trainer_id = u.user_id
+;
 
 
 -- 1. pt_members 테이블: 트레이너와 회원을 users 테이블과 연결합니다.
@@ -176,3 +191,30 @@ select se.user_exercise_id as userExerciseId,
 from selected_exercises se, users u
 where se.user_id = u.user_id
 ;
+
+select distinct e.body_part
+from exercise e, selected_exercises se
+where e.exercise_id = se.exercise_id
+and se.user_id = 3
+order by field(e.body_part, '가슴', '등', '어깨', '팔', '하체', '복근', '역도', '유산소', '기타')
+;
+
+-- 특정 부위 모든 운동 리스트
+select exercise_id as exerciseId,
+	   body_part as bodyPart,
+       exercise_name as exerciseName
+from exercise
+where body_part = '등'
+order by exercise_name asc
+;
+
+
+
+
+
+
+
+
+
+
+

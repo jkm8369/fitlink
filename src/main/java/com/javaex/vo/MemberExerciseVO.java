@@ -1,16 +1,16 @@
 package com.javaex.vo;
 
-public class TrainerExerciseVO {
+public class MemberExerciseVO {
 
 	private int exerciseId;
     private String bodyPart;
     private String exerciseName;
     
-	public TrainerExerciseVO() {
+	public MemberExerciseVO() {
 		super();
 	}
 
-	public TrainerExerciseVO(int exerciseId, String bodyPart, String exerciseName) {
+	public MemberExerciseVO(int exerciseId, String bodyPart, String exerciseName) {
 		super();
 		this.exerciseId = exerciseId;
 		this.bodyPart = bodyPart;

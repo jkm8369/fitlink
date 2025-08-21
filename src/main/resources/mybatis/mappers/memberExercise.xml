@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="memberExercise">
+	
+	<!-- 사용자가 선택한 운동의 부위 목록 (중복 x) group by보다 distinct가 가독성 의미 더 맞다-->
+	<select id="selectBodyPartsByUser" parameterType="int" resultType="String">
+		<![CDATA[
+			select distinct e.body_part as bodyPart
+			from exercise e, selected_exercises se
+			where e.exercise_id = se.exercise_id
+			and se.user_id = #{userId}
+			order by field(e.body_part, '가슴', '등', '어깨', '팔', '하체', '복근', '역도', '유산소', '기타')
+		]]>
+	</select>
+	
+	<!-- 사용자 특정 부위 리스트 가져오기 -->
+	<select id="selectListByUserAndPart" parameterType="map" resultType="com.javaex.vo.MemberExerciseVO">
+		<![CDATA[
+			select  e.exercise_id as exerciseId,
+			        e.body_part as bodyPart,
+			        e.exercise_name as exerciseName
+			from exercise e, selected_exercises se
+			where e.exercise_id = se.exercise_id
+			and se.user_id = #{userId}
+			and e.body_part = #{bodyPart}
+			order by e.exercise_name asc
+		]]>
+	
+	</select>
+
+	<!-- 특정 부위의 모든 운동 리스트 가져오기 -->
+	<select id="selectAllByPart" parameterType="String" resultType="com.javaex.vo.MemberExerciseVO">
+		<![CDATA[
+			select exercise_id as exerciseId,
+				   body_part as bodyPart,
+			       exercise_name as exerciseName
+			from exercise
+			where body_part = #{bodyPart}
+			order by exercise_name asc
+		]]>
+	</select>
+
+</mapper>

@@ -11,7 +11,7 @@
 	<typeAliases>
 		<typeAlias alias="UserVO" type="com.javaex.vo.UserVO" />
 		<typeAlias alias="WorkoutVO" type="com.javaex.vo.WorkoutVO" />
-		<typeAlias alias="TrainerExerciseVO" type="com.javaex.vo.TrainerExerciseVO" />
+		<typeAlias alias="MemberExerciseVO" type="com.javaex.vo.MemberExerciseVO" />
 	</typeAliases>
 
 	<mappers>
@@ -19,7 +19,7 @@
 		<mapper resource="mybatis/mappers/workout.xml" />
 		<mapper resource="mybatis/mappers/schedule.xml" />
 		<mapper resource="mybatis/mappers/booking.xml" />
-		<mapper resource="mybatis/mappers/trainerExercise.xml" />
+		<mapper resource="mybatis/mappers/memberExercise.xml" />
 	</mappers>
 
 </configuration>
