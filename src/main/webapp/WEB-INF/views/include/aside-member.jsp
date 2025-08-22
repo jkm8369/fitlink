@@ -32,7 +32,7 @@
             <i class="fa-solid fa-calendar-check"></i>
             <span>예약현황</span>
         </a>
-        <a href="${pageContext.request.contextPath}/member/exercise" class="menu-item"> 
+        <a href="${pageContext.request.contextPath}/exercise" class="menu-item"> 
             <i class="fa-solid fa-list-ul"></i>
             <span>운동종류</span>
         </a>

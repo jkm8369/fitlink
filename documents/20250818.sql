@@ -163,8 +163,11 @@ INSERT INTO workout_log (log_date, weight, reps, created_at, log_type, user_id, 
 INSERT INTO workout_log (log_date, weight, reps, created_at, log_type, user_id, user_exercise_id, writer_id) VALUES ('2025-08-15', 102.5, 1, NOW(), '1RM', 1, (SELECT user_exercise_id FROM selected_exercises WHERE user_id=1 AND exercise_id=1), 1);
 
 -- 김민지(user_id=3)의 운동 기록
-INSERT INTO workout_log (log_date, weight, reps, created_at, log_type, user_id, user_exercise_id, writer_id) VALUES ('2025-08-19', 15, 12, NOW(), 'NORMAL', 3, (SELECT user_exercise_id FROM selected_exercises WHERE user_id=3 AND exercise_id=7), 3);
-INSERT INTO workout_log (log_date, weight, reps, created_at, log_type, user_id, user_exercise_id, writer_id) VALUES ('2025-08-17', 60, 5, NOW(), '1RM', 3, (SELECT user_exercise_id FROM selected_exercises WHERE user_id=3 AND exercise_id=11), 3);
+INSERT INTO workout_log (log_date, weight, reps, created_at, log_type, user_id, user_exercise_id, writer_id) 
+VALUES ('2025-08-19', 15, 12, NOW(), 'NORMAL', 3, (SELECT user_exercise_id FROM selected_exercises WHERE user_id=3 AND exercise_id=7), 3);
+
+INSERT INTO workout_log (log_date, weight, reps, created_at, log_type, user_id, user_exercise_id, writer_id) 
+VALUES ('2025-08-17', 60, 5, NOW(), '1RM', 3, (SELECT user_exercise_id FROM selected_exercises WHERE user_id=3 AND exercise_id=11), 3);
 -- 김민지(user_id=3) 회원의 운동 목록에 벤치프레스(exercise_id=1)와 데드리프트(exercise_id=10)를 추가합니다.
 INSERT INTO selected_exercises (user_id, exercise_id) VALUES (3, 1);
 INSERT INTO selected_exercises (user_id, exercise_id) VALUES (3, 10);
