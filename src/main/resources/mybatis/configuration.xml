@@ -20,7 +20,6 @@
 		<mapper resource="mybatis/mappers/trainer-schedule.xml" />
 		<mapper resource="mybatis/mappers/booking.xml" />
 		<mapper resource="mybatis/mappers/memberExercise.xml" />
-
 	</mappers>
 
 </configuration>

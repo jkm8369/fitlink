@@ -614,13 +614,15 @@
 				
 				for (let i = 0; i < normalLogs.length; i++) {
 					let log = normalLogs[i];
-					let str = '<div class="set-item" data-log-id="' + log.logId + '">' +
-								'<span>' + (log.bodyPart || '-') + '</span> ' +
-								'<span>' + (log.exerciseName || '-') + '</span> ' +
-								'<span>' + (log.weight || 0) + '</span> ' + '<span>kg</span> ' +
-								'<span>✕</span> ' + '<span>' + (log.reps || 0) + '</span> ' + '<span>회</span>' +
-								'<button class="remove-btn">—</button>' + 
-							  '</div>';
+					let str = '
+						<div class="set-item" data-log-id= "${log.logId}">
+							<span>${log.bodyPart || '-'}</span>
+							<span>${log.exerciseName || '-'}</span>
+							<span>${log.weight || 0}</span><span>kg</span> 
+							<span>✕</span><span>${log.reps || 0}</span><span>회</span>
+							<button class="remove-btn">—</button>
+					  	</div>;
+					';
 					$normalListContainer.append(str);
 				}
 				
