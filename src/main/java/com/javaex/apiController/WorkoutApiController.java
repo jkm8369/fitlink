@@ -1,4 +1,4 @@
-package com.javaex.controller;
+package com.javaex.apiController;
 
 import java.util.List;
 
