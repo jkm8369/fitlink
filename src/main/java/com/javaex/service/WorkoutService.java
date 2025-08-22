@@ -27,8 +27,8 @@ public class WorkoutService {
 	}
 	
 	//-- 사용자가 선택한 운동 목록 전체 가져오기
-	public List<WorkoutVO> exeUserExercises(int userId) {
-		//System.out.println("WorkoutService.exeUserExercises()");
+	public List<WorkoutVO> exeGetUserExercises(int userId) {
+		//System.out.println("WorkoutService.exeGetUserExercises()");
 		
 		List<WorkoutVO> exerciseList = workoutRepository.selectUserExercises(userId);
 		
@@ -36,8 +36,8 @@ public class WorkoutService {
 	}
 	
 	// -- 특정 날짜 운동일지 리스트
-	public List<WorkoutVO> exeWorkoutLogsByDate(int userId, String logDate) {
-		//System.out.println("WorkoutService.exeWorkoutLogsByDate()");
+	public List<WorkoutVO> exeGetWorkoutLogsByDate(int userId, String logDate) {
+		//System.out.println("WorkoutService.exeGetWorkoutLogsByDate()");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("userId", userId);
@@ -49,7 +49,7 @@ public class WorkoutService {
 	}
 	
 	//-- 특정 월에 운동 기록이 있는 날짜 목록 조회
-	public List<String> exeLoggedDates(int userId, String yearMonth) {
+	public List<String> exeGetLoggedDates(int userId, String yearMonth) {
 		//System.out.println("WorkoutService.exeGetLoggedDates()");
 		
 		Map<String, Object> params = new HashMap<>();
@@ -63,7 +63,7 @@ public class WorkoutService {
 	
 	
 	//-- 운동 추가
-	public WorkoutVO exeWorkoutAddKey(WorkoutVO workoutVO) {
+	public WorkoutVO exeGetWorkoutAddKey(WorkoutVO workoutVO) {
 		//System.out.println("WorkoutService.exeWorkoutAddKey()");
 		
 		int count = workoutRepository.workoutInsertKey(workoutVO);
@@ -78,7 +78,7 @@ public class WorkoutService {
 	
 	
 	//-- 운동 삭제
-	public int exeWorkoutRemove(int logId) {
+	public int exeGetWorkoutRemove(int logId) {
 		//System.out.println("WorkoutService.exeWorkoutRemove()");
 		
 		int count = workoutRepository.workoutRemove(logId);

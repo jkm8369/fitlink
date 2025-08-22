@@ -38,7 +38,7 @@ public class WorkoutApiController {
 		
 		System.out.println(authUser.getUserId());
 		
-		WorkoutVO wVO = workoutService.exeWorkoutAddKey(workoutVO);
+		WorkoutVO wVO = workoutService.exeGetWorkoutAddKey(workoutVO);
 		
 		if(wVO != null) {
 			return JsonResult.success(wVO);
@@ -54,7 +54,7 @@ public class WorkoutApiController {
 		
 		//System.out.println("WorkoutApiController.remove()" + logId);
 		
-		int count = workoutService.exeWorkoutRemove(logId);
+		int count = workoutService.exeGetWorkoutRemove(logId);
 		
 		if(count == 1) {
 			return JsonResult.success(count);
@@ -72,7 +72,7 @@ public class WorkoutApiController {
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
 		
-		List<WorkoutVO> exerciseList = workoutService.exeUserExercises(authUser.getUserId());
+		List<WorkoutVO> exerciseList = workoutService.exeGetUserExercises(authUser.getUserId());
 		
 		return JsonResult.success(exerciseList);
 	}
@@ -86,7 +86,7 @@ public class WorkoutApiController {
 		
 		int userId = authUser.getUserId();
 		
-		List<WorkoutVO> workoutList = workoutService.exeWorkoutLogsByDate(userId, logDate);
+		List<WorkoutVO> workoutList = workoutService.exeGetWorkoutLogsByDate(userId, logDate);
 		
 		return JsonResult.success(workoutList);
 	}
@@ -103,7 +103,7 @@ public class WorkoutApiController {
 		// "2025-08" 형식으로 문자열 조합
 		String yearMonth = year + "-" + String.format("%02d", month);
 		
-		List<String> loggedDateList = workoutService.exeLoggedDates(userId, yearMonth);
+		List<String> loggedDateList = workoutService.exeGetLoggedDates(userId, yearMonth);
 		
 		return JsonResult.success(loggedDateList);
 	}

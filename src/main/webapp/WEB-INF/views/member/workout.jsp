@@ -117,21 +117,16 @@
 						<form id="form-add-log" class="set-form">
 							<select id="select-body-part" name="bodyPart">
 								<option value="">부위</option>
-							</select> 
-							<select id="select-exercise-name" name="userExerciseId">
+							</select> <select id="select-exercise-name" name="userExerciseId">
 								<option value="">운동</option>
-							</select> 
-							<span>무게</span> <input id="input-weight" name="weight" type="text" placeholder="숫자" /> 
-							<span>kg</span> 
-							<span>×</span> <input id="input-reps" name="reps" type="text" placeholder="숫자" /> <span>회</span>
+							</select> <span>무게</span> <input id="input-weight" name="weight" type="text" placeholder="숫자" /> <span>kg</span> <span>×</span> <input id="input-reps"
+								name="reps" type="text" placeholder="숫자" /> <span>회</span>
 
 							<button type="submit" class="btn-plus">+</button>
 						</form>
 
 						<!-- -- + 클릭시 추가되는 폼 (js)-- -->
-						<div id="workoutLogList" class="set-list">
-							
-						</div>	
+						<div id="workoutLogList" class="set-list"></div>
 					</section>
 				</div>
 
@@ -156,24 +151,19 @@
 						<h4>1RM 무게</h4>
 						<form id="form-save-1rm" class="set-form">
 							<div class="rm-input-group">
-								<label>벤치프레스</label>
-								<input type="number" class="rm-input" data-exercise-name="벤치프레스" placeholder="kg">
+								<label>벤치프레스</label> <input type="number" class="rm-input" data-exercise-name="벤치프레스" placeholder="kg">
 							</div>
 							<div class="rm-input-group">
-								<label>데드리프트</label>
-								<input type="number" class="rm-input" data-exercise-name="데드리프트" placeholder="kg">
+								<label>데드리프트</label> <input type="number" class="rm-input" data-exercise-name="데드리프트" placeholder="kg">
 							</div>
 							<div class="rm-input-group">
-								<label>스쿼트</label>
-								<input type="number" class="rm-input" data-exercise-name="스쿼트" placeholder="kg">
+								<label>스쿼트</label> <input type="number" class="rm-input" data-exercise-name="스쿼트" placeholder="kg">
 							</div>
 							<button type="submit" class="btn-plus">+</button>
 						</form>
 
 						<!-- -- + 클릭시 추가되는 폼 (js)-- -->
-						<div id="1rmLogList" class="set-list">
-							
-						</div>	
+						<div id="1rmLogList" class="set-list"></div>
 					</section>
 				</div>
 			</main>
@@ -602,31 +592,30 @@
 	
 			// ================== 운동 기록 목록 렌더링 ==================
 			function renderLogList(logList) {
-				//변수 이름 앞에 $ 붙이는건 jQuery 객체라는 걸 표시하려는 코딩 관례
+			  	// jQuery 객체 표기 관례
 				let $normalListContainer = $('#workoutLogList');
-				
-				//기존 목록 비우기
-				$normalListContainer.empty(); 
-				
-				let normalLogs = logList.filter(function(log) {
-					return log.logType == 'NORMAL';
-				});
-				
-				for (let i = 0; i < normalLogs.length; i++) {
-					let log = normalLogs[i];
-					let str = '
-						<div class="set-item" data-log-id= "${log.logId}">
-							<span>${log.bodyPart || '-'}</span>
-							<span>${log.exerciseName || '-'}</span>
-							<span>${log.weight || 0}</span><span>kg</span> 
-							<span>✕</span><span>${log.reps || 0}</span><span>회</span>
-							<button class="remove-btn">—</button>
-					  	</div>;
-					';
-					$normalListContainer.append(str);
-				}
-				
-				
+			
+				// 기존 목록 비우기
+			  	$normalListContainer.empty();
+			
+			  	let normalLogs = logList.filter(function(log) {
+			    	return log.logType == 'NORMAL';
+			  	});
+			
+			  	for (let i = 0; i < normalLogs.length; i++) {
+			    	let log = normalLogs[i];
+			    	let str = `
+			      	<div class="set-item" data-log-id="\${log.logId}">
+				        <span>\${log.bodyPart || '-'}</span>
+				        <span>\${log.exerciseName || '-'}</span>
+				        <span>\${log.weight || 0}</span><span>kg</span>
+				        <span>✕</span>
+				        <span>\${log.reps || 0}</span><span>회</span>
+				        <button class="remove-btn">—</button>
+			      	</div>
+			    `;
+			    $normalListContainer.append(str);
+			  }
 			}
 	
 			// ================== 요약 박스(최고중량/총반복/총볼륨/1RM) ==================

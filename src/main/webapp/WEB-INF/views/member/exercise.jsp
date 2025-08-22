@@ -47,7 +47,7 @@
 				<!-- 2. 운동 종류 리스트-->
 				<div class="exercise-container">
 					<div class="exercise-header">
-						<a href="${pageContext.request.contextPath}/member/exercise/list" class="btn-edit-exercises"> <i class="fa-solid fa-scissors"></i> <span>운동종류
+						<a href="${pageContext.request.contextPath}/exercise/list-member" class="btn-edit-exercises"> <i class="fa-solid fa-scissors"></i> <span>운동종류
 								수정</span>
 						</a>
 					</div>
@@ -77,9 +77,9 @@
 			</main>
 		</div>
 
-		<footer>
-			<p>Copyright © 2025. FitLink All rights reserved.</p>
-		</footer>
+		<!-- <footer> -->
+		<c:import url="/WEB-INF/views/include/footer.jsp"></c:import>
+		<!--// <footer> -->
 	</div>
 </body>
 

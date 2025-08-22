@@ -31,103 +31,85 @@
 			</c:choose>
 			<!-- //------aside------ -->
 
-			<main>
-				<!-- 1. 제목 -->
-				<div class="page-header">
-					<h3 class="page-title">Exercise</h3>
-				</div>
-				<!-- //1. 제목 -->
-
-				<!-- 2. 운동 종류 탭 -->
-				<div class="category-tabs">
-					<div class="tab">가슴</div>
-					<div class="tab">등</div>
-					<div class="tab">어깨</div>
-					<div class="tab">하체</div>
-					<div class="tab">팔</div>
-					<div class="tab">복근</div>
-					<div class="tab">유산소</div>
-					<div class="tab">기타</div>
-				</div>
-				<!-- //2. 운동 종류 탭 -->
-
-				<!-- 3.버튼 -->
-				<div class="category-buttons">
-					<button class="category-btn">
-						<i class="fa-solid fa-plus"></i> 운동종류 등록
-					</button>
-					<button class="category-btn">
-						<i class="fa-solid fa-check"></i> 저장
-					</button>
-				</div>
-				<!-- ..3.버튼 -->
-
-				<!-- 4.선택부위 -->
-				<h4 class="category-title">가슴</h4>
-				<!-- //4.선택부위 -->
-
-				<!-- 5.내가 선택한 리스트 -->
-				<section class="select-box">
-					<p>내가 선택한 리스트</p>
-					<ul class="category-grid">
-						<li>벤치프레스</li>
-						<li>스미스머신 벤치프레스</li>
-						<li>푸시업</li>
-						<li>중량 푸시업</li>
-						<li>해머 벤치프레스</li>
-						<li>스포토 벤치프레스</li>
-					</ul>
-				</section>
-				<!-- //5.내가 선택한 리스트 -->
-
-				<!-- 6.운동종류 리스트 -->
-				<section class="list-box">
-					<ul class="checkbox-grid">
-						<li class="checkbox-item"><label> <input type="checkbox" checked /><span class="custom-checkbox"></span>벤치프레스
-						</label></li>
-						<li class="checkbox-item"><label> <input type="checkbox" checked /><span class="custom-checkbox"></span>푸시업
-						</label></li>
-						<li class="checkbox-item"><label> <input type="checkbox" checked /><span class="custom-checkbox"></span>해머 벤치프레스
-						</label></li>
-						<li class="checkbox-item"><label> <input type="checkbox" checked /><span class="custom-checkbox"></span>스미스머신 벤치프레스
-						</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" checked /><span class="custom-checkbox"></span>중량 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" checked /><span class="custom-checkbox"></span>스포토 벤치프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>스미스머신 인클라인 벤치프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>힌두 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>어시스트 딥스 머신</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>덤벨 벤치프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>아처 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>디클라인 벤치프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>인클라인 덤벨 벤치프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>클로즈그립 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>바벨 플로어 프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>덤벨 플라이</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>케이블 크로스오버</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>클랩 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>스탠딩 케이블 플라이</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>체스트 프레스 머신</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>디클라인 덤벨 플라이</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>인클라인 벤치프레스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>펙덱 플라이 머신</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>인클라인 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>딥스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>덤벨 풀오버</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>파이크 푸시업</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>중량 딥스</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>시티드 딥스 머신</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>디클라인 체스트 프레스 머신</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>인클라인 덤벨 플라이</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>로우 풀리 케이블 플라이</label></li>
-						<li class="checkbox-item"><label><input type="checkbox" /><span class="custom-checkbox"></span>인클라인 덤벨 트위스트 프레스</label></li>
-					</ul>
-				</section>
-				<!-- //6.운동종류 리스트 -->
-			</main>
+			<form action="${pageContext.request.contextPath}/exercise/update-member" method="post" style="display: flex; flex: 1;">
+				<main>
+					<!-- 1. 제목 -->
+					<div class="page-header">
+						<h3 class="page-title">Exercise</h3>
+					</div>
+					<!-- //1. 제목 -->
+	
+					<!-- 2. 운동 종류 탭 -->
+					<div class="category-tabs">
+						<c:forEach items="${exerciseData.bodyPartTabs}" var="tab">
+							<a href="${pageContext.request.contextPath}/exercise/list-member?bodyPart=${tab}"
+								class="tab <c:if test="${exerciseData.currentBodyPart == tab}">active</c:if>">
+								${tab}
+							</a>
+						</c:forEach>
+					</div>
+					<!-- //2. 운동 종류 탭 -->
+	
+					<!-- 3.버튼 -->
+					<div class="category-buttons">
+						<button class="category-btn">
+							<i class="fa-solid fa-plus"></i> 운동종류 등록
+						</button>
+						<button type="submit" class="category-btn">
+							<i class="fa-solid fa-check"></i> 저장
+						</button>
+					</div>
+					<!-- ..3.버튼 -->
+	
+					<!-- 4.선택부위 -->
+					<h4 class="category-title">${exerciseData.currentBodyPart}</h4>
+					<!-- //4.선택부위 -->
+	
+					<!-- 현재 보고 있는 부위 이름을 함께 전송하기 위한 hidden input --> 
+                    <input type="hidden" name="bodyPart" value="${exerciseData.currentBodyPart}">
+	
+					<!-- 5.내가 선택한 리스트 -->
+					<section class="select-box">
+						<p>내가 선택한 리스트</p>
+						<ul class="category-grid">
+							<c:forEach items="${exerciseData.myExerciseList}" var="myExercise">
+								<li>${myExercise.exerciseName}</li>
+							</c:forEach>
+							<c:if test="${empty exerciseData.myExerciseList}">
+								<li class="no-data-small"><p>선택한 운동이 없습니다.<br>운동을 추가해주세요.</p></li>
+							</c:if>
+						</ul>
+					</section>
+					<!-- //5.내가 선택한 리스트 -->
+	
+					<!-- 6.운동종류 리스트 -->
+					<section class="list-box">
+						<ul class="checkbox-grid">
+							
+							<c:forEach items="${exerciseData.allExerciseList}" var="allExercise">
+								<li>
+									<label>
+										<!-- 체크박스에 name과 value를 추가하여 선택된 값을 서버로 보낼 수 있도록 함 -->
+										<input type="checkbox" name="exerciseIds" value="${allExercise.exerciseId}" <c:if test="${allExercise.checked}">checked</c:if> >
+										<span class="custom-checkbox"></span>
+										${allExercise.exerciseName}
+									</label>
+								</li>
+							</c:forEach>
+							<c:if test="${empty exerciseData.allExerciseList}">
+								<li class="no-data-large">등록된 운동이 없습니다.<br>운동을 추가해주세요.</li>
+							</c:if>
+							
+						</ul>
+					</section>
+					<!-- //6.운동종류 리스트 -->
+				</main>
+			</form>
 		</div>
-		<footer>
-			<p>Copyright © 2025. FitLink All rights reserved.</p>
-		</footer>
+		
+		<!-- <footer> -->
+		<c:import url="/WEB-INF/views/include/footer.jsp"></c:import>
+		<!--// <footer> -->
 	</div>
 </body>
 </html>

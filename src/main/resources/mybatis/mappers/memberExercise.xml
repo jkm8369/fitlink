@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="memberExercise">
-	
-	<!-- 사용자가 선택한 운동의 부위 목록 (중복 x) group by보다 distinct가 가독성 의미 더 맞다-->
+
+	<!-- 사용자가 선택한 운동의 부위 목록 (중복 x) group by보다 distinct가 가독성 의미 더 맞다 -->
 	<select id="selectBodyPartsByUser" parameterType="int" resultType="String">
 		<![CDATA[
 			select distinct e.body_part as bodyPart
@@ -13,7 +13,16 @@
 			order by field(e.body_part, '가슴', '등', '어깨', '팔', '하체', '복근', '역도', '유산소', '기타')
 		]]>
 	</select>
-	
+
+	<!-- 모든 운동 부위 리스트 가져오기 (중복x) -->
+	<select id="selectAllBodyParts" resultType="String">
+		select distinct body_part as bodyPart
+		from exercise
+		order by field('가슴', '등', '어깨', '팔', '하체', '복근', '역도',
+		'유산소', '기타')
+	</select>
+
+
 	<!-- 사용자 특정 부위 리스트 가져오기 -->
 	<select id="selectListByUserAndPart" parameterType="map" resultType="com.javaex.vo.MemberExerciseVO">
 		<![CDATA[
@@ -26,7 +35,7 @@
 			and e.body_part = #{bodyPart}
 			order by e.exercise_name asc
 		]]>
-	
+
 	</select>
 
 	<!-- 특정 부위의 모든 운동 리스트 가져오기 -->
@@ -40,5 +49,26 @@
 			order by exercise_name asc
 		]]>
 	</select>
+
+	<!-- 특정 부위에 대한 사용자 운동 선택 기록 삭제 -->
+	<delete id="deleteUserExercisesByPart" parameterType="map">
+		<![CDATA[
+			delete from selected_exercises
+			where user_id = #{userId}
+			  and exercise_id in (select exercise_id 
+			  					  from exercise 
+			  					  where body_part = #{bodyPart})
+		]]>
+	</delete>
+
+	<!-- 사용자가 선택한 운동을 하나 추가 -->
+	<insert id="insertUserExercise" parameterType="map">
+		<![CDATA[
+			insert into selected_exercises (user_id, exercise_id)
+			values (#{userId}, #{exerciseId})
+		]]>
+	</insert>
+
+
 
 </mapper>

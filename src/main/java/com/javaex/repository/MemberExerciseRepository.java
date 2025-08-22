@@ -24,7 +24,14 @@ public class MemberExerciseRepository {
 		return bodyPartList;
 	}
 	
-	
+	// -- 모든 운동 부위 리스트 가져오기
+	public List<String> selectAllBodyParts() {
+		System.out.println("MemberExerciseRepository.selectAllBodyParts()");
+		
+		List<String> bodyPart = sqlSession.selectList("selectAllBodyParts");
+		
+		return bodyPart;
+	}
 	
 	// -- 사용자 특정 부위 리스트 가져오기
 	public List<MemberExerciseVO> selectListByUserAndPart (Map<String, Object> params) {
@@ -45,5 +52,21 @@ public class MemberExerciseRepository {
 		return exerciseList;
 	}
 	
+	
+	
+    // -- 특정 부위에 대한 사용자의 운동 선택 기록을 모두 삭제
+    public void deleteUserExercisesByPart(Map<String, Object> params) {
+        System.out.println("ExerciseRepository.deleteUserExercisesByPart()");
+        
+        sqlSession.delete("memberExercise.deleteUserExercisesByPart", params);
+    }
+
+   
+    // -- 사용자가 선택한 운동을 하나 추가  
+    public void insertUserExercise(Map<String, Object> params) {
+        System.out.println("ExerciseRepository.insertUserExercise()");
+        
+        sqlSession.insert("memberExercise.insertUserExercise", params);
+    }
 	
 }
