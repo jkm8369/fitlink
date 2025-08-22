@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="trainerSchedule">
+	<!-- 1) 트레이너 예약 리스트(하단 표) : 예약된 건만 -->
+	<select id="selectTrainerBookings" parameterType="map" resultType="map">
+	  /* 파라미터: trainerId, start, end */
+	  SELECT
+	    a.availability_id                          AS availabilityId,   -- 근무칸 PK
+	    DATE(a.available_datetime)                 AS workDate,         -- YYYY-MM-DD
+	    DATE_FORMAT(a.available_datetime,'%H:00')  AS hourLabel,        -- 13:00 표시용
+	    r.reservation_id                           AS reservationId,    -- 예약 PK
+	    u.user_name                                AS memberName,       -- 예약자 이름
+	    r.status                                   AS status            -- BOOKED/COMPLETED
+	  FROM availability a
+	  JOIN reservation r ON r.availability_id = a.availability_id   -- 예약된 슬롯만
+	  JOIN users       u ON u.user_id = r.member_id                 -- 회원명 조인
+	  WHERE a.trainer_id = #{trainerId}
+	    AND a.available_datetime BETWEEN #{start} AND #{end}
+	  ORDER BY a.available_datetime ASC
+	</select>
+	
+	<!-- 2) 근무칸 + 예약여부(달력/모달 공용) : 빈 슬롯도 포함 -->
+	<select id="selectTrainerSlotsWithStatus" parameterType="map" resultType="map">
+	  /* 파라미터: trainerId, start, end */
+	  SELECT
+	    a.availability_id                          AS availabilityId,
+	    a.trainer_id                               AS trainerId,
+	    a.available_datetime                       AS startDt,          -- 캘린더 시작시각
+	    DATE(a.available_datetime)                 AS workDate,
+	    DATE_FORMAT(a.available_datetime,'%H:00')  AS hourLabel,
+	    CASE WHEN r.reservation_id IS NULL THEN 'AVAILABLE'
+	         ELSE r.status END                     AS slotStatus,       -- 예약없음=AVAILABLE
+	    r.reservation_id                           AS reservationId,
+	    u.user_name                                AS memberName        -- 예약자 이름(NULL 가능)
+	  FROM availability a
+	  LEFT JOIN reservation r ON r.availability_id = a.availability_id -- 예약 유무 판단
+	  LEFT JOIN users       u ON u.user_id = r.member_id               -- 회원명(있을 때만)
+	  WHERE a.trainer_id = #{trainerId}
+	    AND a.available_datetime BETWEEN #{start} AND #{end}
+	  ORDER BY a.available_datetime ASC
+	</select>
+	
+	<!-- 3) 특정 날짜 슬롯 + 예약여부(모달 버튼 목록) -->
+	<select id="selectDaySlotsWithStatus" parameterType="map" resultType="map">
+	  /* 파라미터: trainerId, workDate(YYYY-MM-DD) */
+	  SELECT
+	    a.availability_id                          AS availabilityId,
+	    DATE_FORMAT(a.available_datetime,'%H:00')  AS hourLabel,
+	    CASE WHEN r.reservation_id IS NULL THEN 'AVAILABLE'
+	         ELSE r.status END                     AS slotStatus
+	  FROM availability a
+	  LEFT JOIN reservation r ON r.availability_id = a.availability_id
+	  WHERE a.trainer_id = #{trainerId}
+	    AND DATE(a.available_datetime) = #{workDate}
+	  ORDER BY a.available_datetime ASC
+	</select>
+	
+	<!-- 4) 근무시간 등록(단건) : 중복은 UNIQUE 제약으로 무시 -->
+	<insert id="insertAvailability" parameterType="map" useGeneratedKeys="true" keyProperty="availabilityId">
+	  INSERT IGNORE INTO availability (trainer_id, available_datetime)
+	  VALUES (#{trainerId}, #{availableDatetime})
+	</insert>
+	
+	<!-- 5) 근무시간 등록(배치) : 여러 시각 한 번에 저장 -->
+	<insert id="insertAvailabilityBatch" parameterType="map">
+	  INSERT IGNORE INTO availability (trainer_id, available_datetime)
+	  VALUES
+	  <foreach collection="datetimes" item="dt" separator=",">
+	    (#{trainerId}, #{dt})
+	  </foreach>
+	</insert>
+	
+	<!-- 6) 근무시간 삭제(단건) -->
+	<delete id="deleteAvailabilityById" parameterType="map">
+	  DELETE FROM availability
+	  WHERE availability_id = #{availabilityId}
+	</delete>
+	
+	<!-- 7) 근무시간 삭제(특정 날짜 + 여러 시간 동시) -->
+	<delete id="deleteAvailabilityByDateHours" parameterType="map">
+	  DELETE FROM availability
+	  WHERE trainer_id = #{trainerId}
+	    AND DATE(available_datetime) = #{workDate}
+	    AND HOUR(available_datetime) IN
+	    <foreach collection="hours" item="h" open="(" close=")" separator=",">
+	      #{h}
+	    </foreach>
+	</delete>
+</mapper>
