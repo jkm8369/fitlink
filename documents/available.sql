@@ -61,8 +61,8 @@ WHERE u.login_id = 'trainer1' AND u.role = 'trainer';
 -- 특정 트레이너의 특정 날짜 근무시간(시간 리스트)
 SELECT work_hour
 FROM trainer_availability
-WHERE trainer_id = 1
-  AND work_date  = '2025-08-19'
+WHERE trainer_id = 4
+  AND work_date  = '2025-08-22'
 ORDER BY work_hour;
 
 -- 로그인아이디로 내 근무시간 조회(조인 사용)
@@ -78,15 +78,15 @@ ORDER BY ta.work_hour;
 SELECT u.user_name  AS trainer_name,
        ta.work_date,
        ta.work_hour
-FROM trainer_availability ta
+FROM trainer_availability tareservation
 JOIN users u ON u.user_id = ta.trainer_id
 WHERE ta.work_date BETWEEN '2025-07-01' AND '2025-07-31'
 ORDER BY u.user_name, ta.work_date, ta.work_hour;
 
 SELECT * 
 FROM trainer_availability
-WHERE trainer_id = 1
-  AND work_date  = '2025-08-12'
+WHERE trainer_id = 4
+  AND work_date  = '2025-08-25'
 ORDER BY work_hour;
 
 -- 모달

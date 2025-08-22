@@ -232,7 +232,8 @@
 			     ====================== */
 			  const calendarEl = document.getElementById('calendar');
 			  calendar = new FullCalendar.Calendar(calendarEl, {
-			    initialView: 'dayGridMonth',
+				timeZone: 'local',
+				initialView: 'dayGridMonth',
 			    locale: 'ko',
 			    headerToolbar: {
 			      left: 'prev,next today',

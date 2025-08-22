@@ -56,7 +56,7 @@ from 	reservation
 
 -- 삭제
 DELETE FROM reservation
-WHERE reservation_id = 40
+WHERE reservation_id = 65
 ;
 
 ALTER TABLE reservation
@@ -68,3 +68,45 @@ ADD UNIQUE KEY uq_active_slot
     (CASE WHEN status IN ('BOOKED','ATTENDED') THEN availability_id ELSE NULL END)
   );
 
+
+select	CONCAT(
+			CASE 
+				WHEN t.work_hour = 24 THEN '24:00'
+				ELSE CONCAT(LPAD(t.work_hour, 2, '0'), ':00')
+			END,
+			' ',
+			u.user_name
+		) AS title,
+        t.work_date start,
+        t.avail_id,
+		t.trainer_id,
+        t.work_date,
+        t.work_hour,
+        r.reservation_id,
+        r.member_id,
+        r.availability_id,
+        r.status,
+        u.user_name
+from Trainer_Availability t, reservation r, users u
+where t.avail_id = r.availability_id 
+and u.user_id = r.member_id
+and t.trainer_id = 4
+and r.status ='BOOKED'
+;
+
+
+select	t.avail_id,
+		t.trainer_id,
+        t.work_date,
+        t.work_hour,
+        r.reservation_id,
+        r.member_id,
+        r.availability_id,
+        r.status,
+        u.user_name
+from Trainer_Availability t, reservation r, users u
+where t.avail_id = r.availability_id 
+and u.user_id = r.member_id
+and t.trainer_id = 4
+and r.status ='BOOKED'
+;

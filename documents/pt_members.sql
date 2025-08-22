@@ -35,6 +35,11 @@ CREATE TABLE pt_member (
 INSERT INTO pt_member (member_id, trainer_id, total_sessions)
 VALUES (1, 3, 30);
 
+INSERT INTO pt_member (member_id, trainer_id, total_sessions)
+VALUES (5, 4, 30)
+ON DUPLICATE KEY UPDATE
+  trainer_id = VALUES(trainer_id);
+  
 -- 조회
 select 	*
 from 	pt_member
