@@ -27,7 +27,14 @@
 		<div id="content">
 
 			<!-- ------aside------ -->
-			<c:import url="/WEB-INF/views/include/aside.jsp"></c:import>
+			<c:choose>
+				<c:when test="${sessionScope.authUser.role == 'trainer'}">
+					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
+				</c:when>
+				<c:otherwise>
+					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
+				</c:otherwise>
+			</c:choose>
 			<!-- //------aside------ -->
 
 
@@ -197,7 +204,7 @@
 				return y + "-" + pad(m + 1) + "-" + pad(d);
 			}
 	
-			// ▼YYYY년 M월 D일 형식으로 날짜 포맷하는 함수
+			// YYYY년 M월 D일 형식으로 날짜 포맷하는 함수
 			function formatKoreanDate(dateStr) {
 				let parts = dateStr.split("-");
 				if (parts.length == 3) {
@@ -210,7 +217,7 @@
 			
 			// 오늘 날짜를 기본값으로 세팅
 			let _now = new Date();
-			let _today = fmt(_now.getFullYear(), _now.getMonth(), _now.getDate());
+			let _today = fmt(_now.getFullYear(), _now.getMonth(), _now.getDate());   // _붙히는건 이 블록 안에서만 잠깐 쓰는것이라는걸 강조할 때 씀 (관례)
 			$("#pickDate").val(_today);
 			$("#currentDateLabel").text(formatKoreanDate(_today)); // 한국식 날짜 포맷으로 표시
 			
@@ -445,7 +452,7 @@
 			// '오늘의 운동' 추가 로직
 			$("#form-add-log").on("submit", function(e) {
 				e.preventDefault();
-				var workoutData = {
+				let workoutData = {
 					userExerciseId: $("#select-exercise-name").val(),
 					weight: $("#input-weight").val(),
 					reps: $("#input-reps").val(),
@@ -466,23 +473,23 @@
 			$("#form-save-1rm").on("submit", function(e) {
 				e.preventDefault();
 				
-				var requests = []; // 여러 개의 Ajax 요청을 담을 배열
+				let requests = []; // 여러 개의 Ajax 요청을 담을 배열
 				
 				// 각 1RM 입력 필드를 순회합니다.
 				$(".rm-input").each(function() {
-					var $input = $(this);
-					var weight = $input.val();
-					var exerciseName = $input.data("exercise-name");
+					let $input = $(this);
+					let weight = $input.val();
+					let exerciseName = $input.data("exercise-name");
 
 					// 무게가 입력된 필드만 처리합니다.
 					if (weight) {
 						// 운동 이름으로 userExerciseList에서 해당 운동 정보를 찾습니다.
-						var exercise = userExerciseList.find(function(ex) {
+						let exercise = userExerciseList.find(function(ex) {
 							return ex.exerciseName === exerciseName;
 						});
 						
 						if (exercise) {
-							var workoutData = {
+							let workoutData = {
 								userExerciseId: exercise.userExerciseId,
 								weight: weight,
 								reps: 1, // 1RM은 항상 1회입니다.
@@ -538,8 +545,8 @@
 
 			// 삭제 이벤트 핸들러 (이제 '오늘의 운동' 목록만 대상으로 합니다)
 			$("#workoutLogList").on("click", ".remove-btn", function() {
-				var $item = $(this).closest(".set-item");
-				var logId = $item.data("log-id");
+				let $item = $(this).closest(".set-item");
+				let logId = $item.data("log-id");
 
 				if (confirm("정말 삭제하시겠습니까?")) {
 					$.ajax({
