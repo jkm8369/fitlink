@@ -17,12 +17,8 @@
 	<mappers>
 		<mapper resource="mybatis/mappers/user.xml" />
 		<mapper resource="mybatis/mappers/workout.xml" />
-<<<<<<< HEAD
-=======
-		<mapper resource="mybatis/mappers/schedule.xml" />
-		<mapper resource="mybatis/mappers/booking.xml" />
 		<mapper resource="mybatis/mappers/memberExercise.xml" />
->>>>>>> branch 'master' of https://github.com/jkm8369/fitlink.git
+
 	</mappers>
 
 </configuration>
