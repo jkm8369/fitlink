@@ -120,4 +120,8 @@ public class TrainerScheduleRepository {
 	    public int deleteAvailabilityByDateHours(Map<String, Object> params) {
 	        return sqlSession.delete("trainerSchedule.deleteAvailabilityByDateHours", params);
 	    }
+	    
+	    public int deleteAvailabilityByDatetimes(Map<String, Object> params) {
+	        return sqlSession.delete("trainerSchedule.deleteAvailabilityByDatetimes", params);
+	    }
 }

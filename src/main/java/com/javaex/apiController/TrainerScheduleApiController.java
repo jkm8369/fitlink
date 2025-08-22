@@ -145,17 +145,18 @@ public class TrainerScheduleApiController {
      * <p>요청 본문 JSON 형식은 {\"trainerId\":1, \"workDate\":\"2025-07-09\", \"hours\":[12,13,14]} 입니다.
      * 선택한 시간대에 예약이 있으면 삭제되지 않습니다.</p>
      */
-    @DeleteMapping("/availability/day")
-    public ResponseEntity<Map<String, Object>> deleteAvailabilityByDate(@RequestBody Map<String, Object> body) {
+    @PostMapping("/availability/delete")
+    public ResponseEntity<Map<String, Object>> deleteAvailabilities(@RequestBody Map<String, Object> body) {
         Integer trainerId = (Integer) body.get("trainerId");
-        String workDate = (String) body.get("workDate");
         @SuppressWarnings("unchecked")
-        List<Integer> hours = (List<Integer>) body.get("hours");
+        List<String> datetimes = (List<String>) body.get("datetimes");
+
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
-        param.put("workDate", workDate);
-        param.put("hours", hours);
-        int deleted = trainerScheduleRepository.deleteAvailabilityByDateHours(param);
+        param.put("datetimes", datetimes);
+
+        int deleted = trainerScheduleRepository.deleteAvailabilityByDatetimes(param);
+
         Map<String, Object> resp = new HashMap<>();
         resp.put("deleted", deleted);
         return ResponseEntity.ok(resp);

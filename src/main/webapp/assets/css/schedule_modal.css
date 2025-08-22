@@ -1,366 +1,239 @@
-@charset "UTF-8";
-/* ====================== modal common ====================== */
-/* 오버레이 */
-.modal-overlay {
+/*
+ * schedule_modal.css — NEW
+ * - 모달: 카드형 + 파란 선택칩
+ * - 기능 버튼: 저장(등록) / 삭제
+ * - 캘린더: 근무 저장일(.has-workday) 배경/글자 강조
+ */
+/* 범례 */
+#schedule-modal .legend {
+	display: flex;
+	justify-content: center; /* ← 중앙 정렬 */
+	gap: 24px; /* 아이템 간 간격 */
+	align-items: center;
+	padding: 10px 0;
+}
+
+#schedule-modal .legend-item {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	color: #64748b;
+	font-size: 13px;
+}
+
+#schedule-modal .legend-color {
+	width: 14px;
+	height: 14px;
+	border-radius: 3px;
+	border: 1px solid #cbd5e1;
+}
+
+#schedule-modal .legend-color.available {
+	background: #fff;
+}
+
+#schedule-modal .legend-color.selected {
+	background: #1E6BFF;
+	border-color: #1E6BFF;
+}
+
+/* ============= 모달 오버레이 & 컨테이너 ============= */
+#schedule-modal {
+	display: none; /* JS에서 show/hide 제어 */
 	position: fixed;
 	inset: 0;
-	z-index: 9999;
-	background: rgba(0, 0, 0, .6);
-	display: none;
 	justify-content: center;
 	align-items: center;
+	background: rgba(15, 23, 42, .45);
+	backdrop-filter: blur(2px);
+	z-index: 1000;
 }
 
-.modal-overlay.show {
+#schedule-modal.show {
 	display: flex;
-}
-
-/* 모달 공통 박스(★ 여기엔 width/height 지정하지 않음) */
-.modal-container {
-	max-width: 95vw;
-	max-height: 90vh;
-	background-color: #fff;
-	border-radius: 16px;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	animation: modalIn .18s ease-out;
-}
-
-/* 헤더/바디/푸터 */
-.modal-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 14px 16px;
-	border-bottom: 1px solid #eee;
-}
-
-.modal-title {
-	font-size: 20px;
-	font-weight: 700;
-	margin: 0;
-}
-
-.modal-close-btn {
-	background: none;
-	border: 0;
-	font-size: 24px;
-	color: #888;
-	cursor: pointer;
-	line-height: 1;
-	padding: 4px 6px;
-}
-
-.modal-body {
-	padding: 16px;
-	overflow: auto;
-	flex: 1 1 auto;
-}
-
-.modal-footer {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	padding: 12px 16px 16px;
-	border-top: 1px solid #eee;
-}
-
-/* 버튼 */
-.submit-btn, .delete-btn {
-	width: 100%;
-	height: 52px;
-	border: none;
-	border-radius: 8px;
-	font-size: 18px;
-	font-weight: 700;
-	cursor: pointer;
-	transition: background-color .2s;
-}
-
-.submit-btn {
-	background-color: #0080ff;
-	color: #fff;
-}
-
-.submit-btn:hover {
-	background-color: #0073e6;
-}
-
-.delete-btn {
-	background-color: #bdbdbd;
-	color: #fff;
-}
-
-.delete-btn:hover {
-	background-color: #a9a9a9;
-}
-
-body.noscroll {
+} /* JS에서 classList.add('show') */
+#schedule-modal .modal-container {
+	position: relative;
+	width: 360px;
+	max-width: 90vw;
+	background: #fff;
+	border-radius: 14px;
+	box-shadow: 0 20px 50px rgba(2, 6, 23, .25);
 	overflow: hidden;
 }
 
-/* iframe */
-.modal-iframe {
+/* ============= 헤더/닫기 버튼 ============= */
+#schedule-modal .modal-header {
+	padding: 14px 16px 0;
+}
+
+#schedule-modal .modal-title {
 	width: 100%;
-	height: 100%;
-	border: 0;
-	display: block;
-	flex: 1 1 auto;
-}
-
-/* 진입 애니메이션 */
-@keyframes modalIn {from { opacity:0;
-	transform: translateY(8px) scale(.98);
-}
-
-to {
-	opacity: 1;
-	transform: none;
-}
-
-}
-
-/* ====================== schedule (모달 내부 콘텐츠 공통) ====================== */
-.modal-calendar {
-	width: 100%;
-	height: 300px;
-	background: #f9f9f9;
-	border: #9f9f9f solid 2px;
-	border-radius: 8px;
-	padding: 16px;
-}
-
-.time-selector {
 	text-align: center;
+	font-size: 18px;
+	font-weight: 800;
 }
 
-.time-selector-title {
-	font-size: 1.125rem;
-	font-weight: 700;
-	margin: 0 0 8px;
-}
-
-.time-selector-date {
-	font-size: .875rem;
-	color: #555;
-	margin: 0 0 20px;
-}
-
-.time-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 8px;
-}
-
-.time-slot {
-	width: 100%;
-	height: 40px;
-	border: 1px solid #ddd;
-	background: #fff;
-	color: #333;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: .875rem;
-	transition: all .2s ease;
-}
-
-.time-slot:hover {
-	border-color: #007bff;
-	color: #007bff;
-}
-
-.time-slot.disabled {
-	background: #e9ecef;
-	border-color: #e9ecef;
-	color: #aaa;
-	cursor: not-allowed;
-}
-
-.time-slot.selected {
-	background: #007bff;
-	border-color: #007bff;
-	color: #fff;
-	font-weight: 600;
-}
-
-.legend {
-	display: flex;
-	justify-content: center;
-	gap: 16px;
-	margin-top: 24px;
-	font-size: .75rem;
-	color: #555;
-}
-
-.legend-item {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.legend-color {
-	width: 12px;
-	height: 12px;
-	border-radius: 3px;
-}
-
-.legend-color.available {
-	border: 1px solid #ddd;
-	background: #fff;
-}
-
-.legend-color.disabled {
-	background: #e9ecef;
-}
-
-.legend-color.selected {
-	background: #007bff;
-}
-
-/* ====================== 부모 전용 크기 (스케줄 화면) ====================== */
-#scheduleModal .modal-container {
-	width: 520px; /* ← 원하는 가로 */
-	height: 760px; /* ← 원하는 세로 */
-	padding: 0; /* 내부 여백 제거 → iframe이 꽉 차게 */
-}
-
-@media ( max-width : 560px) {
-	#scheduleModal .modal-container {
-		width: 95vw;
-		height: 88vh;
-	}
-}
-
-/* ====================== 자식(iframe) 전용: 박스를 100% 채우기 ====================== */
-/* 자식 문서에서 .modal-container 에 'is-inner' 클래스를 추가해 사용 */
-.modal-container.is-inner {
-	width: 100%;
-	height: 100%;
-	max-width: none !important;
-	max-height: none !important;
-	padding: 0; /* 내부 여백은 여기서 조절 */
-	box-shadow: none; /* 부모에 그림자 있으니 자식은 제거(원하면 주석 처리) */
-	border-radius: 0; /* 부모 둥근모서리만 보이게(원하면 16px 등으로 변경) */
-}
-
-/* ====================== 시간버튼 ====================== */
-/* 그리드는 그대로 사용 */
-.time-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 8px;
-}
-
-/* 실제 체크박스는 화면에서 숨김(접근성 유지용) */
-.time-chk {
+#schedule-modal .modal-close-btn {
 	position: absolute;
-	opacity: 0;
+	right: 14px;
+	top: 12px;
+	border: 0;
+	background: none;
+	cursor: pointer;
+	font-size: 18px;
+	color: #334155;
+}
+
+/* ============= 바디 ============= */
+#schedule-modal .modal-body {
+	padding: 8px 18px 0;
+}
+
+#schedule-modal .time-selector-title {
+	display: none;
+} /* 상단 Title만 사용 */
+#schedule-modal .time-selector-date {
+	text-align: center;
+	margin: 6px 0 12px;
+	color: #334155;
+	font-weight: 700;
+}
+
+/* 시간 버튼 그리드 */
+#schedule-modal .time-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 10px;
+	padding: 0 2px 6px;
+}
+
+/* 시간 버튼(기본) */
+#schedule-modal .time-slot-btn {
+	height: 40px;
+	border-radius: 10px;
+	border: 1px solid #E5E7EB;
+	background: #fff;
+	font-weight: 700;
+	color: #0f172a;
+	cursor: pointer;
+	transition: transform .03s ease, box-shadow .15s ease, background .15s
+		ease;
+}
+
+#schedule-modal .time-slot-btn:hover {
+	box-shadow: 0 4px 14px rgba(2, 6, 23, .08);
+}
+
+#schedule-modal .time-slot-btn:active {
+	transform: translateY(1px);
+}
+
+/* 선택됨(파란칩) */
+#schedule-modal .time-slot-btn.selected {
+	background: #1E6BFF;
+	border-color: #1E6BFF;
+	color: #fff;
+	box-shadow: 0 6px 18px rgba(30, 107, 255, .30);
+}
+
+/* 예약됨/완료 → 비활성 */
+#schedule-modal .time-slot-btn.disabled {
+	color: #94a3b8;
+	background: #f8fafc;
+	border-color: #E5E7EB;
+	cursor: not-allowed;
+	text-decoration: line-through;
+}
+
+/* 범례 */
+#schedule-modal .legend {
+	display: flex;
+	gap: 18px;
+	align-items: center;
+	padding: 8px 2px 0;
+}
+
+#schedule-modal .legend-item {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	color: #64748b;
+	font-size: 12px;
+}
+
+/* ============= 캘린더: 근무 저장일 표시 ============= */
+/* frame 위에 오버레이로 칠해 항상 보이도록 */
+.fc .fc-daygrid-day-frame {
+	position: relative;
+}
+
+.fc-daygrid-day.has-workday .fc-daygrid-day-frame::after {
+	content: "";
+	position: absolute;
+	inset: 4px;
+	border-radius: 8px;
+	background: rgba(30, 107, 255, .10); /* 연파랑 */
 	pointer-events: none;
 }
 
-/* 라벨을 버튼처럼 */
-.time-label {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	height: 40px;
-	border: 1px solid #ddd;
-	background: #fff;
-	color: #333;
-	border-radius: 8px;
-	cursor: pointer;
-	font-size: 0.875rem;
-	transition: all .2s ease;
-	user-select: none;
+.fc-daygrid-day.has-workday .fc-daygrid-day-number {
+	color: #1E6BFF !important;
+	font-weight: 700;
 }
 
-.time-label:hover {
-	border-color: #007bff;
-	color: #007bff;
+/* ===== 하단 버튼 영역 (저장/삭제) ===== */
+#schedule-modal .modal-footer {
+	display: grid;
+	gap: 12px;
+	padding: 14px 18px 18px;
 }
 
-/* ✔ 체크됐을 때(선택 상태) */
-.time-chk:checked+.time-label {
-	background: #007bff;
-	border-color: #007bff;
-	color: #fff;
-	font-weight: 600;
-}
-
-/* 포커스 접근성 */
-.time-chk:focus-visible+.time-label {
-	outline: 2px solid #66aaff;
-	outline-offset: 2px;
-}
-
-/* -------------------------------------------
-   member 예약 모달: 시간/상태 표시 오버라이드
-   ------------------------------------------- */
-
-/* 혹시 before/after로 가짜 텍스트 넣는 규칙이 있다면 끈다 */
-.time-grid .time-label::before, .time-grid .time-label::after {
-	content: none !important;
-}
-
-/* 라벨(버튼) 기본 모양 보강 */
-.time-label {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+#schedule-modal .submit-btn.save-btn {
 	height: 48px;
-	width: 100%;
-	border: 1px solid #e5e7eb;
-	border-radius: 10px;
-	background: #fff;
-	color: #111827;
-	font-weight: 600;
-	user-select: none;
-	transition: all .15s ease-in-out;
-}
-
-/* 시간 숫자 보이게(앞자리 사라지는 것 방지) */
-.time-label .hh {
-	display: inline-block !important;
-	font-variant-numeric: tabular-nums;
-	min-width: 2ch;
-	text-align: right;
-	opacity: 1 !important;
-}
-
-.time-label .mm {
-	opacity: .8;
-	margin-left: 2px;
-}
-
-/* 상태별 색상 (등록 가능 / 불가 / 선택됨) */
-.time-label.available {
-	background: #eef6ff !important;
-	border-color: #60a5fa !important;
-	color: #1e40af !important;
+	border-radius: 12px;
+	font-weight: 800;
+	border: 0;
+	background: #1E6BFF; /* 파란 버튼 */
+	color: #fff;
 	cursor: pointer;
 }
 
-.time-chk:disabled+.time-label, .time-label.disabled {
-	background: #f3f4f6 !important;
-	border-color: #e5e7eb !important;
-	color: #9ca3af !important;
-	cursor: not-allowed;
+#schedule-modal .delete-btn {
+	height: 48px;
+	border-radius: 12px;
+	font-weight: 800;
+	border: 0;
+	background: #E5E7EB; /* 회색 버튼 */
+	color: #334155;
+	cursor: pointer;
 }
 
-.time-chk:checked+.time-label, .time-label.selected {
-	background: #2563eb !important;
-	border-color: #1d4ed8 !important;
-	color: #fff !important;
+/* 범례·레이아웃 살짝 보정(이미 있다면 이 값이 우선 적용되도록 맨 아래 배치) */
+#schedule-modal .legend {
+	display: flex;
+	gap: 18px;
+	align-items: center;
+	padding: 8px 2px 0;
 }
 
-/* 혹시 가상요소로 텍스트를 덮는 규칙이 있었다면 제거 */
-.time-label::before, .time-label::after {
-	content: none !important;
+#schedule-modal .legend-item {
+	color: #64748b;
+	font-size: 12px;
 }
 
-/* 시간 숫자가 가려지지 않도록 보장 */
-.time-label {
-	font-size: 0.9rem;
+#schedule-modal .legend-color {
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	border: 1px solid #cbd5e1;
+}
+
+#schedule-modal .legend-color.available {
+	background: #fff;
+}
+
+#schedule-modal .legend-color.selected {
+	background: #1E6BFF;
+	border-color: #1E6BFF;
 }
