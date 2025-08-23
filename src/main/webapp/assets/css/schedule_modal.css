@@ -237,3 +237,21 @@
 	background: #1E6BFF;
 	border-color: #1E6BFF;
 }
+
+/* 회원 모달에서만 적용되게 스코프 */
+#schedule-modal.member-mode .time-slot-btn.unavailable {
+	color: #94a3b8;
+	background: #f1f5f9;
+	border-color: #cbd5e1;
+	border-style: dashed;
+	cursor: not-allowed;
+	pointer-events: none; /* 클릭 방지 */
+	text-decoration: none; /* 혹시 라인 제거 */
+}
+
+/* 범례 색상 */
+#schedule-modal.member-mode .legend-color.unavailable {
+	background: #f1f5f9;
+	border-color: #cbd5e1;
+	border-style: dashed;
+}

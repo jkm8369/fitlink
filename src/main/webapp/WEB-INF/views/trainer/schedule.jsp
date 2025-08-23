@@ -1,165 +1,162 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Schedule - FitLink</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Schedule - FitLink</title>
 
-  <!-- 기본 리셋/공용 스타일 -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/include.css" />
-  <!-- member 전용 스타일 -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/member.css" />
-  <!-- 트레이너/페이지 커스텀 -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/schedule_modal.css" />
+<!-- 기본 리셋/공용 스타일 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/include.css" />
+<!-- member 전용 스타일 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/member.css" />
+<!-- 트레이너/페이지 커스텀 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/schedule_modal.css" />
 
-  <!-- 아이콘 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<!-- 아이콘 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-  <!-- FullCalendar CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/main.min.css"/>
+<!-- FullCalendar CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/main.min.css" />
 
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 
-  <!-- FullCalendar JS + locales -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/locales-all.global.min.js"></script>
+<!-- FullCalendar JS + locales -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/locales-all.global.min.js"></script>
 
 </head>
 <body>
-  <div id="wrap">
-    <!-- ===== 헤더 ===== -->
-    <header>
-      <a href="" class="btn-logout">
-        <img src="../../../../project/front/assets/images/logo.jpg" alt="FitLnk Logo" />
-      </a>
-      <div class="btn-logout">
-        <a href="#" class="logout-link">
-          <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
-        </a>
-      </div>
-    </header>
+	<div id="wrap">
+		<!-- ===== 헤더 ===== -->
+		<header>
+			<a href="" class="btn-logout"> <img src="${pageContext.request.contextPath}/assets/images/logo.jpg" alt="FitLnk Logo" />
+			</a>
+			<div class="btn-logout">
+				<a href="#" class="logout-link"> <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+				</a>
+			</div>
+		</header>
 
-    <!-- ===== 본문 ===== -->
-    <div id="content">
-      <!-- aside -->
-      <aside>
-        <div class="user-info">
-          <div class="user-name-wrap">
-            <img class="dumbell-icon" src="../../assets/images/사이트로고.jpg" alt="dumbell-icon" />
-            <p class="user-name">
-              홍길동<br />
-              <small>(트레이너)</small>
-            </p>
-          </div>
-        </div>
-        <div class="aside-menu">
-          <a href="#" class="menu-item"><i class="fa-solid fa-address-card"></i> <span>회원</span></a>
-          <a href="#" class="menu-item"><i class="fa-solid fa-calendar-days"></i> <span>일정</span></a>
-          <a href="#" class="menu-item"><i class="fa-solid fa-list-ul"></i> <span>운동종류</span></a>
-        </div>
-      </aside>
+		<!-- ===== 본문 ===== -->
+		<div id="content">
+			<!-- aside -->
+			<aside>
+				<div class="user-info">
+					<div class="user-name-wrap">
+						<img class="dumbell-icon" src="${pageContext.request.contextPath}/assets/images/사이트로고.jpg" alt="dumbell-icon" />
+						<p class="user-name">
+							홍길동<br /> <small>(트레이너)</small>
+						</p>
+					</div>
+				</div>
+				<div class="aside-menu">
+					<a href="#" class="menu-item"><i class="fa-solid fa-address-card"></i> <span>회원</span></a> <a href="#" class="menu-item"><i
+						class="fa-solid fa-calendar-days"></i> <span>일정</span></a> <a href="#" class="menu-item"><i class="fa-solid fa-list-ul"></i> <span>운동종류</span></a>
+				</div>
+			</aside>
 
-      <!-- main -->
-      <main>
-        <div class="page-header">
-          <h3 class="page-title">Schedule</h3>
-        </div>
+			<!-- main -->
+			<main>
+				<div class="page-header">
+					<h3 class="page-title">Schedule</h3>
+				</div>
 
-        <div class="calendar-card">
-          <div id="calendar"></div>
-        </div>
+				<div class="calendar-card">
+					<div id="calendar"></div>
+				</div>
 
-        <div class="line"></div>
+				<div class="line"></div>
 
-        <section class="card2 list-card">
-          <div class="card-header">
-            <h4 class="card-title list-title">회원 수업 리스트</h4>
-          </div>
-          <div class="table-wrap">
-            <table class="table">
-              <colgroup>
-                <col class="w-60" />
-                <col class="w-110" />
-                <col class="w-90" />
-                <col class="w-90" />
-                <col class="w-100" />
-                <col class="w-100" />
-                <col class="w-100" />
-                <col class="w-80" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>순서</th>
-                  <th>날짜</th>
-                  <th>시간</th>
-                  <th>회원</th>
-                  <th>PT 등록일수</th>
-                  <th>PT 수업일수</th>
-                  <th>PT 잔여일수</th>
-                  <th class="actions-head"></th>
-                </tr>
-              </thead>
-              <tbody id="booking-body"></tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
+				<section class="card2 list-card">
+					<div class="card-header">
+						<h4 class="card-title list-title">회원 수업 리스트</h4>
+					</div>
+					<div class="table-wrap">
+						<table class="table">
+							<colgroup>
+								<col class="w-60" />
+								<col class="w-110" />
+								<col class="w-90" />
+								<col class="w-90" />
+								<col class="w-100" />
+								<col class="w-100" />
+								<col class="w-100" />
+								<col class="w-80" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>순서</th>
+									<th>날짜</th>
+									<th>시간</th>
+									<th>회원</th>
+									<th>PT 등록일수</th>
+									<th>PT 수업일수</th>
+									<th>PT 잔여일수</th>
+									<th class="actions-head"></th>
+								</tr>
+							</thead>
+							<tbody id="booking-body"></tbody>
+						</table>
+					</div>
+				</section>
+			</main>
+		</div>
 
-    <!-- 푸터 -->
-    <footer>
-      <p>Copyright © 2025. FitLink All rights reserved.</p>
-    </footer>
-  </div>
+		<!-- 푸터 -->
+		<footer>
+			<p>Copyright © 2025. FitLink All rights reserved.</p>
+		</footer>
+	</div>
 
 	<!-- 근무시간 등록 모달 (날짜 클릭 시 표출) -->
-	<div id="schedule-modal" class="modal-overlay" style="display:none;">
-	  <div class="modal-container is-inner">
-	    <!-- Header -->
-	    <div class="modal-header">
-	      <h2 class="modal-title">시간 선택</h2>
-	      <button class="modal-close-btn" type="button" onclick="closeScheduleModal()">
-	        <i class="fa-solid fa-xmark"></i>
-	      </button>
-	    </div>
+	<div id="schedule-modal" class="modal-overlay" style="display: none;">
+		<div class="modal-container is-inner">
+			<!-- Header -->
+			<div class="modal-header">
+				<h2 class="modal-title">시간 선택</h2>
+				<button class="modal-close-btn" type="button" onclick="closeScheduleModal()">
+					<i class="fa-solid fa-xmark"></i>
+				</button>
+			</div>
 
-	    <!-- Body -->
-	    <div class="modal-body">
-	      <div class="time-selector">
-	        <h3 class="time-selector-title">시간 선택</h3>
+			<!-- Body -->
+			<div class="modal-body">
+				<div class="time-selector">
+					<h3 class="time-selector-title">시간 선택</h3>
 
-	        <p class="time-selector-date" id="modal-date">선택된 날짜</p>
+					<p class="time-selector-date" id="modal-date">선택된 날짜</p>
 
-	        <div class="time-grid" id="modal-time-container"></div>
+					<div class="time-grid" id="modal-time-container"></div>
 
-	        <div class="legend">
-	          <div class="legend-item">
-	            <span class="legend-color available"></span> <span>등록 가능</span>
-	          </div>
-	          <div class="legend-item">
-	            <span class="legend-color selected"></span> <span>선택됨</span>
-	          </div>
-	        </div>
-	      </div>
-	    </div>
+					<div class="legend">
+						<div class="legend-item">
+							<span class="legend-color available"></span> <span>등록 가능</span>
+						</div>
+						<div class="legend-item">
+							<span class="legend-color selected"></span> <span>선택됨</span>
+						</div>
+					</div>
+				</div>
+			</div>
 
-	    <!-- Footer -->
-	    <div class="modal-footer">
-	      <button class="submit-btn save-btn" id="modal-save-btn" type="button">저장</button>
-		  <button class="delete-btn" id="modal-delete-btn" type="button">삭제</button>
-	    </div>
-	  </div>
+			<!-- Footer -->
+			<div class="modal-footer">
+				<button class="submit-btn save-btn" id="modal-save-btn" type="button">저장</button>
+				<button class="delete-btn" id="modal-delete-btn" type="button">삭제</button>
+			</div>
+		</div>
 	</div>
 
 
-<!-- ================== Script ================== -->
-  <script>
+	<!-- ================== Script ================== -->
+	<script>
   // JSP에서 전달된 trainerId (세션에 없으면 null)
-  let trainerId = <%= request.getAttribute("trainerId") != null ? request.getAttribute("trainerId") : "null" %>;
+  let trainerId = <%=request.getAttribute("trainerId") != null ? request.getAttribute("trainerId") : "null"%>;
   let calendar; // 전역 캘린더
 
   // "근무가 저장된 날"을 표시하기 위한 Set
@@ -200,7 +197,10 @@
       // 이벤트 소스: 서버에서 슬롯(근무/예약) 받아오기
       events: function (info, success, failure) {
         if (!trainerId) { success([]); return; }
-
+        
+        workDaySet.clear();
+        clearWorkdayHighlight();
+        
         $.ajax({
           url: '/api/trainer/schedule/slots',
           method: 'GET',
@@ -364,23 +364,24 @@
 
   // 예약 취소(회원 예약 취소)
   function cancelReservation(reservationId) {
-    if (!reservationId) return;
-    $.ajax({
-      url: '/api/trainer/schedule/availability',
-      method: 'DELETE',
-      data: { id: reservationId },
-      dataType: 'json'
-    })
-    .done(function () {
-      if (calendar) {
-        calendar.refetchEvents();
-        const activeView = calendar.view;
-        loadBookings(activeView.activeStart.toISOString(), activeView.activeEnd.toISOString());
-      }
-    })
-    .fail(function (jqXHR) {
-      console.error('예약 취소에 실패했습니다.', jqXHR.status, jqXHR.responseText);
-    });
+	if (!reservationId) return;
+	$.ajax({
+	  url: '/api/trainer/schedule/reservation',   // ← 엔드포인트 변경
+	  method: 'DELETE',
+	  data: { reservationId: reservationId, trainerId: trainerId }, // 본인 트레이너 검증용
+	  dataType: 'json'
+	})
+	.done(function () {
+	  if (calendar) {
+	    calendar.refetchEvents();
+	    const v = calendar.view;
+	    loadBookings(v.activeStart.toISOString(), v.activeEnd.toISOString());
+	  }
+	})
+	.fail(function (jqXHR) {
+	  console.error('예약 취소에 실패했습니다.', jqXHR.status, jqXHR.responseText);
+	  alert('예약 취소에 실패했습니다.');
+	});
   }
 
   // 0~9 → 2자리

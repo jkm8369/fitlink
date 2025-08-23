@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
  * </p>
  */
 @Controller
-@RequestMapping("/trainer/schedule")
+@RequestMapping("/trainer")
 public class TrainerController {
 
 	private final TrainerScheduleService trainerScheduleService;
@@ -30,24 +30,28 @@ public class TrainerController {
 		this.trainerScheduleService = trainerScheduleService;
 	}
 
-	/**
-	 * 트레이너 일정 조회 페이지를 표시합니다. 로그인 구현 전에는 trainerId가 세션에 없을 경우 테스트용으로 1을 설정합니다.
-	 */
-	@GetMapping
+	/** 트레이너 스케줄 페이지 */
+	@GetMapping("/schedule")
 	public String showSchedule(HttpSession session, Model model) {
-		// 개발 중에는 세션에 trainerId가 없으면 임시로 1을 넣어 줍니다.
 		if (session.getAttribute("trainerId") == null) {
-			session.setAttribute("trainerId", 1);
+			session.setAttribute("trainerId", 5); // 개발용
 		}
-		Object trainerId = session.getAttribute("trainerId");
-		model.addAttribute("trainerId", trainerId);
+		model.addAttribute("trainerId", session.getAttribute("trainerId"));
 		return "trainer/schedule";
 	}
 
-	/**
-	 * 근무시간 등록 페이지를 표시합니다.
-	 */
-	@GetMapping("/insert")
+	/** 트레이너 회원관리 페이지 */
+	@GetMapping("/members")
+	public String trainerMembersPage(HttpSession session, Model model) {
+		if (session.getAttribute("trainerId") == null) {
+			session.setAttribute("trainerId", 5);
+		}
+		model.addAttribute("trainerId", session.getAttribute("trainerId"));
+		return "trainer/members";
+	}
+
+	/** 근무시간 등록 페이지(두번째 모달 전용 뷰라면 유지/미사용이면 제거 가능) */
+	@GetMapping("/schedule/insert")
 	public String showScheduleInsertPage() {
 		return "schedule-insert";
 	}

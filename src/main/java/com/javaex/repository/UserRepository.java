@@ -1,5 +1,7 @@
 package com.javaex.repository;
 
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,5 +24,11 @@ public class UserRepository {
 		
 		return authUser;
 	}
+	
+    /** 회원의 담당 트레이너 조회 (없으면 null) */
+    public Map<String, Object> selectTrainerByMemberId(int memberId) {
+        // 반환: {trainerId: 4, trainerName: "강호동"} 형태의 Map
+        return sqlSession.selectOne("user.selectTrainerByMemberId", memberId);
+    }
 	
 }

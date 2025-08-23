@@ -1,5 +1,7 @@
 package com.javaex.service;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,12 @@ public class UserService {
 		
 		UserVO authUser = userRepository.userSelectOneByIdPw(userVO);
 		
-		
 		return authUser;
 	}
+	
+    /** [추가] 회원의 담당 트레이너 조회 */
+    public Map<String, Object> selectTrainerByMemberId(int memberId) {
+        return userRepository.selectTrainerByMemberId(memberId);
+    }
 	
 }
