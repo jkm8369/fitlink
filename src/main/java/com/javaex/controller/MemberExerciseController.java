@@ -77,10 +77,18 @@ public class MemberExerciseController {
 
 		// 서비스에 업데이트 요청
 		memberExerciseService.exeUpdateUserExercises(authUser.getUserId(), bodyPart, exerciseIds);
-        
-		
-		// 저장 후, 원래 보던 부위 페이지로 다시 돌아감
-		return "redirect:/exercise/list-member?bodyPart=" + bodyPart;
+
+		try {
+			// [수정] 리다이렉트할 URL의 한글 파라미터를 UTF-8 방식으로 직접 인코딩합니다.
+			// 이렇게 하면 서버 설정과 관계없이 항상 안전하게 한글을 전달할 수 있습니다.
+			String encodedBodyPart = URLEncoder.encode(bodyPart, StandardCharsets.UTF_8);
+			return "redirect:/exercise/list-member?bodyPart=" + encodedBodyPart;
+
+		} catch (Exception e) {
+			// 인코딩 실패는 거의 발생하지 않지만, 만약을 대비해 에러를 출력하고 기본 페이지로 이동합니다.
+			e.printStackTrace();
+			return "redirect:/exercise/list-member";
+		}
 	}
 
 }

@@ -129,4 +129,20 @@ public class MemberExerciseService {
 		}
 	}
 
+	// -- 새로운 운동 종류 1개 추가
+	public MemberExerciseVO exeAddExercise(MemberExerciseVO memberExerciseVO) {
+		System.out.println("ExerciseService.exeAddExercise()");
+
+		// Repository를 통해 DB에 운동 정보를 insert 합니다.
+		// insert가 성공하면 exerciseVO 객체에 새로 생성된 exerciseId가 담깁니다.
+		int count = memberExerciseRepository.insertExercise(memberExerciseVO);
+
+		if (count > 0) {
+			// 성공 시, ID가 포함된 exerciseVO를 반환합니다.
+			return memberExerciseVO;
+		} else {
+			// 실패 시 null을 반환합니다.
+			return null;
+		}
+	}
 }
