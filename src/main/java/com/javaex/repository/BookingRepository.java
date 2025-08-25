@@ -7,10 +7,6 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
-/**
- * BookingRepository - 회원 예약/조회 관련 DB 접근 전담 클래스 - BookingMapper.xml 과 연결됨
- * (namespace="booking") - 컨트롤러 → 서비스 → Repository → MyBatis XML → DB 흐름
- */
 @Repository
 public class BookingRepository {
 	private static final String NS = "booking.";

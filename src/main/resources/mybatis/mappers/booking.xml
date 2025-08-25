@@ -5,131 +5,139 @@
 
 	<!-- 1) 달력: 내가 예약한 이벤트 (기간 범위) -->
 	<select id="selectMyCalendarEvents" parameterType="map" resultType="map">
-		SELECT
-		r.reservation_id AS reservationId,
-		a.availability_id AS availabilityId,
-		a.available_datetime AS startDt,
-		DATE_FORMAT(a.available_datetime,'%H:00') AS
-		hourLabel,
-		r.status AS slotStatus,
-		t.user_name AS trainerName
-		FROM reservation r
-		JOIN availability a ON a.availability_id = r.availability_id
-		JOIN users t ON
-		t.user_id = a.trainer_id
-		WHERE r.member_id =
-		#{memberId}
-		<![CDATA[
-		AND a.available_datetime >= #{start}
-		AND a.available_datetime <  #{end}
-		]]>
-		ORDER BY a.available_datetime
+	  SELECT
+	    reservation.reservation_id                           AS reservationId,
+	    availability.availability_id                         AS availabilityId,
+	    availability.available_datetime                      AS startDt,
+	    DATE_FORMAT(availability.available_datetime, '%H:00') AS hourLabel,
+	    reservation.status                                   AS slotStatus,
+	    trainer.user_name                                    AS trainerName
+	  FROM reservation
+	  JOIN availability
+	    ON availability.availability_id = reservation.availability_id
+	  JOIN users AS trainer
+	    ON trainer.user_id = availability.trainer_id
+	  WHERE reservation.member_id = #{memberId}
+	  <![CDATA[
+	AND availability.available_datetime >= #{start}
+	AND availability.available_datetime <  #{end}
+	]]>
+	  ORDER BY availability.available_datetime
 	</select>
-
-
+	
 	<!-- 2) 모달: 담당 트레이너의 해당 날짜 슬롯(선택/비활성 판단용) -->
 	<select id="selectSlotsByTrainerAndDate" parameterType="map" resultType="map">
-		SELECT
-		a.availability_id AS availabilityId,
-		DATE(a.available_datetime) AS
-		workDate,
-		DATE_FORMAT(a.available_datetime,'%H:00') AS hourLabel,
-		COALESCE(r.status,'AVAILABLE') AS slotStatus, -- 없으면 근무칸(선택 가능)
-		r.member_id AS memberId,
-		m.user_name AS memberName
-		FROM availability a
-		LEFT JOIN reservation r ON r.availability_id = a.availability_id
-		LEFT JOIN users m ON m.user_id = r.member_id
-		WHERE
-		a.trainer_id = #{trainerId}
-		AND DATE(a.available_datetime) = #{date}
-		ORDER BY a.available_datetime
+	  SELECT
+	    availability.availability_id                          AS availabilityId,
+	    DATE(availability.available_datetime)                 AS workDate,
+	    DATE_FORMAT(availability.available_datetime, '%H:00') AS hourLabel,
+	    COALESCE(reservation.status, 'AVAILABLE')             AS slotStatus,  -- 없으면 근무칸(선택 가능)
+	    reservation.member_id                                 AS memberId,
+	    member.user_name                                      AS memberName
+	  FROM availability
+	  LEFT JOIN reservation
+	    ON reservation.availability_id = availability.availability_id
+	  LEFT JOIN users AS member
+	    ON member.user_id = reservation.member_id
+	  WHERE availability.trainer_id = #{trainerId}
+	    AND DATE(availability.available_datetime) = #{date}
+	  ORDER BY availability.available_datetime
 	</select>
-
-	<!-- 3) 하단: 내 PT 리스트(등록/수업/잔여 집계) -->
+	
 	<select id="selectMyPtList" parameterType="int" resultType="map">
-		SELECT
-		r.reservation_id AS reservationId,
-		DATE(a.available_datetime) AS workDate,
-		DATE_FORMAT(a.available_datetime,'%H:%i') AS hourLabel,
-		t.user_name AS trainerName,
-		COALESCE(pc.total_sessions,0) AS totalSessions,
-		COALESCE(comp.completed_cnt,0) AS completedCount,
-		(COALESCE(pc.total_sessions,0)-COALESCE(comp.completed_cnt,0)) AS remainingCount
-		FROM reservation r
-		JOIN
-		availability a ON a.availability_id = r.availability_id
-		JOIN users t ON t.user_id = a.trainer_id
-		LEFT JOIN (
-		SELECT member_id, trainer_id, SUM(total_sessions) AS
-		total_sessions
-		FROM pt_contract GROUP BY member_id, trainer_id
-		) pc ON pc.member_id = r.member_id AND pc.trainer_id = a.trainer_id
-		LEFT JOIN (
-		SELECT
-		r2.member_id, a2.trainer_id, COUNT(*) AS completed_cnt
-		FROM reservation r2
-		JOIN availability a2 ON a2.availability_id = r2.availability_id
-		WHERE
-		r2.status='COMPLETED'
-		GROUP BY r2.member_id, a2.trainer_id
-		) comp ON comp.member_id = r.member_id AND comp.trainer_id = a.trainer_id
-		WHERE r.member_id =
-		#{memberId}
-		ORDER BY
-		a.available_datetime
+	<![CDATA[
+	SELECT
+	  reservation.reservation_id                            AS reservationId,
+	  DATE(availability.available_datetime)                 AS workDate,
+	  DATE_FORMAT(availability.available_datetime,'%H:%i')  AS hourLabel,
+	  trainer.user_name                                     AS trainerName,
+	
+	  /* 총 등록 회차 = 모든 계약 합계 */
+	  COALESCE(pc.total_sessions, 0)                        AS totalSessions,
+	
+	  /* 행(시간)별 누적 사용량 */
+	  SUM(1) OVER (
+	    PARTITION BY reservation.member_id, availability.trainer_id
+	    ORDER BY availability.available_datetime
+	    ROWS UNBOUNDED PRECEDING
+	  )                                                     AS completedCount,
+	
+	  /* 잔여 */
+	  GREATEST(
+	    COALESCE(pc.total_sessions, 0)
+	    -
+	    SUM(1) OVER (
+	      PARTITION BY reservation.member_id, availability.trainer_id
+	      ORDER BY availability.available_datetime
+	      ROWS UNBOUNDED PRECEDING
+	    )
+	  , 0)                                                  AS remainingCount
+	
+	FROM reservation
+	JOIN availability
+	  ON availability.availability_id = reservation.availability_id
+	JOIN users AS trainer
+	  ON trainer.user_id = availability.trainer_id
+	LEFT JOIN (
+	  SELECT
+	    pt_contract.member_id,
+	    pt_contract.trainer_id,
+	    SUM(pt_contract.total_sessions) AS total_sessions
+	  FROM pt_contract
+	  GROUP BY pt_contract.member_id, pt_contract.trainer_id
+	) pc
+	  ON pc.member_id = reservation.member_id
+	 AND pc.trainer_id = availability.trainer_id
+	WHERE reservation.member_id = #{memberId}
+	  AND reservation.status IN ('BOOKED','COMPLETED')
+	ORDER BY availability.available_datetime
+	]]>
 	</select>
-
-	<!-- 4) 예약 생성/취소 (기본) -->
+	
+	<!-- 4) 예약 생성 -->
 	<insert id="insertReservation" parameterType="map" useGeneratedKeys="true" keyProperty="reservationId">
-		INSERT INTO reservation(member_id, availability_id, status)
-		VALUES(#{memberId}, #{availabilityId}, 'BOOKED')
+	  INSERT INTO reservation(member_id, availability_id, status)
+	  VALUES(#{memberId}, #{availabilityId}, 'BOOKED')
 	</insert>
-
+	
 	<!-- 예약 취소 (BOOKED만/본인만/24시간 이전만 허용) -->
 	<delete id="deleteReservation" parameterType="map">
-		<![CDATA[
-		DELETE r
-		FROM reservation r
-		JOIN availability a ON a.availability_id = r.availability_id
-		WHERE r.reservation_id = #{reservationId}
-		  AND r.member_id      = #{memberId}
-		  AND r.status         = 'BOOKED'
-		  /* 24시간 이전만 취소하려면 아래 줄 유지, 제한 없애려면 주석 처리 */
-		  AND TIMESTAMPDIFF(HOUR, NOW(), a.available_datetime) >= 24
-		]]>
+	  <![CDATA[
+	DELETE reservation
+	FROM reservation
+	JOIN availability
+	  ON availability.availability_id = reservation.availability_id
+	WHERE reservation.reservation_id = #{reservationId}
+	  AND reservation.member_id       = #{memberId}
+	  AND reservation.status          = 'BOOKED'
+	  /* 24시간 이전만 취소하려면 유지, 제한 없애려면 아래 한 줄 주석 처리 */
+	  AND TIMESTAMPDIFF(HOUR, NOW(), availability.available_datetime) >= 24
+	]]>
 	</delete>
-
-	<!-- 5) 멤버-트레이너 최근 계약 1건의 total_sessions (최근 created_at 기준) -->
+	
+	<!-- 5) 멤버-트레이너 누적 총회수 (SUM으로 통일) -->
 	<select id="findTotalSessions" parameterType="map" resultType="int">
-		SELECT p.total_sessions
-		FROM pt_contract p
-		JOIN (
-		SELECT member_id, trainer_id,
-		MAX(created_at) AS max_created
-		FROM pt_contract
-		WHERE member_id = #{memberId} AND trainer_id = #{trainerId}
-		) lastp
-		ON lastp.member_id = p.member_id
-		AND
-		lastp.trainer_id = p.trainer_id
-		AND lastp.max_created = p.created_at
+	  SELECT COALESCE(SUM(total_sessions), 0)
+	  FROM pt_contract
+	  WHERE member_id = #{memberId}
+	    AND trainer_id = #{trainerId}
 	</select>
-
-	<!-- 6) 멤버-트레이너 예약 수 (정책에 맞춰 상태 선택) -->
+	
+	<!-- 6) 멤버-트레이너 예약 수 (예약 가능 판단용: BOOKED+COMPLETED) -->
 	<select id="countMemberReservations" parameterType="map" resultType="int">
-		SELECT COUNT(*)
-		FROM reservation r
-		JOIN availability a ON a.availability_id = r.availability_id
-		WHERE r.member_id = #{memberId}
-		AND a.trainer_id = #{trainerId}
-		AND r.status IN ('BOOKED','COMPLETED')  <!-- 완료만 차감하려면 'COMPLETED' 로 변경 -->
+	  SELECT COUNT(*)
+	  FROM reservation
+	  JOIN availability
+	    ON availability.availability_id = reservation.availability_id
+	  WHERE reservation.member_id = #{memberId}
+	    AND availability.trainer_id = #{trainerId}
+	    AND reservation.status IN ('BOOKED','COMPLETED')
 	</select>
-
+	
 	<!-- (선택) 완료 처리 -->
 	<update id="completeReservation" parameterType="int">
-		UPDATE reservation SET status='COMPLETED'
-		WHERE reservation_id = #{reservationId}
+	  UPDATE reservation SET status='COMPLETED'
+	  WHERE reservation_id = #{reservationId}
 	</update>
 
 </mapper>
