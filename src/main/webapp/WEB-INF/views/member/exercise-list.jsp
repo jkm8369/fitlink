@@ -7,10 +7,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Workout Log - FitLink</title>
-<link rel="stylesheet" href="../../assets/css/reset.css" />
-<link rel="stylesheet" href="../../assets/css/include.css" />
-<link rel="stylesheet" href="../../assets/css/trainer.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/include.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/form_trainer.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<script src="${pageContext.request.contextPath}/assets/js/jquery/jquery-3.7.1.js"></script>
 </head>
 <body>
 	<div id="wrap">
@@ -52,7 +54,7 @@
 	
 					<!-- 3.버튼 -->
 					<div class="category-buttons">
-						<button class="category-btn">
+						<button type="button" id="btn-open-modal" class="category-btn">
 							<i class="fa-solid fa-plus"></i> 운동종류 등록
 						</button>
 						<button type="submit" class="category-btn">
@@ -111,5 +113,95 @@
 		<c:import url="/WEB-INF/views/include/footer.jsp"></c:import>
 		<!--// <footer> -->
 	</div>
+	
+	<%-- ================================================================= --%>
+    <%-- [추가] 운동 등록 모달창 HTML                                        --%>
+    <%-- ================================================================= --%>
+    <div class="modal-overlay" id="add-exercise-modal" style="display: none; position: fixed;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">운동종류 등록</h2>
+                <button type="button" class="modal-close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form-add-exercise" class="register-form">
+                    <div class="form-group">
+                        <label for="modal-exercise-type">운동부위</label>
+                        <select id="modal-exercise-type" name="bodyPart">
+                            <c:forEach items="${exerciseData.bodyPartTabs}" var="tab">
+                                <option value="${tab}">${tab}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modal-exercise-name">이름</label>
+                        <input type="text" id="modal-exercise-name" name="exerciseName" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="form-add-exercise" class="submit-btn">저장</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+    $(document).ready(function() {
+        var $modal = $("#add-exercise-modal");
+
+        // '운동종류 등록' 버튼 클릭 시 모달 열기
+        $("#btn-open-modal").on("click", function() {
+            var currentPart = "${exerciseData.currentBodyPart}";
+            $modal.find("#modal-exercise-type").val(currentPart);
+            $modal.css("display", "flex");
+        });
+
+        // 모달의 닫기(X) 버튼 클릭 시 모달 닫기
+        $modal.find(".modal-close-btn").on("click", function() {
+            $modal.hide();
+        });
+
+        // 모달의 '저장' 버튼 클릭 시 (form 전송 이벤트)
+        $("#form-add-exercise").on("submit", function(e) {
+            e.preventDefault(); 
+
+            var bodyPart = $("#modal-exercise-type").val();
+            var exerciseName = $("#modal-exercise-name").val().trim();
+
+            if (!exerciseName) {
+                alert("운동 이름을 입력해주세요.");
+                return;
+            }
+
+            var exerciseData = {
+                bodyPart: bodyPart,
+                exerciseName: exerciseName
+            };
+
+            $.ajax({
+                url: "${pageContext.request.contextPath}/api/exercise/add",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(exerciseData),
+                dataType: "json",
+                success: function(jsonResult) {
+                    if (jsonResult.result === "success") {
+                        alert("운동이 성공적으로 등록되었습니다.");
+                        location.href = "${pageContext.request.contextPath}/exercise/list-member?bodyPart=" + bodyPart;
+                    } else {
+                        alert(jsonResult.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("운동 등록 실패:", error);
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        });
+    });
+    </script>
 </body>
 </html>

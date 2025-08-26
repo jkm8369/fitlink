@@ -28,7 +28,7 @@ public class MemberExerciseRepository {
 	public List<String> selectAllBodyParts() {
 		System.out.println("MemberExerciseRepository.selectAllBodyParts()");
 		
-		List<String> bodyPart = sqlSession.selectList("selectAllBodyParts");
+		List<String> bodyPart = sqlSession.selectList("memberExercise.selectAllBodyParts");
 		
 		return bodyPart;
 	}
@@ -69,4 +69,11 @@ public class MemberExerciseRepository {
         sqlSession.insert("memberExercise.insertUserExercise", params);
     }
 	
+    // -- 새로운 운동 종류 1개 추가
+    public int insertExercise(MemberExerciseVO memberExerciseVO) {
+        System.out.println("ExerciseRepository.insertExercise()");
+        return sqlSession.insert("memberExercise.insertExercise", memberExerciseVO);
+    }
+    
+    
 }

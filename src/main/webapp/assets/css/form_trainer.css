@@ -1,17 +1,4 @@
-/* ======================reset======================= */
-body {
-  font-family: "Pretendard", sans-serif; /* 'Pretendard' 폰트가 없다면 기본 sans-serif 폰트 사용 */
-  margin: 0;
-  background-color: #f0f2f5;
-}
 
-/* 모든 요소에 box-sizing 적용하여 레이아웃을 쉽게 만듭니다 */
-* {
-  box-sizing: border-box;
-}
-/* ======================reset======================= */
-
-/* ======================modal======================= */
 /* 모달 오버레이 (뒷배경) */
 .modal-overlay {
   top: 0;

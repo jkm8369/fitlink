@@ -18,8 +18,7 @@
 	<select id="selectAllBodyParts" resultType="String">
 		select distinct body_part as bodyPart
 		from exercise
-		order by field('가슴', '등', '어깨', '팔', '하체', '복근', '역도',
-		'유산소', '기타')
+		order by field('가슴', '등', '어깨', '팔', '하체', '복근', '역도','유산소', '기타')
 	</select>
 
 
@@ -69,6 +68,16 @@
 		]]>
 	</insert>
 
+	<!-- 새로운 운동 종류를 exercise 테이블에 추가 -->
+	<insert id="insertExercise" parameterType="com.javaex.vo.MemberExerciseVO">
+		<![CDATA[
+			insert into exercise (body_part, exercise_name)
+			values (#{bodyPart}, #{exerciseName})
+		]]>
+		<selectKey keyProperty="exerciseId" resultType="int" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+	</insert>
 
 
 </mapper>
