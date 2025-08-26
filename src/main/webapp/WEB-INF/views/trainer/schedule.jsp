@@ -44,21 +44,16 @@
 
 		<!-- ===== 본문 ===== -->
 		<div id="content">
-			<!-- aside -->
-			<aside>
-				<div class="user-info">
-					<div class="user-name-wrap">
-						<img class="dumbell-icon" src="${pageContext.request.contextPath}/assets/images/사이트로고.jpg" alt="dumbell-icon" />
-						<p class="user-name">
-							홍길동<br /> <small>(트레이너)</small>
-						</p>
-					</div>
-				</div>
-				<div class="aside-menu">
-					<a href="#" class="menu-item"><i class="fa-solid fa-address-card"></i> <span>회원</span></a> <a href="#" class="menu-item"><i
-						class="fa-solid fa-calendar-days"></i> <span>일정</span></a> <a href="#" class="menu-item"><i class="fa-solid fa-list-ul"></i> <span>운동종류</span></a>
-				</div>
-			</aside>
+			<!-- ------aside------ -->
+			<c:choose>
+				<c:when test="${sessionScope.authUser.role == 'trainer'}">
+					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
+				</c:when>
+				<c:otherwise>
+					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
+				</c:otherwise>
+			</c:choose>
+			<!-- //------aside------ -->
 
 			<!-- main -->
 			<main>

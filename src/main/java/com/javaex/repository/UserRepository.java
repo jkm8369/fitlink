@@ -25,10 +25,26 @@ public class UserRepository {
 		return authUser;
 	}
 	
-    /** 회원의 담당 트레이너 조회 (없으면 null) */
+    // -- 회원의 담당 트레이너 조회 (없으면 null)
     public Map<String, Object> selectTrainerByMemberId(int memberId) {
         // 반환: {trainerId: 4, trainerName: "강호동"} 형태의 Map
         return sqlSession.selectOne("user.selectTrainerByMemberId", memberId);
     }
+    
+    
+	// -- user_id로 특정 사용자의 정보를 조회
+    public UserVO selectUserByNo(int userId) {
+        System.out.println("UserRepository.selectUserByNo()");
+        return sqlSession.selectOne("user.selectUserByNo", userId);
+    }
+    
+    
+    // -- 특정 회원이 특정 트레이너에게 배정되었는지 확인(보안)
+    public int checkMemberAssignment(Map<String, Object> params) {
+        System.out.println("UserRepository.checkMemberAssignment()");
+        return sqlSession.selectOne("user.checkMemberAssignment", params);
+    }
+    
+    
 	
 }

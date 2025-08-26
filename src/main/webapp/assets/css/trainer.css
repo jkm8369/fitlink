@@ -284,16 +284,16 @@
 
 /* 시간만 보이는 예약칩 스타일 */
 .fc .only-time {
-  width: 100%; 
-  display: inline-block;
-  /* text-align: center; */
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 1;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgb(255, 128, 192); /* 연보라 */
-  border: 1px solid rgb(128, 128, 128);
+	width: 100%;
+	display: inline-block;
+	/* text-align: center; */
+	font-weight: 600;
+	font-size: 12px;
+	line-height: 1;
+	padding: 2px 6px;
+	border-radius: 4px;
+	background: rgb(255, 128, 192); /* 연보라 */
+	border: 1px solid rgb(128, 128, 128);
 }
 
 /* ================== FullCalendar: 요일 색상 ================== */
@@ -591,6 +591,26 @@
 	border: solid rgb(0, 0, 0);
 	border-width: 0 2.5px 2.5px 0;
 	transform: rotate(45deg);
+}
+
+/* 삭제 버튼 기본 스타일 */
+.btn-delete-exercise {
+	background-color: #e0e0e0; /* 옅은 회색 배경 */
+	color: #888; /* 아이콘 색상 */
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	cursor: pointer;
+	font-size: 12px;
+	line-height: 18px; /* 아이콘 중앙 정렬 */
+	text-align: center;
+	transition: background-color 0.2s, color 0.2s; /* 부드러운 색상 전환 효과 */
+}
+
+/* 마우스를 올렸을 때 스타일 */
+.btn-delete-exercise:hover {
+	background-color: #d5d5d5; /* 살짝 더 진한 회색 */
+	color: #555;
 }
 
 /*************************exercise-list*************************/

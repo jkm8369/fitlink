@@ -72,7 +72,19 @@ public class MemberExerciseRepository {
     // -- 새로운 운동 종류 1개 추가
     public int insertExercise(MemberExerciseVO memberExerciseVO) {
         System.out.println("ExerciseRepository.insertExercise()");
-        return sqlSession.insert("memberExercise.insertExercise", memberExerciseVO);
+        
+        int addExercise = sqlSession.insert("memberExercise.insertExercise", memberExerciseVO);
+        
+        return addExercise;
+    }
+    
+    // -- 운동 ID와 생성자 ID를 조건으로 exercise 테이블에서 데이터를 삭제하는 메소드
+    public int deleteExerciseByIdAndCreator(Map<String, Object> params) {
+        System.out.println("MemberExerciseRepository.deleteExerciseByIdAndCreator()");
+        
+        int removeExercise = sqlSession.delete("memberExercise.deleteExerciseByIdAndCreator", params);
+        
+        return removeExercise;
     }
     
     

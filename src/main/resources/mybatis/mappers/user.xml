@@ -16,15 +16,43 @@
 		]]>
 	</select>
 
-	<!-- 회원의 담당 트레이너 조회 (users.assigned_trainer_id 기반) -->
+	<!-- 회원의 담당 트레이너 조회 -->
 	<select id="selectTrainerByMemberId" parameterType="int" resultType="map">
-		SELECT
-		t.user_id AS trainerId,
-		t.user_name AS trainerName
-		FROM users m
-		JOIN users t ON t.user_id = m.assigned_trainer_id
-		WHERE m.user_id = #{memberId}
-		LIMIT 1
+		select u.user_id AS trainerId,
+		       u.user_name AS trainerName
+		from users u
+		join pt_contract pc on u.user_id = pc.trainer_id
+		where pc.member_id = #{memberId}
+		limit 1
 	</select>
+	
+	<select id="selectMembersByTrainerId" parameterType="int" resultType="com.javaex.vo.UserVO">
+        select u.user_id as userId,
+               u.user_name as userName,
+               u.phone_number as phoneNumber
+        from users u
+        join pt_contract pc on u.user_id = pc.member_id
+        where pc.trainer_id = #{trainerId}
+        order by u.user_name ASC
+    </select>  
+
+	<!-- 트레이너와 회원이 pt_members 테이블에 연결되어 있는지 확인,보안용 -->
+    <select id="checkMemberAssignment" parameterType="map" resultType="int">
+        select count(*)
+        from pt_contract
+        where member_id = #{memberId}
+        and trainer_id = #{trainerId}
+    </select>
+
+	<!-- user_id로 사용자의 기본 정보를 조회하는 쿼리 -->
+    <select id="selectUserByNo" parameterType="int" resultType="com.javaex.vo.UserVO">
+        select user_id as userId,
+               user_name as userName,
+               role
+        from users
+        where user_id = #{userId}
+    </select>
+    
+    
 
 </mapper>

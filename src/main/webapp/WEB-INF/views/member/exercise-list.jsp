@@ -86,23 +86,57 @@
 	
 					<!-- 6.운동종류 리스트 -->
 					<section class="list-box">
+						<!-- 기본 운동 리스트 -->
 						<ul class="checkbox-grid">
 							
-							<c:forEach items="${exerciseData.allExerciseList}" var="allExercise">
+							<c:forEach items="${exerciseData.systemExerciseList}" var="systemExercise">
 								<li>
 									<label>
 										<!-- 체크박스에 name과 value를 추가하여 선택된 값을 서버로 보낼 수 있도록 함 -->
-										<input type="checkbox" name="exerciseIds" value="${allExercise.exerciseId}" <c:if test="${allExercise.checked}">checked</c:if> >
+										<input type="checkbox" name="exerciseIds" value="${systemExercise.exerciseId}" <c:if test="${systemExercise.checked}">checked</c:if> >
 										<span class="custom-checkbox"></span>
-										${allExercise.exerciseName}
+										${systemExercise.exerciseName}
 									</label>
 								</li>
 							</c:forEach>
-							<c:if test="${empty exerciseData.allExerciseList}">
-								<li class="no-data-large">등록된 운동이 없습니다.<br>운동을 추가해주세요.</li>
-							</c:if>
 							
 						</ul>
+						
+						<br><hr>
+						<div class="custom-exercise-separator">
+								<span style="font-weight: 700;">사용자 추가 운동</span>
+						</div>
+						<br>
+						<!-- 사용자 추가 운동 리스트가 있을 경우에만 구분선과 함께 표시 -->
+						<c:if test="${not empty exerciseData.customExerciseList}">
+						
+							
+							
+							<ul class="checkbox-grid">
+								<c:forEach items="${exerciseData.customExerciseList}" var="customExercise">
+									<li>
+										<label>
+											<input type="checkbox" name="exerciseIds" value="${customExercise.exerciseId}" <c:if test="${customExercise.checked}">checked</c:if> >
+											<span class="custom-checkbox"></span>
+											${customExercise.exerciseName}
+											
+											<!-- 삭제버튼 -->
+											<button type="button" class="btn-delete-exercise" data-exercise-id="${customExercise.exerciseId}">
+												<i class="fa-solid fa-xmark"></i>
+											</button>
+										</label>
+									</li>
+								</c:forEach>
+							</ul>
+						</c:if>
+						
+						<!-- 두 리스트가 모두 비어있을 경우에만 메시지 표시 -->
+						<c:if test="${empty exerciseData.systemExerciseList and empty exerciseData.customExerciseList}">
+							<div class="no-data-large">등록된 운동이 없습니다.<br>운동을 추가해주세요.</div>
+						</c:if>
+						
+						
+						
 					</section>
 					<!-- //6.운동종류 리스트 -->
 				</main>
@@ -150,11 +184,11 @@
     
     <script>
     $(document).ready(function() {
-        var $modal = $("#add-exercise-modal");
+    	let $modal = $("#add-exercise-modal");
 
         // '운동종류 등록' 버튼 클릭 시 모달 열기
         $("#btn-open-modal").on("click", function() {
-            var currentPart = "${exerciseData.currentBodyPart}";
+        	let currentPart = "${exerciseData.currentBodyPart}";
             $modal.find("#modal-exercise-type").val(currentPart);
             $modal.css("display", "flex");
         });
@@ -168,15 +202,15 @@
         $("#form-add-exercise").on("submit", function(e) {
             e.preventDefault(); 
 
-            var bodyPart = $("#modal-exercise-type").val();
-            var exerciseName = $("#modal-exercise-name").val().trim();
+            let bodyPart = $("#modal-exercise-type").val();
+            let exerciseName = $("#modal-exercise-name").val().trim();
 
             if (!exerciseName) {
                 alert("운동 이름을 입력해주세요.");
                 return;
             }
 
-            var exerciseData = {
+            let exerciseData = {
                 bodyPart: bodyPart,
                 exerciseName: exerciseName
             };
@@ -201,6 +235,41 @@
                 }
             });
         });
+        
+        // 사용자 추가 운동 삭제 버튼 클릭 이벤트 
+        $(".list-box").on("click", ".btn-delete-exercise", function() {
+            // 클릭된 버튼에서 삭제할 운동의 ID를 가져옵니다.
+            let exerciseId = $(this).data("exercise-id");
+            
+            // this를 저장해두면 ajax 내부에서도 현재 클릭한 버튼을 가리킬 수 있습니다.
+            let $clickedButton = $(this);
+
+            // 사용자에게 정말 삭제할 것인지 다시 한번 확인합니다.
+            if (confirm("이 운동을 목록에서 삭제하시겠습니까?")) {
+                
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/api/exercise/delete/" + exerciseId,
+                    type: "DELETE", // HTTP 메소드를 'DELETE'로 지정합니다.
+                    dataType: "json",
+                    success: function(jsonResult) {
+                        if (jsonResult.result === "success") {
+                            // 성공 시, 화면에서 해당 항목(<li>)을 부드럽게 사라지게 한 후 완전히 제거합니다.
+                            $clickedButton.closest("li").fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            // 실패 시, 서버가 보낸 실패 메시지를 alert 창으로 보여줍니다.
+                            alert(jsonResult.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("운동 삭제 실패:", error);
+                        alert("삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+                    }
+                });
+            }
+        });
+        
     });
     </script>
 </body>

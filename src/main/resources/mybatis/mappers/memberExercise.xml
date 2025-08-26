@@ -42,7 +42,8 @@
 		<![CDATA[
 			select exercise_id as exerciseId,
 				   body_part as bodyPart,
-			       exercise_name as exerciseName
+			       exercise_name as exerciseName,
+			       creator_id as creatorId
 			from exercise
 			where body_part = #{bodyPart}
 			order by exercise_name asc
@@ -54,7 +55,7 @@
 		<![CDATA[
 			delete from selected_exercises
 			where user_id = #{userId}
-			  and exercise_id in (select exercise_id 
+			and exercise_id in (select exercise_id 
 			  					  from exercise 
 			  					  where body_part = #{bodyPart})
 		]]>
@@ -71,13 +72,22 @@
 	<!-- 새로운 운동 종류를 exercise 테이블에 추가 -->
 	<insert id="insertExercise" parameterType="com.javaex.vo.MemberExerciseVO">
 		<![CDATA[
-			insert into exercise (body_part, exercise_name)
-			values (#{bodyPart}, #{exerciseName})
+			insert into exercise (body_part, exercise_name, creator_id)
+			values (#{bodyPart}, #{exerciseName}, #{creatorId})
 		]]>
 		<selectKey keyProperty="exerciseId" resultType="int" order="AFTER">
 			select last_insert_id()
 		</selectKey>
 	</insert>
+	
+	<!-- 사용자가 직접 추가한 운동을 삭제 -->
+	<delete id="deleteExerciseByIdAndCreator" parameterType="map">
+        <![CDATA[
+            delete from exercise
+            where exercise_id = #{exerciseId}
+            and creator_id = #{creatorId}
+        ]]>
+    </delete>
 
 
 </mapper>

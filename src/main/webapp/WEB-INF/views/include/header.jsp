@@ -5,7 +5,7 @@
 <header>
       <!-- 왼쪽: 이미지 로고 (변경됨) -->
       <h1>
-        <a href="" class="btn-logout">
+        <a href="${pageContext.request.contextPath}/" class="btn-logout">
           <!-- 여기에 실제 로고 이미지 파일을 연결하세요 -->
           <img src="${pageContext.request.contextPath}/assets/images/logo.jpg" alt="FitLnk Logo" />
         </a>
