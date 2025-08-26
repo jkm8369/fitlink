@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="memberList">
+
+  <!-- (A) 멤버리스트 조회: 트레이너 담당 회원 + 집계 -->
+  <select id="selectMemberListForTrainer" parameterType="int" resultType="map">
+    SELECT
+      users.user_id   AS memberId,
+      users.user_name AS memberName,
+      DATE_FORMAT(users.birthdate, '%Y-%m-%d') AS birthdate,
+      member_profile.job            AS job,
+      member_profile.consult_date   AS consultDate,
+      member_profile.goal           AS goal,
+      COALESCE(pt_sum.total_sessions, 0)  AS pt_registered_cnt,
+      COALESCE(res_sum.completed_cnt, 0)  AS pt_completed_cnt,
+      (COALESCE(pt_sum.total_sessions,0) - COALESCE(res_sum.completed_cnt,0)) AS pt_remaining_cnt
+    FROM users
+    LEFT JOIN member_profile
+      ON member_profile.member_id = users.user_id
+    LEFT JOIN (
+      SELECT pt_contract.member_id, SUM(pt_contract.total_sessions) AS total_sessions
+      FROM pt_contract
+      WHERE pt_contract.trainer_id = #{_parameter}
+      GROUP BY pt_contract.member_id
+    ) AS pt_sum
+      ON pt_sum.member_id = users.user_id
+    LEFT JOIN (
+      SELECT reservation.member_id, COUNT(*) AS completed_cnt
+      FROM reservation
+      JOIN availability
+        ON availability.availability_id = reservation.availability_id
+      WHERE reservation.status = 'COMPLETED'
+        AND availability.trainer_id = #{_parameter}
+      GROUP BY reservation.member_id
+    ) AS res_sum
+      ON res_sum.member_id = users.user_id
+    WHERE users.role = 'member'
+      AND users.assigned_trainer_id = #{_parameter}
+    ORDER BY users.user_name ASC
+  </select>
+
+  <!-- (B) 단건 상세 조회: 기본/프로필/집계 포함 -->
+  <select id="selectMemberDetail" parameterType="map" resultType="map">
+    SELECT
+      users.user_id   AS memberId,
+      users.user_name AS memberName,
+      users.phone_number AS phoneNumber,
+      DATE_FORMAT(users.birthdate, '%Y-%m-%d') AS birthdate,
+      member_profile.job            AS job,
+      member_profile.consult_date   AS consultDate,
+      member_profile.goal           AS goal,
+      member_profile.memo           AS memo,
+      COALESCE(pt_sum.total_sessions, 0)  AS pt_registered_cnt,
+      COALESCE(res_sum.completed_cnt, 0)  AS pt_completed_cnt,
+      (COALESCE(pt_sum.total_sessions,0) - COALESCE(res_sum.completed_cnt,0)) AS pt_remaining_cnt
+    FROM users
+    LEFT JOIN member_profile
+      ON member_profile.member_id = users.user_id
+    LEFT JOIN (
+      SELECT pt_contract.member_id, SUM(pt_contract.total_sessions) AS total_sessions
+      FROM pt_contract
+      WHERE pt_contract.trainer_id = #{trainerId}
+      GROUP BY pt_contract.member_id
+    ) AS pt_sum
+      ON pt_sum.member_id = users.user_id
+    LEFT JOIN (
+      SELECT reservation.member_id, COUNT(*) AS completed_cnt
+      FROM reservation
+      JOIN availability
+        ON availability.availability_id = reservation.availability_id
+      WHERE reservation.status = 'COMPLETED'
+        AND availability.trainer_id = #{trainerId}
+      GROUP BY reservation.member_id
+    ) AS res_sum
+      ON res_sum.member_id = users.user_id
+    WHERE users.user_id = #{memberId}
+      AND users.role = 'member'
+  </select>
+
+  <!-- (C) 기본정보 수정 -->
+  <update id="updateUsersBasic" parameterType="map">
+    UPDATE users
+    SET user_name    = #{userName},
+        phone_number = #{phoneNumber},
+        birthdate    = #{birthdate}
+    WHERE user_id = #{memberId}
+      AND role    = 'member'
+  </update>
+
+  <!-- (D) 프로필 업서트 -->
+  <insert id="upsertMemberProfile" parameterType="map">
+    INSERT INTO member_profile (member_id, job, consult_date, goal, memo)
+    VALUES (#{memberId}, #{job}, #{consultDate}, #{goal}, #{memo})
+    ON DUPLICATE KEY UPDATE
+      job          = VALUES(job),
+      consult_date = VALUES(consult_date),
+      goal         = VALUES(goal),
+      memo         = VALUES(memo),
+      updated_at   = CURRENT_TIMESTAMP
+  </insert>
+
+  <!-- (E) PT 추가 구매 기록(누적 INSERT) -->
+  <insert id="insertPtContract" parameterType="map">
+    INSERT INTO pt_contract (member_id, trainer_id, total_sessions, created_at)
+    VALUES (#{memberId}, #{trainerId}, #{totalSessions}, NOW())
+  </insert>
+
+  <!-- (F) 회원 삭제 -->
+  <delete id="deleteMember" parameterType="int">
+    DELETE FROM users
+    WHERE user_id = #{value}
+      AND role    = 'member'
+  </delete>
+
+</mapper>

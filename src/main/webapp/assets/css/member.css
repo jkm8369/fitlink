@@ -1508,3 +1508,28 @@ h4 {
 .w-80 {
 	width: 80px;
 }
+
+/* ================= Member page only ================= */
+.member-page .list-card .table-wrap{
+  overflow-x: auto;                 /* 가로 스크롤 */
+  -webkit-overflow-scrolling: touch;/* iOS 부드러운 스크롤 */
+}
+
+.member-page .list-card .table{
+  /* 열이 많을 때 줄이지 말고 스크롤하도록 최소폭 지정
+     (현재 colgroup 합 ≈ 1040px: 60+120+110+90+120+110+110+110+110+100) */
+  min-width: 1040px;
+}
+
+/* 헤더/셀은 줄바꿈 방지해서 행 높이 균일 */
+.member-page .table thead th,
+.member-page .table tbody td{
+  white-space: nowrap;
+}
+
+/* (선택) 액션 열을 항상 보이게 하고 싶다면 sticky 적용 */
+.member-page .table .actions{
+  position: sticky;
+  right: 0;
+  background: #fff;
+}

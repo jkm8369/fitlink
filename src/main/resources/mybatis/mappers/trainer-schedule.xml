@@ -3,202 +3,251 @@
 
 <mapper namespace="trainerSchedule">
 
-	<!-- 1) 트레이너 예약 리스트(하단 표) : 예약된 건만 + 총/수업/잔여 포함 -->
-	<select id="selectTrainerBookings" parameterType="map" resultType="map">
-	    <![CDATA[
-	    SELECT
-	      a.availability_id                           AS availabilityId,
-	      DATE(a.available_datetime)                  AS workDate,
-	      DATE_FORMAT(a.available_datetime,'%H:00')   AS hourLabel,
-	      r.reservation_id                            AS reservationId,
-	      u.user_name                                 AS memberName,
-	      r.status                                    AS status,
-	
-	      (
-	        SELECT p.total_sessions
-	        FROM pt_contract p
-	        WHERE p.member_id = r.member_id
-	          AND p.trainer_id = a.trainer_id
-	        ORDER BY p.created_at DESC
-	        LIMIT 1
-	      ) AS totalSessions,
-	
-	      (
-	        SELECT COUNT(*)
-	        FROM reservation r2
-	        JOIN availability a2 ON a2.availability_id = r2.availability_id
-	        WHERE r2.member_id = r.member_id
-	          AND a2.trainer_id = a.trainer_id
-	          AND r2.status IN ('BOOKED','COMPLETED')
-	      ) AS completedCount,
-	
-	      GREATEST(
-	        COALESCE((
-	          SELECT p.total_sessions
-	          FROM pt_contract p
-	          WHERE p.member_id = r.member_id
-	            AND p.trainer_id = a.trainer_id
-	          ORDER BY p.created_at DESC
-	          LIMIT 1
-	        ), 0)
-	        -
-	        COALESCE((
-	          SELECT COUNT(*)
-	          FROM reservation r2
-	          JOIN availability a2 ON a2.availability_id = r2.availability_id
-	          WHERE r2.member_id = r.member_id
-	            AND a2.trainer_id = a.trainer_id
-	            AND r2.status IN ('BOOKED','COMPLETED')
-	        ), 0)
-	      , 0) AS remainingCount
-	
-	    FROM reservation r
-	    JOIN availability a ON a.availability_id = r.availability_id
-	    JOIN users u        ON u.user_id        = r.member_id
-	    WHERE a.trainer_id = #{trainerId}
-	      AND a.available_datetime >= #{start}
-	      AND a.available_datetime <  #{end}
-	      AND r.status IN ('BOOKED','COMPLETED')
-	    ORDER BY a.available_datetime ASC
-	    ]]>
-	</select>
+  <!-- =========================================================
+       1) FullCalendar 이벤트 소스: 근무/예약 상태 (기간)
+       - IN : trainerId, start(ISO), end(ISO)
+       - OUT: availabilityId, trainerId, startDt, workDate, hourLabel,
+              slotStatus(AVAILABLE/BOOKED/COMPLETED), reservationId, memberName
+       ========================================================= -->
+  <select id="selectTrainerSlotsWithStatus" parameterType="map" resultType="map">
+    <![CDATA[
+    SELECT
+      availability.availability_id                           AS availabilityId,
+      availability.trainer_id                                AS trainerId,
+      availability.available_datetime                        AS startDt,
+      DATE(availability.available_datetime)                  AS workDate,
+      DATE_FORMAT(availability.available_datetime, '%H:00')  AS hourLabel,
+      CASE
+        WHEN reservation.reservation_id IS NULL THEN 'AVAILABLE'
+        ELSE reservation.status
+      END                                                    AS slotStatus,
+      reservation.reservation_id                             AS reservationId,
+      users.user_name                                        AS memberName
+    FROM availability AS availability
+    LEFT JOIN reservation AS reservation
+      ON reservation.availability_id = availability.availability_id
+    LEFT JOIN users AS users
+      ON users.user_id = reservation.member_id
+    WHERE availability.trainer_id = #{trainerId}
+      AND availability.available_datetime >= STR_TO_DATE(SUBSTRING(#{start}, 1, 19), '%Y-%m-%dT%H:%i:%s')
+      AND availability.available_datetime <  STR_TO_DATE(SUBSTRING(#{end},   1, 19), '%Y-%m-%dT%H:%i:%s')
+    ORDER BY availability.available_datetime ASC
+    ]]>
+  </select>
 
-	<!-- 2) 근무칸 + 예약여부(달력/모달 공용) : 빈 슬롯 포함 -->
-	<select id="selectTrainerSlotsWithStatus" parameterType="map" resultType="map">
-	    <![CDATA[
-	    SELECT
-	      a.availability_id                           AS availabilityId,
-	      a.trainer_id                                AS trainerId,
-	      a.available_datetime                        AS startDt,
-	      DATE(a.available_datetime)                  AS workDate,
-	      DATE_FORMAT(a.available_datetime,'%H:00')   AS hourLabel,
-	      CASE WHEN r.reservation_id IS NULL THEN 'AVAILABLE'
-	           ELSE r.status END                      AS slotStatus,
-	      r.reservation_id                            AS reservationId,
-	      u.user_name                                 AS memberName
-	    FROM availability a
-	    LEFT JOIN reservation r ON r.availability_id = a.availability_id
-	    LEFT JOIN users u        ON u.user_id        = r.member_id
-	    WHERE a.trainer_id = #{trainerId}
-	      AND a.available_datetime >= #{start}
-	      AND a.available_datetime <  #{end}
-	    ORDER BY a.available_datetime ASC
-	    ]]>
-	</select>
+  <!-- =========================================================
+       2) 모달용: 특정 날짜의 시간대 상태
+       - IN : trainerId, workDate(YYYY-MM-DD)
+       ========================================================= -->
+  <select id="selectDaySlotsWithStatus" parameterType="map" resultType="map">
+    <![CDATA[
+    SELECT
+      availability.availability_id                           AS availabilityId,
+      DATE(availability.available_datetime)                  AS workDate,
+      DATE_FORMAT(availability.available_datetime, '%H:00')  AS hourLabel,
+      CASE
+        WHEN reservation.reservation_id IS NULL THEN 'AVAILABLE'
+        ELSE reservation.status
+      END                                                    AS slotStatus,
+      reservation.reservation_id                             AS reservationId,
+      users.user_name                                        AS memberName
+    FROM availability AS availability
+    LEFT JOIN reservation AS reservation
+      ON reservation.availability_id = availability.availability_id
+    LEFT JOIN users AS users
+      ON users.user_id = reservation.member_id
+    WHERE availability.trainer_id = #{trainerId}
+      AND DATE(availability.available_datetime) = #{workDate}
+    ORDER BY availability.available_datetime ASC
+    ]]>
+  </select>
 
-	<!-- 3) 특정 날짜 슬롯 + 예약여부(모달 시간 버튼) -->
-	<select id="selectDaySlotsWithStatus" parameterType="map" resultType="map">
-	    <![CDATA[
-	    SELECT
-	      a.availability_id                           AS availabilityId,
-	      DATE_FORMAT(a.available_datetime,'%H:00')   AS hourLabel,
-	      CASE WHEN r.reservation_id IS NULL THEN 'AVAILABLE'
-	           ELSE r.status END                      AS slotStatus
-	    FROM availability a
-	    LEFT JOIN reservation r ON r.availability_id = a.availability_id
-	    WHERE a.trainer_id = #{trainerId}
-	      AND DATE(a.available_datetime) = #{workDate}
-	    ORDER BY a.available_datetime ASC
-	    ]]>
-	</select>
+  <!-- =========================================================
+       3) 트레이너 하단 리스트(예약된 건만)
+       - IN : trainerId, start(ISO), end(ISO)
+       - 규칙 : "최근 계약 1건"의 total_sessions 사용
+         (합계를 원하면 아래 total 부분의 서브쿼리를 SUM(...) 으로 교체)
+       - OUT: workDate, hourLabel, memberName, status,
+              totalSessions, completedCount(=누적 사용), remainingCount
+       ========================================================= -->
+  <select id="selectTrainerBookings" parameterType="map" resultType="map">
+    <![CDATA[
+    SELECT
+      availability.availability_id                           AS availabilityId,
+      DATE(availability.available_datetime)                  AS workDate,
+      DATE_FORMAT(availability.available_datetime, '%H:00')  AS hourLabel,
+      reservation.reservation_id                             AS reservationId,
+      users.user_name                                        AS memberName,
+      reservation.status                                     AS status,
 
-	<!-- 4) 근무시간 등록(단건) -->
-	<insert id="insertAvailability" parameterType="map" useGeneratedKeys="true" keyProperty="availabilityId">
-	    <![CDATA[
-	    INSERT IGNORE INTO availability (trainer_id, available_datetime)
-	    VALUES (#{trainerId}, #{availableDatetime})
-	    ]]>
-	</insert>
+      /* (1) 최근 계약 1건 total_sessions
+         ─ 합계 원하면: SELECT SUM(pt_contract.total_sessions) ... */
+      (
+        SELECT SUM(pt_contract.total_sessions)
+        FROM pt_contract
+        WHERE pt_contract.member_id = reservation.member_id
+          AND pt_contract.trainer_id = availability.trainer_id
+      )                                                      AS totalSessions,
 
-	<!-- 5) 근무시간 등록(배치) -->
-	<insert id="insertAvailabilityBatch" parameterType="map">
-	    <![CDATA[
-	    INSERT IGNORE INTO availability (trainer_id, available_datetime)
-	    VALUES
-	    ]]>
-			<foreach collection="datetimes" item="dt" separator=",">
-	      <![CDATA[(#{trainerId}, #{dt})]]>
-			</foreach>
-	</insert>
+      /* (2) 현재 행까지의 누적 사용(BOOKED+COMPLETED) */
+      (
+        SELECT COUNT(*)
+        FROM reservation AS reservation_inner
+        JOIN availability AS availability_inner
+          ON availability_inner.availability_id = reservation_inner.availability_id
+        WHERE reservation_inner.member_id = reservation.member_id
+          AND availability_inner.trainer_id   = availability.trainer_id
+          AND reservation_inner.status IN ('BOOKED','COMPLETED')
+          AND availability_inner.available_datetime <= availability.available_datetime
+      )                                                      AS completedCount,
 
-	<!-- 6) 근무시간 삭제(단건) -->
-	<delete id="deleteAvailabilityById" parameterType="map">
-	    <![CDATA[
-	    DELETE FROM availability
-	    WHERE availability_id = #{availabilityId}
-	    ]]>
-	</delete>
+      /* (3) 잔여 = 총 - 누적 (음수 방지) */
+      GREATEST(
+        COALESCE((
+          SELECT SUM(pt_contract.total_sessions)
+          FROM pt_contract
+          WHERE pt_contract.member_id = reservation.member_id
+            AND pt_contract.trainer_id = availability.trainer_id
+        ), 0)
+        -
+        (
+          SELECT COUNT(*)
+          FROM reservation AS reservation_used
+          JOIN availability AS availability_used
+            ON availability_used.availability_id = reservation_used.availability_id
+          WHERE reservation_used.member_id = reservation.member_id
+            AND availability_used.trainer_id   = availability.trainer_id
+            AND reservation_used.status IN ('BOOKED','COMPLETED')
+            AND availability_used.available_datetime <= availability.available_datetime
+        )
+      , 0)                                                   AS remainingCount
 
-	<!-- 7) 근무시간 삭제(특정 날짜 + 여러 시간 동시, HOUR 기준) -->
-	<delete id="deleteAvailabilityByDateHours" parameterType="map">
-	    <![CDATA[
-	    DELETE FROM availability
-	    WHERE trainer_id = #{trainerId}
-	      AND DATE(available_datetime) = #{workDate}
-	      AND HOUR(available_datetime) IN
-	    ]]>
-			<foreach collection="hours" item="h" open="(" close=")" separator=",">
-	      <![CDATA[#{h}]]>
-			</foreach>
-	</delete>
+    FROM availability AS availability
+    JOIN reservation  AS reservation
+      ON reservation.availability_id = availability.availability_id
+    JOIN users        AS users
+      ON users.user_id = reservation.member_id
+    WHERE availability.trainer_id = #{trainerId}
+      AND availability.available_datetime >= STR_TO_DATE(SUBSTRING(#{start}, 1, 19), '%Y-%m-%dT%H:%i:%s')
+      AND availability.available_datetime <  STR_TO_DATE(SUBSTRING(#{end},   1, 19), '%Y-%m-%dT%H:%i:%s')
+      AND reservation.status IN ('BOOKED','COMPLETED')
+    ORDER BY availability.available_datetime ASC
+    ]]>
+  </select>
 
-	<!-- 8) 근무시간 삭제(특정 일자 시각목록; 예약 없는 슬롯만) -->
-	<delete id="deleteAvailabilityByDatetimes" parameterType="map">
-	    <![CDATA[
-	    DELETE a
-	    FROM availability a
-	    LEFT JOIN reservation r ON r.availability_id = a.availability_id
-	    WHERE a.trainer_id = #{trainerId}
-	      AND a.available_datetime IN
-	    ]]>
-			<foreach collection="datetimes" item="dt" open="(" separator="," close=")">
-	      <![CDATA[#{dt}]]>
-			</foreach>
-	    <![CDATA[
-	      AND r.reservation_id IS NULL
-	    ]]>
-	</delete>
+  <!-- =========================================================
+       4) 근무시간 단건 등록 (중복 방지)
+       - IN : trainerId, availableDatetime('YYYY-MM-DD HH:mm:ss')
+       ========================================================= -->
+  <insert id="insertAvailability" parameterType="map">
+    <![CDATA[
+    INSERT INTO availability (trainer_id, available_datetime)
+    SELECT #{trainerId}, STR_TO_DATE(#{availableDatetime}, '%Y-%m-%d %H:%i:%s')
+    FROM DUAL
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM availability
+      WHERE trainer_id = #{trainerId}
+        AND available_datetime = STR_TO_DATE(#{availableDatetime}, '%Y-%m-%d %H:%i:%s')
+    )
+    ]]>
+  </insert>
 
-	<!-- 9) 회원관리 리스트 -->
-	<select id="selectMemberManageList" parameterType="int" resultType="map">
-		<![CDATA[
-		SELECT
-		  m.user_id   AS memberId,
-		  m.user_name AS memberName,
-		  m.birthdate,
-		  p.job,
-		  p.consult_date AS consultDate,
-		  p.goal,
-		  COALESCE(pc.total_sessions, 0)   AS totalSessions,
-		  COALESCE(comp.completed_cnt, 0)  AS completedCount,
-		  (COALESCE(pc.total_sessions,0) - COALESCE(comp.completed_cnt,0)) AS remainingCount
-		FROM users m
-		LEFT JOIN member_profile p ON p.member_id = m.user_id
-		LEFT JOIN (
-		  SELECT member_id, trainer_id, SUM(total_sessions) AS total_sessions
-		  FROM pt_contract
-		  GROUP BY member_id, trainer_id
-		) pc   ON pc.member_id = m.user_id AND pc.trainer_id = #{trainerId}
-		LEFT JOIN (
-		  SELECT r2.member_id, a2.trainer_id, COUNT(*) AS completed_cnt
-		  FROM reservation r2
-		  JOIN availability a2 ON a2.availability_id = r2.availability_id
-		  WHERE r2.status = 'COMPLETED'
-		  GROUP BY r2.member_id, a2.trainer_id
-		) comp ON comp.member_id = m.user_id AND comp.trainer_id = #{trainerId}
-		WHERE m.assigned_trainer_id = #{trainerId}
-		ORDER BY m.user_name
-		]]>
-	</select>
-	
-	<!-- 트레이너 강제예약 취소 -->
-	<delete id="deleteReservationByTrainer" parameterType="map">
-		<![CDATA[
-		DELETE r
-		FROM reservation r
-		JOIN availability a ON a.availability_id = r.availability_id
-		WHERE r.reservation_id = #{reservationId}
-		  AND a.trainer_id    = #{trainerId}
-		]]>
-	</delete>
+  <!-- =========================================================
+       5) 근무시간 여러 건 등록 (단일 SQL, 중복 방지)
+       - IN : trainerId, datetimes(List<String>)
+       ========================================================= -->
+  <insert id="insertAvailabilityBatch" parameterType="map">
+    <![CDATA[
+    INSERT INTO availability (trainer_id, available_datetime)
+    SELECT #{trainerId} AS trainer_id,
+           STR_TO_DATE(values_list.dt, '%Y-%m-%d %H:%i:%s') AS available_datetime
+    FROM (
+    ]]>
+      <foreach collection="datetimes" item="dt" separator=" UNION ALL ">
+        <![CDATA[ SELECT #{dt} AS dt ]]>
+      </foreach>
+    <![CDATA[
+    ) AS values_list
+    LEFT JOIN availability AS availability_existing
+      ON availability_existing.trainer_id = #{trainerId}
+     AND availability_existing.available_datetime = STR_TO_DATE(values_list.dt, '%Y-%m-%d %H:%i:%s')
+    WHERE availability_existing.availability_id IS NULL
+    ]]>
+  </insert>
+
+  <!-- =========================================================
+       6) 근무시간 단건 삭제 (예약 없을 때만)
+       - IN : availabilityId
+       ========================================================= -->
+  <delete id="deleteAvailabilityById" parameterType="map">
+    <![CDATA[
+    DELETE availability
+    FROM availability AS availability
+    LEFT JOIN reservation AS reservation
+      ON reservation.availability_id = availability.availability_id
+    WHERE availability.availability_id = #{availabilityId}
+      AND reservation.reservation_id IS NULL
+    ]]>
+  </delete>
+
+  <!-- =========================================================
+       7) 특정 날짜의 여러 시간(HOUR) 삭제 (예약 없을 때만)
+       - IN : trainerId, workDate(YYYY-MM-DD), hours(List<Integer>)
+       ========================================================= -->
+  <delete id="deleteAvailabilityByDateHours" parameterType="map">
+    <![CDATA[
+    DELETE availability
+    FROM availability AS availability
+    LEFT JOIN reservation AS reservation
+      ON reservation.availability_id = availability.availability_id
+    WHERE availability.trainer_id = #{trainerId}
+      AND DATE(availability.available_datetime) = #{workDate}
+      AND HOUR(availability.available_datetime) IN
+    ]]>
+      <foreach collection="hours" item="h" open="(" close=")" separator=",">#{h}</foreach>
+    <![CDATA[
+      AND reservation.reservation_id IS NULL
+    ]]>
+  </delete>
+
+  <!-- =========================================================
+       8) 여러 날짜시간(문자열)로 삭제 (예약 없을 때만)
+       - IN : trainerId, datetimes(List<String>)
+       ========================================================= -->
+  <delete id="deleteAvailabilityByDatetimes" parameterType="map">
+    <![CDATA[
+    DELETE availability
+    FROM availability AS availability
+    LEFT JOIN reservation AS reservation
+      ON reservation.availability_id = availability.availability_id
+    WHERE availability.trainer_id = #{trainerId}
+      AND availability.available_datetime IN (
+    ]]>
+      <foreach collection="datetimes" item="dt" separator=",">
+        STR_TO_DATE(#{dt}, '%Y-%m-%d %H:%i:%s')
+      </foreach>
+    <![CDATA[
+      )
+      AND reservation.reservation_id IS NULL
+    ]]>
+  </delete>
+
+  <!-- =========================================================
+       9) 트레이너 소유 예약 강제 취소
+       - IN : reservationId, trainerId
+       ========================================================= -->
+  <delete id="deleteReservationByTrainer" parameterType="map">
+    <![CDATA[
+    DELETE reservation
+    FROM reservation AS reservation
+    WHERE reservation.reservation_id = #{reservationId}
+      AND reservation.availability_id IN (
+        SELECT availability.availability_id
+        FROM availability AS availability
+        WHERE availability.trainer_id = #{trainerId}
+      )
+    ]]>
+  </delete>
+
 </mapper>

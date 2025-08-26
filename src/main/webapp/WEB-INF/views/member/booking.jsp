@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/member.css" />
 <!-- 트레이너/페이지 커스텀 -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css" />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/schedule_modal.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/modal.css" />
 
 <!-- 아이콘 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />

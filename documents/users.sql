@@ -1,38 +1,20 @@
-/*******************************************************
-users
-*******************************************************/
--- 데이터 베이스 사용
-use fitlink_db;
+SELECT *
+FROM users;
 
--- 테이블 목록 조회
-show tables;
-
--- 테이블 삭제
-drop table users;
-
--- 유저(회원) 테이블 생성
-create table users(
-     user_id 		int 						primary key auto_increment
-	,login_id 		varchar(50) 				unique
-    ,password 		varchar(20) 				not null
-    ,user_name 		varchar(20)
-    ,phone_number 	varchar(20)
-    ,birthdate 		date
-    ,gender			enum('male', 'female')
-    ,role			enum('member', 'trainer')
-    ,created_at		datetime
-);
-
--- 회원추가
-insert into users
-value(null, 'aaa', '123', '강호동', '010-1111-1111', '1970-06-11', 'male', 'trainer', now())
-;
-
-insert into users
-value(null, 'bbb', '123', '정우성', '010-2222-2222', '1970-06-11', 'male', 'member', now())
-;
-
--- 회원조회
-select 	*
-from 	users
-;
+CREATE TABLE users (
+  user_id             INT AUTO_INCREMENT PRIMARY KEY,
+  login_id            VARCHAR(50)  NOT NULL,
+  password            VARCHAR(255) NULL,
+  user_name           VARCHAR(50)  NOT NULL,
+  phone_number        VARCHAR(20)  NULL,
+  birthdate           DATE         NULL,
+  gender              ENUM('male','female') NULL,
+  role                ENUM('member','trainer') NOT NULL,
+  assigned_trainer_id INT NULL,
+  created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_users_login (login_id),
+  KEY idx_users_assigned_trainer (assigned_trainer_id),
+  CONSTRAINT fk_users_assigned_trainer
+    FOREIGN KEY (assigned_trainer_id) REFERENCES users(user_id)
+    ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
