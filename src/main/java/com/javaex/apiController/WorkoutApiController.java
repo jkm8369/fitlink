@@ -33,10 +33,13 @@ public class WorkoutApiController {
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
 		
-		workoutVO.setUserId(authUser.getUserId());
+		// workoutVO에 userId가 없으면(회원이 직접 기록), 세션의 ID를 사용합니다.
+		// 만약 workoutVO에 userId가 있으면(트레이너가 대리 기록), 그 ID를 그대로 사용합니다.
+		if (workoutVO.getUserId() == 0) {
+			workoutVO.setUserId(authUser.getUserId());
+		}
+		// 기록자는 항상 로그인한 사람입니다.
 		workoutVO.setWriterId(authUser.getUserId());
-		
-		System.out.println(authUser.getUserId());
 		
 		WorkoutVO wVO = workoutService.exeGetWorkoutAddKey(workoutVO);
 		
@@ -67,26 +70,46 @@ public class WorkoutApiController {
 	
 	//-- 사용자가 선택한 운동 목록 전체 가져오기
 	@GetMapping(value="/user-exercises")
-	public JsonResult UserExercises(HttpSession session) {
+	public JsonResult UserExercises(@RequestParam(value="memberId", required=false, defaultValue="0") int memberId,
+									HttpSession session) {
 		//System.out.println("WorkoutApiController.UserExercises()");
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
 		
-		List<WorkoutVO> exerciseList = workoutService.exeGetUserExercises(authUser.getUserId());
+		int targetUserId;
+		if (memberId > 0) {
+			// [주석] memberId가 있으면(트레이너가 회원 조회) 그 회원의 ID를 사용합니다.
+			targetUserId = memberId;
+		} else {
+			// [주석] memberId가 없으면(회원 본인 조회) 로그인한 사용자의 ID를 사용합니다.
+			targetUserId = authUser.getUserId();
+		}
+		
+		List<WorkoutVO> exerciseList = workoutService.exeGetUserExercises(targetUserId);
 		
 		return JsonResult.success(exerciseList);
 	}
 	
 	// -- 특정 날짜 운동일지 리스트
 	@GetMapping(value="/logs")
-	public JsonResult logsByDate(@RequestParam("logDate") String logDate, HttpSession session) {
+	public JsonResult logsByDate(@RequestParam("logDate") String logDate, 
+								 @RequestParam(value="memberId", required=false, defaultValue="0") int memberId,
+								 HttpSession session) {
 		//System.out.println("WorkoutApiController.logsByDate()" + logDate);
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
 		
-		int userId = authUser.getUserId();
+		int targetUserId;
 		
-		List<WorkoutVO> workoutList = workoutService.exeGetWorkoutLogsByDate(userId, logDate);
+		if(memberId > 0) {
+			// 만약 memberId가 0보다 크면 (즉, 유효한 회원 ID가 전달되었으면)
+			targetUserId = memberId;
+		} else {
+			// 그렇지 않으면 (memberId가 0이면)
+		    targetUserId = authUser.getUserId(); // 현재 로그인한 사용자의 ID를 사용한다
+		}
+		
+		List<WorkoutVO> workoutList = workoutService.exeGetWorkoutLogsByDate(targetUserId, logDate);
 		
 		return JsonResult.success(workoutList);
 	}
@@ -95,15 +118,23 @@ public class WorkoutApiController {
 	@GetMapping(value="/logged-dates")
 	public JsonResult loggedDates(@RequestParam("year") int year,
 								  @RequestParam("month") int month,
+								  @RequestParam(value="memberId", required=false, defaultValue="0") int memberId,
 								  HttpSession session) {
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
-		int userId = authUser.getUserId();
+		
+		int targetUserId;
+		
+		if(memberId > 0) {
+			targetUserId = memberId;
+		} else {
+			targetUserId = authUser.getUserId();
+		}
 		
 		// "2025-08" 형식으로 문자열 조합
 		String yearMonth = year + "-" + String.format("%02d", month);
 		
-		List<String> loggedDateList = workoutService.exeGetLoggedDates(userId, yearMonth);
+		List<String> loggedDateList = workoutService.exeGetLoggedDates(targetUserId, yearMonth);
 		
 		return JsonResult.success(loggedDateList);
 	}

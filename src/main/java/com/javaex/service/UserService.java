@@ -23,9 +23,17 @@ public class UserService {
 		return authUser;
 	}
 	
-    /** [추가] 회원의 담당 트레이너 조회 */
+    // 회원의 담당 트레이너 조회
     public Map<String, Object> selectTrainerByMemberId(int memberId) {
         return userRepository.selectTrainerByMemberId(memberId);
     }
 	
+    
+    // 특정 회원의 기본 정보를 조회 (jsp에서 이름 표시용)
+    public UserVO exeGetMemberInfo(int memberId) {
+        System.out.println("UserService.exeGetMemberInfo()");
+        
+        return userRepository.selectUserByNo(memberId);
+    }
+    
 }

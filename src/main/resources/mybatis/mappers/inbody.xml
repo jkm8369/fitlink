@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="inbody">
+	<!-- 한 회원의 인바디 기록 총 갯수 구하기 (페이징용) -->
+	<select id="selectTotalCount" parameterType="int" resultType="int">
+		<![CDATA[ 
+		  select count(*)
+		  from inbody
+		  where user_id = #{userId}
+		]]>
+	</select>
+
+	<!-- 한 회원의 인바디 리스트 가져오기 (페이징 적용) -->
+	<select id="selectListByUserId" parameterType="map" resultType="com.javaex.vo.InbodyVO">
+		<![CDATA[
+			select inbody_id as inbodyId,
+				   record_date as recordDate,
+				   inbody_score as inbodyScore
+			from inbody
+			where user_id = #{userId}
+			order by record_date desc
+			limit #{startRownum}, #{pageSize}
+		]]>
+	</select>
+	
+	<!-- 인바디 기록 1개 상세 정보 가져오기 -->
+	<select id="selectOneByInbodyId" parameterType="int" resultType="com.javaex.vo.InbodyVO">
+		<![CDATA[
+			select inbody_id as inbodyId,
+				   record_date as recordDate,
+				   image_url as imageUrl,
+				   weight_kg as weightKg,
+				   muscle_mass_kg as muscleMassKg,
+				   fat_mass_kg as fatMassKg,
+				   bmi,
+				   percent_body_fat as percentBodyFat,
+				   cid_type as cidType,
+				   visceral_fat_level as visceralFatLevel,
+				   fat_control_kg as fatControlKg,
+				   muscle_control_kg as muscleControlKg,
+				   upper_lower_balance as upperLowerBalance,
+				   left_right_balance as leftRightBalance,
+				   target_calories as targetCalories,
+				   required_protein_g as requiredProteinG,
+				   carb_ratio as carbRatio,
+				   protein_ratio as proteinRatio,
+				   fat_ratio as fatRatio,
+				   target_carb_kcal as targetCarbKcal,
+				   target_protein_kcal as targetProteinKcal,
+				   target_fat_kcal as targetFatKcal,
+				   target_carb_g as targetCarbG,
+				   target_protein_g as targetProteinG,
+				   target_fat_g as targetFatG,
+				   breakfast_kcal as breakfastKcal,
+				   breakfast_carb_g as breakfastCarbG,
+				   breakfast_protein_g as breakfastProteinG,
+				   breakfast_fat_g as breakfastFatG,
+				   lunch_kcal as lunchKcal,
+				   lunch_carb_g as lunchCarbG,
+				   lunch_protein_g as lunchProteinG,
+				   lunch_fat_g as lunchFatG,
+				   dinner_kcal as dinnerKcal,
+				   dinner_carb_g as dinnerCarbG,
+				   dinner_protein_g as dinnerProteinG,
+				   dinner_fat_g as dinnerFatG,
+				   user_id as userId,
+				   inbody_score as inbodyScore
+			from inbody
+			where inbody_id = #{inbodyId}
+		]]>
+	</select>
+	
+	<!-- 인바디 기록 저장하기 -->
+	<insert id="insert" parameterType="com.javaex.vo.InbodyVO">
+		<![CDATA[
+			insert into inbody
+			values (
+				null, #{recordDate}, #{imageUrl}, #{weightKg}, #{muscleMassKg}, #{fatMassKg},
+				#{bmi}, #{percentBodyFat}, #{cidType}, #{visceralFatLevel}, #{fatControlKg},
+				#{muscleControlKg}, #{upperLowerBalance}, #{leftRightBalance}, #{targetCalories},
+				#{requiredProteinG}, #{carbRatio}, #{proteinRatio}, #{fatRatio}, #{targetCarbKcal},
+				#{targetProteinKcal}, #{targetFatKcal}, #{targetCarbG}, #{targetProteinG}, #{targetFatG},
+				#{breakfastKcal}, #{breakfastCarbG}, #{breakfastProteinG}, #{breakfastFatG},
+				#{lunchKcal}, #{lunchCarbG}, #{lunchProteinG}, #{lunchFatG}, #{dinnerKcal},
+				#{dinnerCarbG}, #{dinnerProteinG}, #{dinnerFatG}, #{userId}, #{inbodyScore}
+			)
+		]]>
+		<selectKey keyProperty="inbodyId" resultType="int" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 인바디 기록 삭제하기 -->
+	<delete id="delete" parameterType="int">
+		<![CDATA[
+			delete 
+			from inbody
+			where inbody_id = #{inbodyId}
+		]]>
+	</delete>
+</mapper>

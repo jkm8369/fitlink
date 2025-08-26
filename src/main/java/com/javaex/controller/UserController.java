@@ -21,7 +21,7 @@ public class UserController {
 	//로그인 폼
 	@RequestMapping(value="/loginform", method = {RequestMethod.GET, RequestMethod.POST})
 	public String loginform() {
-		System.out.println("UserController.loginform()");
+		//System.out.println("UserController.loginform()");
 		
 		return "/user/loginform";
 	}
@@ -29,7 +29,7 @@ public class UserController {
 	//로그인
 	@RequestMapping(value="/login", method= {RequestMethod.GET, RequestMethod.POST})
 	public String login(@ModelAttribute UserVO userVO, HttpSession session) {
-		System.out.println("UserController.login()");
+		//System.out.println("UserController.login()");
 		
 		UserVO authUser = userService.exeLogin(userVO);
 		
@@ -47,7 +47,7 @@ public class UserController {
 	//로그아웃
 	@RequestMapping(value="/logout", method= {RequestMethod.GET, RequestMethod.POST})
 	public String logout(HttpSession session) {
-		System.out.println("UserController.logout()");
+		//System.out.println("UserController.logout()");
 		
 		session.invalidate();
 		

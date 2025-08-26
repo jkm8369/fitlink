@@ -28,13 +28,22 @@
 		<div id="content">
 			<!-- ------aside------ -->
 			<c:choose>
-				<c:when test="${sessionScope.authUser.role == 'trainer'}">
-					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
-				</c:when>
-				<c:otherwise>
-					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
-				</c:otherwise>
-			</c:choose>
+		        <c:when test="${sessionScope.authUser.role == 'trainer'}">
+		            <!-- 트레이너일 경우, currentMember 유무로 어떤 aside를 보여줄지 결정 -->
+		            <c:choose>
+		                <c:when test="${not empty currentMember}">
+		                    <c:import url="/WEB-INF/views/include/aside-trainer-member.jsp"></c:import>
+		                </c:when>
+		                <c:otherwise>
+		                    <c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
+		                </c:otherwise>
+		            </c:choose>
+		        </c:when>
+		        <c:otherwise>
+		            <!-- 회원이면 무조건 회원용 aside -->
+		            <c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
+		        </c:otherwise>
+		    </c:choose>
 			<!-- //------aside------ -->
 
 			<main>
@@ -47,9 +56,20 @@
 				<!-- 2. 운동 종류 리스트-->
 				<div class="exercise-container">
 					<div class="exercise-header">
-						<a href="${pageContext.request.contextPath}/exercise/list-member" class="btn-edit-exercises"> <i class="fa-solid fa-scissors"></i> <span>운동종류
-								수정</span>
-						</a>
+						<c:choose>
+                			<c:when test="${not empty currentMember}">
+	                    		<%-- 트레이너가 보고 있을 경우, 회원 ID를 포함한 주소로 링크 --%>
+			                    <a href="${pageContext.request.contextPath}/exercise/list-member/member/${currentMember.userId}" class="btn-edit-exercises"> 
+			                        <i class="fa-solid fa-scissors"></i> <span>운동종류 수정</span>
+			                    </a>
+                			</c:when>
+			                <c:otherwise>
+			                    <%-- 회원 본인이 보고 있을 경우, 기존 주소로 링크 --%>
+			                    <a href="${pageContext.request.contextPath}/exercise/list-member" class="btn-edit-exercises">
+			                        <i class="fa-solid fa-scissors"></i> <span>운동종류 수정</span>
+			                    </a>
+			                </c:otherwise>
+            			</c:choose>
 					</div>
 
 					<c:forEach items="${exerciseMap}" var="emap">
