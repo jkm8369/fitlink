@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -32,85 +33,71 @@
 </head>
 <body>
 	<div id="wrap">
-		<!-- ===== 헤더 ===== -->
-		<header>
-			<a href="" class="btn-logout"> <img src="${pageContext.request.contextPath}/assets/images/logo.jpg" alt="FitLnk Logo" />
-			</a>
-			<div class="btn-logout">
-				<a href="#" class="logout-link"> <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
-				</a>
-			</div>
-		</header>
+		<!-- ------헤더------ -->
+		<c:import url="/WEB-INF/views/include/header.jsp"></c:import>
+		<!-- //------헤더------ -->
 
-		<!-- ===== 본문 ===== -->
+
 		<div id="content">
-			<!-- aside -->
+		<!-- ------aside------ -->
 			<aside>
 				<div class="user-info">
-					<div class="user-name-wrap">
-						<img class="dumbell-icon" src="${pageContext.request.contextPath}/assets/images/사이트로고.jpg" alt="dumbell-icon" />
-						<p class="user-name">
-							홍길동<br /> <small>(트레이너)</small>
-						</p>
-					</div>
-				</div>
-				<div class="aside-menu">
-					<a href="#" class="menu-item"><i class="fa-solid fa-address-card"></i> <span>회원</span></a> <a href="#" class="menu-item"><i
-						class="fa-solid fa-calendar-days"></i> <span>일정</span></a> <a href="#" class="menu-item"><i class="fa-solid fa-list-ul"></i> <span>운동종류</span></a>
+					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
 				</div>
 			</aside>
+		<!-- ------aside------ -->
 
-			<!-- main -->
-			<main>
-				<div class="page-header">
-					<h3 class="page-title">Schedule</h3>
+		<!-- main -->
+		<main>
+			<div class="page-header">
+				<h3 class="page-title">Schedule</h3>
+			</div>
+
+			<div class="calendar-card">
+				<div id="calendar"></div>
+			</div>
+
+			<div class="line"></div>
+
+			<section class="card2 list-card">
+				<div class="card-header">
+					<h4 class="card-title list-title">회원 수업 리스트</h4>
 				</div>
-
-				<div class="calendar-card">
-					<div id="calendar"></div>
+				<div class="table-wrap">
+					<table class="table">
+						<colgroup>
+							<col class="w-60" />
+							<col class="w-110" />
+							<col class="w-90" />
+							<col class="w-90" />
+							<col class="w-100" />
+							<col class="w-100" />
+							<col class="w-100" />
+							<col class="w-80" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th>순서</th>
+								<th>날짜</th>
+								<th>시간</th>
+								<th>회원</th>
+								<th>PT 등록일수</th>
+								<th>PT 수업일수</th>
+								<th>PT 잔여일수</th>
+								<th class="actions-head"></th>
+							</tr>
+						</thead>
+						<tbody id="booking-body"></tbody>
+					</table>
 				</div>
+			</section>
+		</main>
+	</div>
 
-				<div class="line"></div>
-
-				<section class="card2 list-card">
-					<div class="card-header">
-						<h4 class="card-title list-title">회원 수업 리스트</h4>
-					</div>
-					<div class="table-wrap">
-						<table class="table">
-							<colgroup>
-								<col class="w-60" />
-								<col class="w-110" />
-								<col class="w-90" />
-								<col class="w-90" />
-								<col class="w-100" />
-								<col class="w-100" />
-								<col class="w-100" />
-								<col class="w-80" />
-							</colgroup>
-							<thead>
-								<tr>
-									<th>순서</th>
-									<th>날짜</th>
-									<th>시간</th>
-									<th>회원</th>
-									<th>PT 등록일수</th>
-									<th>PT 수업일수</th>
-									<th>PT 잔여일수</th>
-									<th class="actions-head"></th>
-								</tr>
-							</thead>
-							<tbody id="booking-body"></tbody>
-						</table>
-					</div>
-				</section>
-			</main>
-		</div>
-
-		<!-- 푸터 -->
-		<footer>
-			<p>Copyright © 2025. FitLink All rights reserved.</p>
-		</footer>
+	<!-- 푸터 -->
+	<footer>
+		<p>Copyright © 2025. FitLink All rights reserved.</p>
+	</footer>
 	</div>
 
 	<!-- 근무시간 등록 모달 (날짜 클릭 시 표출) -->

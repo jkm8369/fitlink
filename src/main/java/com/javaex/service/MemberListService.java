@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.javaex.repository.MemberListRepository;
+import com.javaex.vo.MemberVO;
 
 @Service
 public class MemberListService {
@@ -17,38 +18,53 @@ public class MemberListService {
 		this.repo = repo;
 	}
 
-	/** (A) 트레이너 담당 맴버리스트 조회 */
-	public List<Map<String, Object>> getMemberListForTrainer(int trainerId) {
+	// 리스트
+	public List<MemberVO> getMemberListForTrainer(int trainerId) {
 		return repo.selectMemberListForTrainer(trainerId);
 	}
 
-	/** (B) 모달용 단건 상세 조회 */
-	public Map<String, Object> getMemberDetail(int trainerId, int memberId) {
+	// 상세
+	public MemberVO getMemberDetail(int trainerId, int memberId) {
 		return repo.selectMemberDetail(trainerId, memberId);
 	}
 
-	/** (C) 기본정보 수정: 단건 UPDATE */
-	public void updateBasic(int memberId, String userName, String phoneNumber, String birthdate) {
+	// 기본정보 업데이트
+	public void updateUsersBasic(int memberId, String userName, String phoneNumber, String birthdate) {
 		repo.updateUsersBasic(memberId, userName, phoneNumber, birthdate);
 	}
 
-	/** (D) 프로필 업서트: INSERT or UPDATE */
+	// 프로필 upsert
 	public void saveProfile(int memberId, String job, String consultDate, String goal, String memo) {
 		repo.upsertMemberProfile(memberId, job, consultDate, goal, memo);
 	}
 
-	/**
-	 * (E) PT 등록횟수 추가구매 - 구매이력 보존을 위한 누적 INSERT - 여러 테이블을 같이 변경하는 상황을
-	 * 대비하여 @Transactional 권장
-	 */
+	// PT 계약 추가
 	@Transactional
 	public void addPtContract(int trainerId, int memberId, int totalSessions) {
 		repo.insertPtContract(trainerId, memberId, totalSessions);
 	}
 
-	/** (F) 회원 삭제 */
-	public void deleteMember(int memberId) {
-		repo.deleteMember(memberId);
+	// 연결 해제(예약 삭제 → 계약 삭제 → 배정 해제)
+	@Transactional
+	public void unlinkMember(int trainerId, int memberId) {
+		repo.deleteReservationsByMemberAndTrainer(trainerId, memberId);
+		repo.deletePtContractsByMemberAndTrainer(trainerId, memberId);
+		int updated = repo.unassignTrainer(memberId, trainerId);
+		if (updated == 0) {
+			throw new IllegalStateException("연결 해제 실패: 소유권 불일치 또는 이미 해제됨");
+		}
 	}
-	
+
+	// 회원 생성 + 트레이너 배정
+	@Transactional
+	public int createMemberAndAssignTrainer(int trainerId, Map<String, Object> req) {
+		int userId = repo.insertUser(req); // req.birthdate = "yyMMdd"
+		repo.assignTrainer(userId, trainerId);
+		return userId;
+	}
+
+	public Map<String, Object> getUserBasicByLoginId(String loginId) {
+	    return repo.selectUserBasicByLoginId(loginId);
+	}
+
 }

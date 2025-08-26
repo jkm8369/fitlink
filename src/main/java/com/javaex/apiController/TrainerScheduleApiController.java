@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.javaex.repository.TrainerScheduleRepository;
 
@@ -26,11 +27,14 @@ public class TrainerScheduleApiController {
         this.trainerScheduleRepository = trainerScheduleRepository;
     }
 
-    /** 예약된 건만 리스트 (트레이너 하단 표) */
+    /** 예약된 건만 리스트 (트레이너 하단 표)
+     *  - start, end 만 받고 trainerId는 세션에서 */
     @GetMapping("/bookings")
-    public List<Map<String, Object>> getTrainerBookings(@RequestParam("trainerId") int trainerId,
-                                                        @RequestParam("start") String start,
-                                                        @RequestParam("end") String end) {
+    public List<Map<String, Object>> getTrainerBookings(
+            @SessionAttribute("trainerId") Integer trainerId,
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
+
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
         param.put("start", start);
@@ -38,11 +42,14 @@ public class TrainerScheduleApiController {
         return trainerScheduleRepository.selectTrainerBookings(param);
     }
 
-    /** 슬롯+예약 상태 (FullCalendar 이벤트) */
+    /** 슬롯+예약 상태 (FullCalendar 이벤트)
+     *  - start, end 만 받고 trainerId는 세션에서 */
     @GetMapping("/slots")
-    public List<Map<String, Object>> getTrainerSlots(@RequestParam("trainerId") int trainerId,
-                                                     @RequestParam("start") String start,
-                                                     @RequestParam("end") String end) {
+    public List<Map<String, Object>> getTrainerSlots(
+            @SessionAttribute("trainerId") Integer trainerId,
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
+
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
         param.put("start", start);
@@ -50,20 +57,26 @@ public class TrainerScheduleApiController {
         return trainerScheduleRepository.selectTrainerSlotsWithStatus(param);
     }
 
-    /** 특정일 시(hour)별 슬롯 상태 */
+    /** 특정일 시(hour)별 슬롯 상태
+     *  - date만 받고 trainerId는 세션에서 */
     @GetMapping("/slots/day")
-    public List<Map<String, Object>> getDaySlots(@RequestParam("trainerId") int trainerId,
-                                                 @RequestParam("date") String date) {
+    public List<Map<String, Object>> getDaySlots(
+            @SessionAttribute("trainerId") Integer trainerId,
+            @RequestParam("date") String date) {
+
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
         param.put("workDate", date);
         return trainerScheduleRepository.selectDaySlotsWithStatus(param);
     }
 
-    /** 근무시간 등록 */
+    /** 근무시간 등록
+     *  - Body의 trainerId는 무시하고(또는 없어도 됨), 세션 trainerId 사용 */
     @PostMapping("/availability")
-    public ResponseEntity<Map<String, Object>> insertAvailabilities(@RequestBody Map<String, Object> body) {
-        Integer trainerId = (Integer) body.get("trainerId");
+    public ResponseEntity<Map<String, Object>> insertAvailabilities(
+            @SessionAttribute("trainerId") Integer trainerId,
+            @RequestBody Map<String, Object> body) {
+
         @SuppressWarnings("unchecked")
         List<String> datetimes = (List<String>) body.get("datetimes");
 
@@ -78,6 +91,7 @@ public class TrainerScheduleApiController {
             param.put("availableDatetime", datetimes.get(0));
             inserted = trainerScheduleRepository.insertAvailability(param);
         }
+
         Map<String, Object> resp = new HashMap<>();
         resp.put("inserted", inserted);
         return ResponseEntity.ok(resp);
@@ -85,19 +99,26 @@ public class TrainerScheduleApiController {
 
     /** 단일 근무시간 삭제 */
     @DeleteMapping("/availability")
-    public ResponseEntity<Map<String, Object>> deleteAvailability(@RequestParam("id") int id) {
+    public ResponseEntity<Map<String, Object>> deleteAvailability(
+            @RequestParam("id") int id) {
+
         Map<String, Object> param = new HashMap<>();
         param.put("availabilityId", id);
+
         int deleted = trainerScheduleRepository.deleteAvailabilityById(param);
+
         Map<String, Object> resp = new HashMap<>();
         resp.put("deleted", deleted);
         return ResponseEntity.ok(resp);
     }
 
-    /** 특정일 여러 근무시간 삭제 */
+    /** 특정일 여러 근무시간 삭제
+     *  - Body의 trainerId는 무시하고 세션 trainerId 사용 */
     @PostMapping("/availability/delete")
-    public ResponseEntity<Map<String, Object>> deleteAvailabilities(@RequestBody Map<String, Object> body) {
-        Integer trainerId = (Integer) body.get("trainerId");
+    public ResponseEntity<Map<String, Object>> deleteAvailabilities(
+            @SessionAttribute("trainerId") Integer trainerId,
+            @RequestBody Map<String, Object> body) {
+
         @SuppressWarnings("unchecked")
         List<String> datetimes = (List<String>) body.get("datetimes");
 
@@ -112,15 +133,19 @@ public class TrainerScheduleApiController {
         return ResponseEntity.ok(resp);
     }
 
-    /** 트레이너 강제 예약취소 (본인 소유 예약만) */
+    /** 트레이너 강제 예약취소 (본인 소유 예약만)
+     *  - trainerId 파라미터 제거, 세션값 사용 */
     @DeleteMapping("/reservation")
-    public ResponseEntity<Map<String, Object>> forceCancelReservation(@RequestParam("reservationId") int reservationId,
-                                                                      @RequestParam("trainerId") int trainerId) {
+    public ResponseEntity<Map<String, Object>> forceCancelReservation(
+            @SessionAttribute("trainerId") Integer trainerId,
+            @RequestParam("reservationId") int reservationId) {
+
         Map<String, Object> param = new HashMap<>();
         param.put("reservationId", reservationId);
         param.put("trainerId", trainerId);
 
         int deleted = trainerScheduleRepository.deleteReservationByTrainer(param);
+
         Map<String, Object> resp = new HashMap<>();
         resp.put("ok", deleted > 0);
         resp.put("deleted", deleted);

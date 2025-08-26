@@ -13,15 +13,15 @@
     </div>
 
     <div class="aside-menu">
-      <a href="#" class="menu-item">
+      <a href="${pageContext.request.contextPath}/trainer/member-list" class="menu-item">
         <i class="fa-solid fa-address-card"></i>
         <span>회원</span>
       </a>
-      <a href="#" class="menu-item">
+      <a href="${pageContext.request.contextPath}/trainer/schedule" class="menu-item">
         <i class="fa-solid fa-calendar-days"></i>
         <span>일정</span>
       </a>
-      <a href="${pageContext.request.contextPath}/trainer/exercise" class="menu-item">
+      <a href="${pageContext.request.contextPath}/exercise" class="menu-item">
         <i class="fa-solid fa-list-ul"></i>
         <span>운동종류</span>
       </a>

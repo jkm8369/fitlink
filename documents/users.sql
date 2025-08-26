@@ -1,3 +1,5 @@
+use fitlink_db;
+
 SELECT *
 FROM users;
 
@@ -18,3 +20,8 @@ CREATE TABLE users (
     FOREIGN KEY (assigned_trainer_id) REFERENCES users(user_id)
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+SELECT CONSTRAINT_NAME, DELETE_RULE, UPDATE_RULE
+FROM information_schema.REFERENTIAL_CONSTRAINTS
+WHERE CONSTRAINT_SCHEMA = 'aws_fitlink_db' AND TABLE_NAME = 'users';
+

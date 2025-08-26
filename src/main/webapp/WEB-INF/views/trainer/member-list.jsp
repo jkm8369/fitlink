@@ -2,122 +2,183 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
-<%-- 컨텍스트 경로 (정적 리소스/링크에 사용). 루트 배포면 '' 가 들어옵니다. --%>
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Members - FitLink</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MemberList - FitLink</title>
 
-  <%-- 정적 CSS: 컨텍스트 안전하게 로드 --%>
-  <link rel="stylesheet" href="<c:url value='/assets/css/reset.css'/>" />
-  <link rel="stylesheet" href="<c:url value='/assets/css/include.css'/>" />
-  <link rel="stylesheet" href="<c:url value='/assets/css/trainer.css'/>" />
-  <link rel="stylesheet" href="<c:url value='/assets/css/member.css'/>" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- 기본 리셋/공용 스타일 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/include.css" />
+
+<!-- member 전용 스타일 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/member.css" />
+
+<!-- 트레이너/페이지 커스텀 -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/trainer.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/modal.css" />
+
+<!-- 아이콘 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
-<body class="member-page">
-  <div id="wrap">
-    <!-- ===== 헤더 ===== -->
-    <header>
-      <a href="${ctx}/trainer/member" class="btn-logout">
-        <img src="${ctx}/assets/images/logo.jpg" alt="FitLink Logo" />
-      </a>
-      <div class="btn-logout">
-        <a href="#" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</a>
-      </div>
-    </header>
 
-    <!-- ===== aside + main ===== -->
+
+<body>
+  <div id="wrap">
+    <!-- ------헤더------ -->
+    <c:import url="/WEB-INF/views/include/header.jsp"></c:import>
+    <!-- //------헤더------ -->
+
     <div id="content">
+      <!-- ------aside------ -->
       <aside>
         <div class="user-info">
-          <div class="user-name-wrap">
-            <img class="dumbell-icon" src="${ctx}/assets/images/사이트로고.jpg" alt="dumbell-icon" />
-            <p class="user-name">홍길동<br/><small>(트레이너)</small></p>
-          </div>
-        </div>
-
-        <div class="aside-menu">
-          <a href="${ctx}/trainer/member" class="menu-item"><i class="fa-solid fa-address-card"></i><span>회원</span></a>
-          <a href="${ctx}/trainer/schedule" class="menu-item"><i class="fa-solid fa-calendar-days"></i><span>일정</span></a>
-          <a href="#" class="menu-item"><i class="fa-solid fa-list-ul"></i><span>운동종류</span></a>
+          <c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
         </div>
       </aside>
+      <!-- ------aside------ -->
 
-      <main>
+      <!-- trainerId를 JS에서 편하게 쓰도록 data-attr로도 노출 -->
+      <main id="member-list" data-trainer-id="${trainerId}">
+        <!-- 제목 -->
         <div class="page-header">
           <h3 class="page-title">Members</h3>
-          <p class="page-subtitle">
-            <fmt:formatDate value="<%=new java.util.Date()%>" pattern="yyyy년 M월 d일"/>
-          </p>
         </div>
 
-        <!-- ===== 회원 리스트 ===== -->
+        <!-- 회원 리스트 -->
         <div class="list-area">
           <section class="card list-card">
             <div class="card-header">
               <h4 class="card-title list-title">회원 리스트</h4>
             </div>
 
-            <div class="table-wrap">
-              <table class="table">
-                <colgroup>
-                  <col class="w-60"><col class="w-120"><col class="w-110"><col class="w-90"><col class="w-120">
-                  <col class="w-110"><col class="w-110"><col class="w-110"><col class="w-110"><col class="w-100">
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th class="w-90">순서</th>
-                    <th>이름</th>
-                    <th>생년월일</th>
-                    <th>직업</th>
-                    <th>상담일</th>
-                    <th>운동목적</th>
-                    <th class="nowrap">PT 등록일수</th>
-                    <th class="nowrap">PT 수업일수</th>
-                    <th class="nowrap">PT 잔여일수</th>
-                    <th class="actions-head"></th>
+            <table class="table">
+              <colgroup>
+                <col class="w-60"><!-- 순서 -->
+                <col class="w-60"><!-- 이름 -->
+                <col class="w-80"><!-- 생년월일 -->
+                <col class="w-70"><!-- 직업 -->
+                <col class="w-100"><!-- 상담일 -->
+                <col class="w-90"><!-- 운동목적 -->
+                <col class="w-110"><!-- PT 등록일수 -->
+                <col class="w-110"><!-- PT 수업일수 -->
+                <col class="w-40"><!-- PT 잔여일수 -->
+                <col class="w-100"><!-- 액션 -->
+              </colgroup>
+
+              <thead>
+                <tr>
+                  <th class="w-90">순서</th>
+                  <th>이름</th>
+                  <th>생년월일</th>
+                  <th>직업</th>
+                  <th>상담일</th>
+                  <th>운동목적</th>
+                  <th class="nowrap">PT 등록일수</th>
+                  <th class="nowrap">PT 수업일수</th>
+                  <th class="nowrap">PT 잔여일수</th>
+                  <th class="actions-head"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <!-- rows 반복 -->
+                <c:forEach var="row" items="${rows}" varStatus="st">
+                  <tr data-member-id="${row.memberId}">
+                    <td><c:out value="${st.index + 1}"/></td>
+
+                    <td>
+                      <a href="#" class="link-member" data-member-id="${row.memberId}">
+                        <c:out value="${row.memberName}"/>
+                      </a>
+                    </td>
+
+                    <!-- 생년월일 -->
+                    <td>
+					  <c:choose>
+					    <c:when test="${empty row.birth}">-</c:when>
+					    <c:otherwise>${row.birth}</c:otherwise>
+					  </c:choose>
+				      <input type="hidden" id="birth" value="${row.birth}" />
+					</td>
+
+                    <!-- 직업 -->
+                    <td>
+                      <c:choose>
+                        <c:when test="${empty row.job}">-</c:when>
+                        <c:otherwise>${row.job}</c:otherwise>
+                      </c:choose>
+                    </td>
+
+                    <!-- 상담일 -->
+                    <td>
+                      <c:choose>
+                        <c:when test="${empty row.consultDate}">-</c:when>
+                        <c:otherwise>${row.consultDate}</c:otherwise>
+                      </c:choose>
+                    </td>
+
+                    <!-- 운동목적 -->
+                    <td class="td-left">
+                      <c:choose>
+                        <c:when test="${empty row.goal}">-</c:when>
+                        <c:otherwise>${row.goal}</c:otherwise>
+                      </c:choose>
+                    </td>
+
+					<!-- PT 등록일수 -->
+					<td>
+					  <c:choose>
+					    <c:when test="${empty row.ptRegisteredCnt}">0</c:when>
+					    <c:otherwise>${row.ptRegisteredCnt}</c:otherwise>
+					  </c:choose>
+					</td>
+					
+					<!-- PT 수업일수 -->
+					<td>
+					  <c:choose>
+					    <c:when test="${empty row.ptUsedCnt}">0</c:when>
+					    <c:otherwise>${row.ptUsedCnt}</c:otherwise>
+					  </c:choose>
+					</td>
+					
+					<!-- PT 잔여일수 -->
+					<td>
+					  <c:choose>
+					    <c:when test="${empty row.ptRemainingCnt}">0</c:when>
+					    <c:otherwise>${row.ptRemainingCnt}</c:otherwise>
+					  </c:choose>
+					</td>
+
+
+                    <td class="actions">
+                      <button class="icon-btn btn-edit"   type="button" aria-label="수정">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button class="icon-btn btn-delete" type="button" aria-label="삭제">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  <c:choose>
-                    <c:when test="${not empty rows}">
-                      <c:forEach var="row" items="${rows}" varStatus="st">
-                        <tr data-id="${row.memberId}">
-                          <td>${st.index + 1}</td>
-                          <td><a href="#" class="lnk-member" data-id="${row.memberId}">${row.memberName}</a></td>
-                          <td><c:out value="${row.birthdate}"/></td>
-                          <td><c:out value="${row.job}" default="-"/></td>
-                          <td><c:out value="${row.consultDate}" default="-"/></td>
-                          <td><c:out value="${row.goal}" default="-"/></td>
-                          <td class="nowrap"><c:out value="${row.pt_registered_cnt}"/>회</td>
-                          <td class="nowrap"><c:out value="${row.pt_completed_cnt}"/>회</td>
-                          <td class="nowrap"><c:out value="${row.pt_remaining_cnt}"/>회</td>
-                          <td class="actions">
-                            <button class="icon-btn btn-edit" data-id="${row.memberId}" aria-label="수정">
-                              <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button class="icon-btn btn-del" data-id="${row.memberId}" aria-label="삭제">
-                              <i class="fa-regular fa-trash-can"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                      <tr><td colspan="10" class="text-center">등록된 회원이 없습니다.</td></tr>
-                    </c:otherwise>
-                  </c:choose>
-                </tbody>
-              </table>
-            </div>
+                </c:forEach>
+
+                <!-- 빈 목록 처리 -->
+                <c:if test="${empty rows}">
+                  <tr>
+                    <td colspan="10" class="muted">담당 회원이 없습니다.</td>
+                  </tr>
+                </c:if>
+              </tbody>
+            </table>
           </section>
+
+          <button class="add-member-btn" type="button" id="btn-create">
+            <i class="fa-solid fa-address-card"></i><span>회원 등록</span>
+          </button>
         </div>
       </main>
     </div>
@@ -125,138 +186,283 @@
     <footer>
       <p>Copyright © 2025. FitLink All rights reserved.</p>
     </footer>
-
-    <!-- ===== 회원 수정 모달 ===== -->
-    <div id="memberEditModal" class="modal-overlay" style="display:none;">
-      <div class="modal-container">
-        <div class="modal-header">
-          <h2 class="modal-title">회원 수정</h2>
-          <button class="modal-close-btn" id="btnCloseMemberModal" type="button"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-          <form id="memberEditForm" onsubmit="return false;">
-            <input type="hidden" id="mem_memberId" />
-            <div class="form-row"><label>이름</label><input id="mem_userName" type="text"/></div>
-            <div class="form-row"><label>전화번호</label><input id="mem_phoneNumber" type="text" placeholder="XXX-XXXX-XXXX"/></div>
-            <div class="form-row"><label>직업</label><input id="mem_job" type="text"/></div>
-            <div class="form-row"><label>상담일</label><input id="mem_consultDate" type="date"/></div>
-            <div class="form-row"><label>운동목적</label>
-              <select id="mem_goal">
-                <option value="">선택</option><option>체중감량</option><option>근력증가</option><option>자세교정</option><option>건강관리</option><option>기타</option>
-              </select>
-            </div>
-            <div class="form-row"><label>메모</label><textarea id="mem_memo" rows="3" placeholder="특이사항 메모"></textarea></div>
-            <div class="form-row"><label>PT등록횟수</label><input id="mem_ptAdd" type="number" min="0" value="0"/><small class="help">※ 이번에 추가 구매한 회수 (합계가 아님)</small></div>
-          </form>
-        </div>
-        <div class="modal-footer"><button id="btnSaveMember" class="submit-btn save-btn" type="button">저장</button></div>
-      </div>
-    </div>
   </div>
 
-  <%-- ===== Ajax 스크립트 ===== --%>
+	<!-- ================= 회원 등록 모달 ================= -->
+	<div id="schedule-modal" class="">
+	  <div class="modal-container">
+	    <!-- 1. 모달 헤더 -->
+	    <div class="modal-header">
+	      <h2 class="modal-title">회원 등록</h2>
+	      <button type="button" class="modal-close-btn" aria-label="닫기">
+	        <i class="fa-solid fa-xmark"></i>
+	      </button>
+	    </div>
+	
+	    <!-- 2. 모달 바디 -->
+	    <div class="modal-body">
+	      <form class="register-form" onsubmit="return false;">
+	        <!-- 아이디 -->
+	        <div class="form-group">
+	          <label for="user-id">아이디</label>
+	          <input type="text" id="user-id" />
+	        </div>
+	        
+            <input type="hidden" id="member-id" />
+            
+	        <!-- 이름 -->
+	        <div class="form-group">
+	          <label for="user-name">이름</label>
+	          <input type="text" id="user-name" />
+	        </div>
+	        <!-- 전화번호 -->
+	        <div class="form-group">
+	          <label for="user-phone">전화번호</label>
+	          <input type="text" id="user-phone" />
+	        </div>
+	        <!-- 직업 -->
+	        <div class="form-group">
+	          <label for="user-job">직업</label>
+	          <input type="text" id="user-job" />
+	        </div>
+	        <!-- 상담일 -->
+	        <div class="form-group">
+	          <label for="consult-date">상담일</label>
+	          <div class="input-with-icon">
+	            <input type="text" id="consult-date" placeholder="YYYY-MM-DD" />
+	          </div>
+	        </div>
+	        <!-- 운동목적 -->
+	        <div class="form-group">
+	          <label for="goal">운동목적</label>
+	          <select id="goal">
+				<option value="">선택</option>
+				<option value="체중감량">체중감량</option>
+				<option value="근력강화">근력강화</option>
+				<option value="체형교정">체형교정</option>
+				<option value="체력향상">체력향상</option>
+				<option value="재활/건강관리">재활/건강관리</option>
+				<option value="생활습관 개선">생활습관 개선</option>
+				<option value="대회/목표 준비">대회/목표 준비</option>
+	          </select>
+	        </div>
+	        
+	        <!-- PT 등록일수 -->
+	        <div class="form-group">
+	          <label for="pt-days">PT등록일수</label>
+	          <input type="number" id="pt-days" />
+	        </div>
+	      </form>
+	    </div>
+	
+	    <!-- 3. 모달 푸터 -->
+	    <div class="modal-footer">
+	      <button type="button" class="submit-btn save-btn">저장</button>
+	    </div>
+	  </div>
+	</div>
+
+  <!-- script -->
 	<script>
-	const CTX = '${pageContext.request.contextPath}';
-	const API_MEMBER = `${CTX}/api/trainer/member-list`;
+	/* ================= 모달 열기/닫기 ================= */
+	let $modal = $("#schedule-modal");
 	
-	// 공용 유틸
-	const getMemberIdFrom = (el) => $(el).data('id') || $(el).closest('tr').data('id');
-	const showModal = () => $('#memberEditModal').show();
-	const hideModal = () => $('#memberEditModal').hide();
-	function ajaxFail(jq, text, err){
-	  const msg = (jq.responseText || text || err || '').toString().slice(0,200);
-	  alert('요청 실패: ' + msg);
+	function openMemberModal() {
+	  let $form = $("#schedule-modal .register-form");
+	  if ($form.length > 0 && $form[0].reset) {
+	    $form[0].reset();
+	  }
+	  $modal.addClass("show"); // CSS로 표시
+	  setTimeout(function () { $("#user-id").trigger("focus"); }, 0);
 	}
 	
-	// 모달 폼 채우기
-	function fillEditModal(d){
-	  $('#mem_memberId').val(d.memberId);
-	  $('#mem_userName').val(d.userName || '');
-	  $('#mem_phoneNumber').val(d.phoneNumber || '');
-	  $('#mem_job').val(d.job || '');
-	  $('#mem_consultDate').val((d.consultDate || '').substring(0,10));
-	  $('#mem_goal').val(d.goal || '');
-	  $('#mem_memo').val(d.memo || '');
-	  $('#mem_ptAdd').val(0);
+	function closeMemberModal() {
+	  if ($modal.hasClass("show")) {
+	    $modal.removeClass("show");
+	  }
 	}
 	
-	// (1) 수정 아이콘 → 상세 조회 → 모달 오픈
-	$(document).on('click', '.btn-edit', function(){
-	  const memberId = $(this).data('id');
-	  $.getJSON(`${API_MEMBER}/${memberId}`)
-	    .done(res => { if(!res.ok){ alert('조회 실패'); return; } fillEditModal(res.data); showModal(); })
-	    .fail(ajaxFail);
+	/* 회원등록 버튼 클릭 → 모달 오픈 */
+	$(document).on("click", "#btn-create", function () {
+	  openMemberModal();
 	});
 	
-	// 닫기
-	$('#btnCloseMemberModal').on('click', hideModal);
-	
-	// (2) 삭제 아이콘 → DELETE /api/trainer/member-list/{id}
-	$(document).on('click', '.btn-del', function(){
-	  const memberId = $(this).data('id');
-	  if(!confirm('정말 삭제하시겠어요?')) return;
-	
-	  $.ajax({
-	    url: `${API_MEMBER}/${memberId}/delete`,  // <= '/delete' 붙여서 POST로
-	    type: 'POST',
-	    dataType: 'json'
-	  })
-	  .done(res => {
-	    if(!res.ok){ alert('삭제 실패'); return; }
-	    $(`tr[data-id="${memberId}"]`).remove();
-	  })
-	  .fail(ajaxFail);
+	/* 닫기(X), 오버레이 클릭, ESC */
+	$(document).on("click", ".modal-close-btn", function () {
+	  closeMemberModal();
 	});
 	
-	// (3) 저장 버튼 → 기본정보/프로필/(선택)PT추가
-	$('#btnSaveMember').on('click', function(){
-	  const memberId    = $('#mem_memberId').val();
-	  const userName    = $('#mem_userName').val().trim();
-	  const phoneNumber = $('#mem_phoneNumber').val().trim();
-	  const birthdate   = $('#mem_birthdate').length ? $('#mem_birthdate').val() : '';
-	  const job         = $('#mem_job').val().trim();
-	  const consultDate = $('#mem_consultDate').val();
-	  const goal        = $('#mem_goal').val();
-	  const memo        = $('#mem_memo').val().trim();
-	  const ptAdd       = parseInt($('#mem_ptAdd').val() || '0', 10);
-	
-	  if(!memberId){ alert('회원이 선택되지 않았습니다.'); return; }
-	  if(!userName){ alert('이름을 입력하세요.'); return; }
-	
-	const p1 = $.ajax({
-		  url: `${API_MEMBER}/${memberId}/basic`,
-		  type: 'POST',
-		  dataType: 'json',
-		  data: { userName, phoneNumber, birthdate }
-		});
-	const p2 = $.ajax({
-	  url: `${API_MEMBER}/${memberId}/profile`,
-	  type: 'POST',
-	  dataType: 'json',
-	  data: { job, consultDate, goal, memo }
+	$(document).on("click", "#schedule-modal", function (event) {
+	  if (event.target && event.target.id === "schedule-modal") {
+	    closeMemberModal();
+	  }
 	});
-	const p3 = (ptAdd > 0)
-	  ? $.ajax({
-	      url: `${API_MEMBER}/${memberId}/pt-contract`,
-	      type: 'POST',
-	      dataType: 'json',
-	      data: { totalSessions: ptAdd }
-	    })
-	: $.Deferred().resolve({ok:true}).promise();
+	
+	$(document).on("keydown", function (event) {
+	  if (event.key === "Escape" && $modal.hasClass("show")) {
+	    closeMemberModal();
+	  }
+	});
+	
+	/* ============ 가입정보 자동조회: GET /api/users/{memberId} ============ */
+	// 아이디 입력칸(#user-id)에는 login_id를 받습니다.
+	function fetchSignupInfoByLoginId(loginId) {
+	  if (loginId && loginId.length > 0) {
+	    $.ajax({
+	      url: "/api/users/by-login/" + encodeURIComponent(loginId),
+	      type: "GET",
+	      dataType: "json",
+	      success: function (response) {
+	        if (response && response.ok && response.data) {
+	          let user = response.data; // { memberId, userName, phoneNumber, birth }
+	          $("#member-id").val(user.memberId || "");      // 숨김: 정수 user_id
+	          $("#user-name").val(user.userName || "");
+	          $("#user-phone").val(user.phoneNumber || "");
+	          $("#birth").val(user.birth || "");             // yyMMdd(보기/전송용)
+	        } else {
+	          alert("해당 아이디의 회원이 없습니다.");
+	          $("#member-id").val("");
+	          $("#user-name, #user-phone, #birth").val("");
+	        }
+	      },
+	      error: function () {
+	        alert("회원 정보 조회 실패");
+	      }
+	    });
+	  }
+	}
 
 	
-	  $.when(p1, p2, p3).done((r1,r2,r3)=>{
-	    const ok1 = r1[0]?.ok !== false, ok2 = r2[0]?.ok !== false, ok3 = (ptAdd>0) ? (r3[0]?.ok !== false) : true;
-	    if(ok1 && ok2 && ok3){
-	      alert('저장되었습니다.');
-	      hideModal();
-	      const $row = $(`tr[data-id="${memberId}"]`); if($row.length){ $row.find('a.lnk-member').text(userName); }
-	    } else { alert('일부 저장에 실패했습니다.'); }
-	  }).fail(ajaxFail);
+	/* blur + Enter 둘 다 지원 */
+	$(document).on("blur", "#user-id", function () {
+	  let loginId = ($(this).val() || "").trim();
+	  if (loginId.length > 0) {
+	    fetchSignupInfoByLoginId(loginId);
+	  }
 	});
 	
-	// 상세 링크 기본 이동 막기
-	$(document).on('click', '.lnk-member', (e)=> e.preventDefault());
+	$(document).on("keydown", "#user-id", function (event) {
+	  if (event.key === "Enter") {
+	    event.preventDefault();
+	    let loginId = ($(this).val() || "").trim();
+	    if (loginId.length > 0) {
+	      fetchSignupInfoByLoginId(loginId);
+	    }
+	  }
+	});
+
+	
+	/* ================= 저장: POST /api/trainer/member-list ================= */
+	$(document).on("click", ".save-btn", function () {
+	  let trainerId   = $("#member-list").data("trainer-id");
+	  let goalValue   = ($("#goal").val() || $("#purpose").val() || "").trim();
+	
+	  // 중요: 정수 user_id는 숨김에서!
+	  let memberIdVal = ($("#member-id").val() || "").trim();
+	
+	  let payload = {
+	    memberId:      memberIdVal,                         // 바뀐 부분
+	    userName:      ($("#user-name").val() || "").trim(),
+	    phoneNumber:   ($("#user-phone").val() || "").trim(),
+	    birthdate:     ($("#birth").val() || "").trim(),
+	    job:           ($("#user-job").val() || "").trim(),
+	    consultDate:   ($("#consult-date").val() || "").trim(),
+	    goal:          goalValue,
+	    memo:          ($("#memo").val() || "").trim(),
+	    totalSessions: ($("#pt-days").val() || "").trim(),
+	    trainerId:     trainerId
+	  };
+	
+	  if (!payload.memberId) { alert("회원 조회를 먼저 해주세요(아이디 입력 후 엔터)."); return; }
+	  if (!payload.userName) { alert("이름은 필수입니다."); return; }
+	
+	  $.ajax({
+	    url: "/api/trainer/member-list",
+	    type: "POST",
+	    contentType: "application/json; charset=UTF-8",
+	    dataType: "json",
+	    data: JSON.stringify(payload),
+	    success: function (response) {
+	      if (response && response.ok) {
+	        alert("등록되었습니다.");
+	        closeMemberModal();
+	      } else {
+	        alert((response && response.msg) ? response.msg : "등록 실패");
+	      }
+	    },
+	    error: function () {
+	      alert("네트워크 오류");
+	    }
+	  });
+	});
+	
+	/* ================ 수정(연필) 클릭 → 단건 조회 후 모달 채우기 ================ */
+	$(document).on("click", ".btn-edit", function () {
+	  let memberId = $(this).closest("tr").data("memberId");
+	
+	  if (!memberId) {
+	    alert("회원 ID가 없습니다.");
+	    return;
+	  }
+	
+	  $.ajax({
+	    url: "/api/trainer/member-list/" + encodeURIComponent(memberId),
+	    type: "GET",
+	    dataType: "json",
+	    success: function (response) {
+	      if (response && response.ok === true && response.data) {
+	        let data = response.data;
+	        openMemberModal();
+	
+	        $("#user-id").val(data.memberId || "");
+	        $("#user-name").val(data.userName || "");
+	        $("#user-phone").val(data.phoneNumber || "");
+	        $("#birth").val(data.birth || "");
+	        $("#user-job").val(data.job || "");
+	        $("#consult-date").val(data.consultDate || "");
+	        $("#goal").val(data.goal || "");
+	        $("#memo").val(data.memo || "");
+	        $("#pt-days").val(data.ptRegisteredCnt || "");
+	      } else {
+	        alert("회원 조회 실패");
+	      }
+	    },
+	    error: function () {
+	      alert("회원 조회 실패");
+	    }
+	  });
+	});
+	
+	/* ================= 삭제 (DELETE /api/trainer/member-list/{memberId}) ================= */
+	$(document).on("click", ".btn-delete", function () {
+	  let $row = $(this).closest("tr");
+	  let memberId = $row.data("memberId");
+	
+	  if (!memberId) {
+	    alert("회원 ID가 없습니다.");
+	    return;
+	  }
+	
+	  let confirmDelete = confirm("정말 삭제하시겠습니까?");
+	  if (confirmDelete) {
+	    $.ajax({
+	      url: "/api/trainer/member-list/" + encodeURIComponent(memberId),
+	      type: "DELETE",
+	      dataType: "json",
+	      success: function (response) {
+	        if (response && response.ok === true) {
+	          $row.remove();
+	        } else {
+	          alert((response && response.msg) ? response.msg : "삭제 실패");
+	        }
+	      },
+	      error: function () {
+	        alert("네트워크 오류");
+	      }
+	    });
+	  }
+	});
 	</script>
+
 </body>
 </html>

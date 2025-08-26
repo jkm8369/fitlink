@@ -12,3 +12,6 @@ CREATE TABLE availability (
 -- 조회
 SELECT *
 FROM availability;
+
+ALTER TABLE availability DROP INDEX idx_avail_trainer_dt;
+CREATE UNIQUE INDEX uq_avail_trainer_dt ON availability (trainer_id, available_datetime);
