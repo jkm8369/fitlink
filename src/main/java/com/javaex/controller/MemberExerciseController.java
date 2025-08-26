@@ -31,7 +31,7 @@ public class MemberExerciseController {
 	// --일반 회원이 자신의 운동 종류 목록을 볼 때 사용 
 	@GetMapping(value = "")
 	public String exercise(HttpSession session, Model model) {
-		System.out.println("MemberExerciseController.exercise() member");
+		//System.out.println("MemberExerciseController.exercise() member");
 		
 		UserVO authUser = (UserVO) session.getAttribute("authUser");
 		
@@ -42,8 +42,10 @@ public class MemberExerciseController {
 	
 	// -- 트레이너가 담당 회원의 운동 종류 목록을 볼 때 사용하는 메소드
 	@GetMapping(value = "/member/{memberId}")
-	public String exerciseByTrainer(@PathVariable("memberId") int memberId, HttpSession session, Model model) {
-		System.out.println("MemberExerciseController.exerciseByTrainer() for trainer");
+	public String exerciseByTrainer(@PathVariable("memberId") int memberId, 
+									HttpSession session, 
+									Model model) {
+		//System.out.println("MemberExerciseController.exerciseByTrainer() for trainer");
 		
 		UserVO authUser = (UserVO) session.getAttribute("authUser");
 		
@@ -86,32 +88,50 @@ public class MemberExerciseController {
 	public String memberExerciseList(
 			@RequestParam(value = "bodyPart", required = false, defaultValue = "가슴") String bodyPart,
 			HttpSession session, Model model) {
-		System.out.println("MemberExerciseController.memberExerciseList()");
+		//System.out.println("MemberExerciseController.memberExerciseList()");
 
 		UserVO authUser = (UserVO) session.getAttribute("authUser");
 
-		int userId = authUser.getUserId();
-
-		// 수정 페이지에 필요한 모든 데이터 가져오기
-		Map<String, Object> exerciseData = memberExerciseService.exeGetExerciseEditData(userId, bodyPart);
-
-		// 받아온 데이터를 모델에 담아 jsp로 전달
-		model.addAttribute("exerciseData", exerciseData);
-
-		return "member/exercise-list";
+		return getExerciseListPage(authUser, authUser.getUserId(), bodyPart, model);
 	}
 
+	// 트레이너가 보는 회원 운동 종류 수정 페이지
+	@GetMapping(value = "/list-member/member/{memberId}")
+	public String memberExerciseListByTrainer(@PathVariable("memberId") int memberId,
+			@RequestParam(value = "bodyPart", required = false, defaultValue = "가슴") String bodyPart,
+			HttpSession session, Model model) {
+		System.out.println("MemberExerciseController.memberExerciseListByTrainer()");
+		
+		UserVO authUser = (UserVO) session.getAttribute("authUser");
+		
+		boolean hasAuth = memberExerciseService.exeCheckAuth(memberId, authUser.getUserId());
+		
+		if(!hasAuth) {
+			return "redirect:/trainer/members";
+		}
+		
+		return getExerciseListPage(authUser, memberId, bodyPart, model);
+	}
 	
-	// 회원용 운동 종류 선택을 저장하는 메소드
+	// 운동 종류 수정 페이지 구성
+	private String getExerciseListPage(UserVO authUser, int targetUserId, String bodyPart, Model model) {
+		Map<String, Object> exerciseData = memberExerciseService.exeGetExerciseEditData(targetUserId, bodyPart);
+		model.addAttribute("exerciseData", exerciseData);
+		
+		if("trainer".equals(authUser.getRole())) {
+			UserVO currentMember = memberExerciseService.exeGetMemberInfo(targetUserId);
+			model.addAttribute("currentMember", currentMember);
+		}
+		return "member/exercise-list";
+	}
+	
+	// 회원용 본인 운동 선택 저장
 	@PostMapping(value = "/update-member")
 	public String updateUserExercises(@RequestParam("bodyPart") String bodyPart,
 			@RequestParam(value = "exerciseIds", required = false) List<Integer> exerciseIds, HttpSession session) {
-		System.out.println("ExerciseController.updateUserExercises()");
+		//System.out.println("MemberExerciseController.updateUserExercises()");
 
 		UserVO authUser = (UserVO) session.getAttribute("authUser");
-		if (authUser == null) {
-			return "redirect:/user/loginform";
-		}
 
 		// 서비스에 업데이트 요청
 		memberExerciseService.exeUpdateUserExercises(authUser.getUserId(), bodyPart, exerciseIds);
@@ -129,6 +149,30 @@ public class MemberExerciseController {
 		}
 	}
 	
+	// -- 트레이너가 회원 운동 선택 저장
+	@PostMapping(value = "/update-member/member/{memberId}")
+	public String updateUserExercisesByTrainer(@PathVariable("memberId") int memberId,
+			@RequestParam("bodyPart") String bodyPart,
+			@RequestParam(value = "exerciseIds", required = false) List<Integer> exerciseIds, 
+			HttpSession session) {
+		//System.out.println("MemberExerciseController.updateUserExercisesByTrainer()");
+		
+		UserVO authUser = (UserVO) session.getAttribute("authUser");
+		
+		boolean hasAuth = memberExerciseService.exeCheckAuth(memberId, authUser.getUserId());
+		if(!hasAuth) {
+			return "redirect:/trainer/members";
+		}
+		
+		memberExerciseService.exeUpdateUserExercises(memberId, bodyPart, exerciseIds);
+		
+		try {
+			String encodedBodyPart = URLEncoder.encode(bodyPart, StandardCharsets.UTF_8);
+			return "redirect:/exercise/list-member/member/" + memberId + "?bodyPart=" + encodedBodyPart;
+		} catch (Exception e) {
+			return "redirect:/trainer/members";
+		}
+	}
 	
 
 }

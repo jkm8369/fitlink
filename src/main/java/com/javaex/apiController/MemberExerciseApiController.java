@@ -29,7 +29,7 @@ public class MemberExerciseApiController {
      */
     @PostMapping("/add")
     public JsonResult addExercise(@RequestBody MemberExerciseVO memberExerciseVO, HttpSession session) {
-        System.out.println("ExerciseApiController.addExercise()");
+        //System.out.println("ExerciseApiController.addExercise()");
         
         UserVO authUser = (UserVO)session.getAttribute("authUser");
         
@@ -48,7 +48,7 @@ public class MemberExerciseApiController {
     
     @DeleteMapping("/delete/{exerciseId}")
     public JsonResult deleteExercise(@PathVariable("exerciseId") int exerciseId, HttpSession session) {
-        System.out.println("ExerciseApiController.deleteExercise(): " + exerciseId);
+        //System.out.println("ExerciseApiController.deleteExercise(): " + exerciseId);
 
         // 세션에서 현재 로그인한 사용자 정보를 가져옵니다.
         UserVO authUser = (UserVO) session.getAttribute("authUser");

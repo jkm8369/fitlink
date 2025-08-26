@@ -29,7 +29,7 @@ public class MemberExerciseService {
 
 	// -- 사용자 부위별 운동 목록
 	public Map<String, List<MemberExerciseVO>> exeGetExerciseListGroup(int userId) {
-		System.out.println("memberExerciseService.exeGetExerciseListGroup()");
+		//System.out.println("memberExerciseService.exeGetExerciseListGroup()");
 
 		Map<String, List<MemberExerciseVO>> groupedMap = new LinkedHashMap<>(); // LinkedHashMap --> map과 달리 순서를 보장해준다
 
@@ -57,7 +57,7 @@ public class MemberExerciseService {
 
 	// -- 운동 수정 페이지
 	public Map<String, Object> exeGetExerciseEditData(int userId, String bodyPart) {
-		System.out.println("MemberExerciseService.exeGetExerciseEditData()");
+		//System.out.println("MemberExerciseService.exeGetExerciseEditData()");
 
 		// 1. 현재 부위의 모든 운동 목록 (이제 creator_id 포함)
 		List<MemberExerciseVO> allExercisesInPart = memberExerciseRepository.selectAllByPart(bodyPart);
@@ -119,7 +119,7 @@ public class MemberExerciseService {
 	 */
 	@Transactional
 	public void exeUpdateUserExercises(int userId, String bodyPart, List<Integer> checkedIds) {
-		System.out.println("ExerciseService.exeUpdateUserExercises()");
+		//System.out.println("ExerciseService.exeUpdateUserExercises()");
 
 		// 1. 이 부위('가슴')에 대한 사용자의 기존 선택 기록을 모두 삭제합니다.
 		Map<String, Object> deleteParams = new HashMap<>();
@@ -140,7 +140,7 @@ public class MemberExerciseService {
 
 	// -- 새로운 운동 종류 1개 추가
 	public MemberExerciseVO exeAddExercise(MemberExerciseVO memberExerciseVO, int creatorId) {
-		System.out.println("ExerciseService.exeAddExercise()");
+		//System.out.println("ExerciseService.exeAddExercise()");
 
 		// 파라미터로 받은 creatorId를 VO에 설정
 		memberExerciseVO.setCreatorId(creatorId);
@@ -159,7 +159,7 @@ public class MemberExerciseService {
 	
 	@Transactional // exercise 테이블과 selected_exercises 테이블에 모두 영향을 주므로 트랜잭션 처리
     public boolean exeDeleteExercise(int exerciseId, int currentUserId) {
-        System.out.println("MemberExerciseService.exeDeleteExercise()");
+        //System.out.println("MemberExerciseService.exeDeleteExercise()");
 
         // DB에 넘길 파라미터를 Map에 담습니다.
         Map<String, Object> params = new HashMap<>();
@@ -176,7 +176,7 @@ public class MemberExerciseService {
 	
     // --트레이너가 특정 회원을 조회할 권한이 있는지 확인하는 보안 메소드
     public boolean exeCheckAuth(int memberId, int trainerId) {
-        System.out.println("MemberExerciseService.exeCheckAuth()");
+        //System.out.println("MemberExerciseService.exeCheckAuth()");
         
         Map<String, Object> params = new HashMap<>();
         
@@ -191,7 +191,7 @@ public class MemberExerciseService {
 
     // --특정 회원의 기본 정보를 조회 (jsp에서 이름 표시용)
     public UserVO exeGetMemberInfo(int memberId) {
-        System.out.println("MemberExerciseService.exeGetMemberInfo()");
+        //System.out.println("MemberExerciseService.exeGetMemberInfo()");
         return userRepository.selectUserByNo(memberId);
     }
 	

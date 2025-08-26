@@ -24,16 +24,32 @@
 		<div id="content">
 			<!-- ------aside------ -->
 			<c:choose>
-				<c:when test="${sessionScope.authUser.role == 'trainer'}">
-					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
-				</c:when>
-				<c:otherwise>
-					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
-				</c:otherwise>
-			</c:choose>
+		        <c:when test="${sessionScope.authUser.role == 'trainer'}">
+		            <!-- 트레이너일 경우, currentMember 유무로 어떤 aside를 보여줄지 결정 -->
+		            <c:choose>
+		                <c:when test="${not empty currentMember}">
+		                    <c:import url="/WEB-INF/views/include/aside-trainer-member.jsp"></c:import>
+		                </c:when>
+		                <c:otherwise>
+		                    <c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
+		                </c:otherwise>
+		            </c:choose>
+		        </c:when>
+		        <c:otherwise>
+		            <!-- 회원이면 무조건 회원용 aside -->
+		            <c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
+		        </c:otherwise>
+		    </c:choose>
 			<!-- //------aside------ -->
 
-			<form action="${pageContext.request.contextPath}/exercise/update-member" method="post" style="display: flex; flex: 1;">
+			<c:choose>
+		        <c:when test="${not empty currentMember}">
+		            <form action="${pageContext.request.contextPath}/exercise/update-member/member/${currentMember.userId}" method="post" style="display: flex; flex: 1;">
+		        </c:when>
+		        <c:otherwise>
+		            <form action="${pageContext.request.contextPath}/exercise/update-member" method="post" style="display: flex; flex: 1;">
+		        </c:otherwise>
+	    	</c:choose>
 				<main>
 					<!-- 1. 제목 -->
 					<div class="page-header">
@@ -44,10 +60,14 @@
 					<!-- 2. 운동 종류 탭 -->
 					<div class="category-tabs">
 						<c:forEach items="${exerciseData.bodyPartTabs}" var="tab">
-							<a href="${pageContext.request.contextPath}/exercise/list-member?bodyPart=${tab}"
-								class="tab <c:if test="${exerciseData.currentBodyPart == tab}">active</c:if>">
-								${tab}
-							</a>
+							<c:choose>
+		                        <c:when test="${not empty currentMember}">
+		                             <a href="${pageContext.request.contextPath}/exercise/list-member/member/${currentMember.userId}?bodyPart=${tab}" class="tab <c:if test='${exerciseData.currentBodyPart == tab}'>active</c:if>">${tab}</a>
+		                        </c:when>
+		                        <c:otherwise>
+		                            <a href="${pageContext.request.contextPath}/exercise/list-member?bodyPart=${tab}" class="tab <c:if test='${exerciseData.currentBodyPart == tab}'>active</c:if>">${tab}</a>
+		                        </c:otherwise>
+		                    </c:choose>
 						</c:forEach>
 					</div>
 					<!-- //2. 운동 종류 탭 -->
@@ -184,6 +204,10 @@
     
     <script>
     $(document).ready(function() {
+    	
+    	// 현재 보고 있는 회원 ID를 저장 (없으면 0)
+    	const currentMemberId = Number("${currentMember.userId}" || 0);
+    	
     	let $modal = $("#add-exercise-modal");
 
         // '운동종류 등록' 버튼 클릭 시 모달 열기
@@ -224,7 +248,20 @@
                 success: function(jsonResult) {
                     if (jsonResult.result === "success") {
                         alert("운동이 성공적으로 등록되었습니다.");
-                        location.href = "${pageContext.request.contextPath}/exercise/list-member?bodyPart=" + bodyPart;
+                        
+                     	// 현재 상황에 맞는 URL을 동적으로 생성
+                        let redirectUrl = "";
+                        let bodyPart = $("#modal-exercise-type").val();
+                        
+                        if (currentMemberId > 0) {
+                            // 트레이너가 회원 페이지를 보고 있을 때
+                            redirectUrl = "${pageContext.request.contextPath}/exercise/list-member/member/" + currentMemberId + "?bodyPart=" + bodyPart;
+                        } else {
+                            // 회원 본인 페이지일 때
+                            redirectUrl = "${pageContext.request.contextPath}/exercise/list-member?bodyPart=" + bodyPart;
+                        }
+                        
+                        location.href = redirectUrl; // 올바른 주소로 이동
                     } else {
                         alert(jsonResult.message);
                     }
@@ -241,24 +278,38 @@
             // 클릭된 버튼에서 삭제할 운동의 ID를 가져옵니다.
             let exerciseId = $(this).data("exercise-id");
             
-            // this를 저장해두면 ajax 내부에서도 현재 클릭한 버튼을 가리킬 수 있습니다.
+            // this를 저장해두면 ajax 내부에서도 현재 클릭한 버튼을 가리킬 수 있음
             let $clickedButton = $(this);
 
-            // 사용자에게 정말 삭제할 것인지 다시 한번 확인합니다.
+            // 사용자에게 정말 삭제할 것인지 다시 한번 확인
             if (confirm("이 운동을 목록에서 삭제하시겠습니까?")) {
                 
                 $.ajax({
                     url: "${pageContext.request.contextPath}/api/exercise/delete/" + exerciseId,
-                    type: "DELETE", // HTTP 메소드를 'DELETE'로 지정합니다.
+                    type: "DELETE", // HTTP 메소드를 'DELETE'로 지정
                     dataType: "json",
                     success: function(jsonResult) {
                         if (jsonResult.result === "success") {
-                            // 성공 시, 화면에서 해당 항목(<li>)을 부드럽게 사라지게 한 후 완전히 제거합니다.
-                            $clickedButton.closest("li").fadeOut(300, function() {
+                        	
+                        	// '내가 선택한 리스트'에서도 동일한 운동 이름(텍스트)을 가진 항목을 찾아 제거
+                        	// 체크박스 리스트에서 해당 항목 제거
+                        	$clickedButton.closest("li").fadeOut(300, function() {
                                 $(this).remove();
                             });
+                        	
+                        	// 삭제된 운동의 이름을 가져옴
+                            let exerciseName = $clickedButton.closest("label").text().trim();
+                        	
+                        	// 내가 선택한 리스트(`.select-box ul`) 안을 순회하면서
+                            $(".select-box .category-grid li").each(function() {
+                                // 리스트 항목의 텍스트와 삭제된 운동의 이름이 같으면
+                                if ($(this).text().trim() === exerciseName) {
+                                    // 해당 항목을 화면에서 제거
+                                    $(this).remove();
+                                }
+                            });
                         } else {
-                            // 실패 시, 서버가 보낸 실패 메시지를 alert 창으로 보여줍니다.
+                            // 실패 시, 서버가 보낸 실패 메시지를 alert 창으로 보여줌
                             alert(jsonResult.message);
                         }
                     },

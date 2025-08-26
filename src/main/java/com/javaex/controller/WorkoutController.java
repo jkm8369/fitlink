@@ -28,40 +28,25 @@ public class WorkoutController {
 		System.out.println("WorkoutController.workout() for member");
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
-		int targetUserId = authUser.getUserId();
 		
-		Map<String, Object> workoutData = workoutService.exeGetWorkoutData(targetUserId);
-		
-		model.addAttribute("workoutData", workoutData);
-		
-		return "member/workout";
+		return getWorkoutPage(authUser, authUser.getUserId(), model);
 	}
 	
 	
 	// -- 트레이너가 담당 회원의 운동일지를 볼 때 사용
-	
 	@GetMapping(value="/member/{memberId}")
 	public String workoutByTrainer(@PathVariable("memberId") int memberId, HttpSession session, Model model) {
 		System.out.println("WorkoutController.workoutByTrainer() for trainer");
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
 		
-		// 트레이너가 이 회원을 볼 권한이 있는지 확인
 		boolean hasAuth = workoutService.exeCheckAuth(memberId, authUser.getUserId());
 		
 		if(!hasAuth) {
-			// 권한이 없으면 회원 목록 페이지로 돌려보냄
 			return "redirect:/trainer/members";
 		}
 		
-		Map<String, Object> workoutData = workoutService.exeGetWorkoutData(memberId);
-		
-		model.addAttribute("workoutData", workoutData);
-		
-		// JSP가 동적 링크를 만들 수 있도록, 현재 보고 있는 회원의 정보를 모델에 담아줌
-		model.addAttribute("currentMember", workoutData.get("memberInfo"));
-		
-		return "member/workout";
+		return getWorkoutPage(authUser, memberId, model);
 	}
 	
 	/**
@@ -69,13 +54,16 @@ public class WorkoutController {
 	 */
 	private String getWorkoutPage(UserVO authUser, int targetUserId, Model model) {
 		
+		//서비스에 targetUserId를 전달하여 필요한 데이터를 가져옴
 		Map<String, Object> workoutData = workoutService.exeGetWorkoutData(targetUserId);
 		model.addAttribute("workoutData", workoutData);
 		
+		// 만약 로그인한 사용자가 트레이너라면, 사이드 메뉴가 동적으로 바뀌도록 현재 보고 있는 회원의 정보('currentMember')를 모델에 추가
 		if ("trainer".equals(authUser.getRole())) {
 			model.addAttribute("currentMember", workoutData.get("memberInfo"));
 		}
 		
+		// 최종적으로 보여줄 jsp 페이지의 경로를 반환
 		return "member/workout";
 	}
 	
