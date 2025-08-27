@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+
 <mapper namespace="memberList">
 
-  <!-- (A) 트레이너 담당 멤버리스트 (VO 반환) -->
+  <!-- =========================================================
+       (A) 트레이너 담당 멤버리스트 (VO 반환)
+       - IN : trainerId (int)  => parameterType="int" 사용, #{_parameter}
+       - RULE:
+         * users.role='member' 만
+         * users.assigned_trainer_id = :trainerId 만
+         * phone_number는 u에서 직접 가져온다
+       ========================================================= -->
   <select id="selectMemberListForTrainer" parameterType="int" resultType="com.javaex.vo.MemberVO">
     <![CDATA[
     SELECT
@@ -13,12 +21,11 @@
       mp.job                            AS job,
       mp.consult_date                   AS consultDate,
       mp.goal                           AS goal,
-      NULL                              AS memo,
-      NULL                              AS phoneNumber,
+      mp.memo                           AS memo,
+      u.phone_number                    AS phoneNumber,
       COALESCE(pt_sum.total_sessions, 0) AS ptRegisteredCnt,
       COALESCE(res_sum.used_cnt, 0)      AS ptUsedCnt,
-      GREATEST(COALESCE(pt_sum.total_sessions,0) - COALESCE(res_sum.used_cnt,0), 0)
-                                         AS ptRemainingCnt
+      GREATEST(COALESCE(pt_sum.total_sessions,0) - COALESCE(res_sum.used_cnt,0), 0) AS ptRemainingCnt
     FROM users u
     LEFT JOIN member_profile mp ON mp.member_id = u.user_id
     LEFT JOIN (
@@ -41,11 +48,16 @@
     ]]>
   </select>
 
-  <!-- (B) 단건 상세 (VO 반환, 소유 검증) -->
+  <!-- =========================================================
+       (B) 단건 상세 (VO 반환, 소유 검증 포함)
+       - IN : trainerId, memberId (map)
+       - RULE: role='member' + assigned_trainer_id = :trainerId
+       ========================================================= -->
   <select id="selectMemberDetail" parameterType="map" resultType="com.javaex.vo.MemberVO">
     <![CDATA[
     SELECT
       u.user_id                          AS memberId,
+      u.login_id                         AS userLoginId,
       u.user_name                        AS memberName,
       u.phone_number                     AS phoneNumber,
       DATE_FORMAT(u.birthdate,'%y%m%d')  AS birth,
@@ -55,8 +67,7 @@
       mp.memo                            AS memo,
       COALESCE(pt_sum.total_sessions, 0) AS ptRegisteredCnt,
       COALESCE(res_sum.used_cnt, 0)      AS ptUsedCnt,
-      GREATEST(COALESCE(pt_sum.total_sessions,0) - COALESCE(res_sum.used_cnt,0), 0)
-                                         AS ptRemainingCnt
+      GREATEST(COALESCE(pt_sum.total_sessions,0) - COALESCE(res_sum.used_cnt,0), 0) AS ptRemainingCnt
     FROM users u
     LEFT JOIN member_profile mp ON mp.member_id = u.user_id
     LEFT JOIN (
@@ -79,15 +90,19 @@
     ]]>
   </select>
 
-  <!-- (C) 기본정보 업데이트 -->
-  <update id="updateUsersBasic" parameterType="map">
+  <!-- =========================================================
+       (N-1) 기본정보 업데이트 (users) — (C)와 중복되어 이 쿼리만 남김
+       - IN : MemberVO (memberId, memberName, phoneNumber, birth)
+       - birth는 'YYYY-MM-DD' 또는 'yyMMdd' 등 컨트롤러에서 변환 후 전달 권장
+       ========================================================= -->
+  <update id="updateUserBasic" parameterType="com.javaex.vo.MemberVO">
     <![CDATA[
     UPDATE users
-       SET user_name    = #{userName},
+       SET user_name    = #{memberName},
            phone_number = #{phoneNumber},
-           birthdate    = STR_TO_DATE(#{birthdate}, '%y%m%d')
-     WHERE user_id = #{memberId}
-       AND role    = 'member'
+           birthdate    = #{birth}
+     WHERE user_id      = #{memberId}
+       AND role         = 'member'
     ]]>
   </update>
 
@@ -113,7 +128,7 @@
     ]]>
   </insert>
 
-  <!-- (F) 예약 삭제(해당 트레이너 것만) -->
+  <!-- (F) 예약 삭제(해당 트레이너 것만) — 기본 플로우 자동 연동 금지, 별도 관리용 -->
   <delete id="deleteReservationsByMemberAndTrainer" parameterType="map">
     <![CDATA[
     DELETE r FROM reservation r
@@ -123,14 +138,14 @@
     ]]>
   </delete>
 
-  <!-- (G) 프로필 삭제 (옵션) -->
+  <!-- (G) 프로필 삭제 (옵션) — 별도 초기화 기능에서만 사용 -->
   <delete id="deleteMemberProfile" parameterType="int">
     <![CDATA[
     DELETE FROM member_profile WHERE member_id = #{value}
     ]]>
   </delete>
 
-  <!-- (H) PT 계약 삭제(해당 트레이너 것만) -->
+  <!-- (H) PT 계약 삭제(해당 트레이너 것만) — 별도 초기화 기능에서만 사용 -->
   <delete id="deletePtContractsByMemberAndTrainer" parameterType="map">
     <![CDATA[
     DELETE FROM pt_contract
@@ -139,23 +154,25 @@
     ]]>
   </delete>
 
-
-  <!-- (I) 회원 생성 -->
-  <insert id="insertUser" parameterType="map" useGeneratedKeys="true" keyProperty="userId">
-    INSERT INTO users
-      (login_id, password, user_name, phone_number, birthdate, gender, role, created_at)
-    VALUES
-      (#{loginId}, #{password}, #{userName}, #{phoneNumber}, #{birthdate}, #{gender}, 'member', NOW())
-  </insert>
-
-  <!-- (J) 트레이너 배정 -->
+  <!-- =========================================================
+       (J) 트레이너 배정 (등록)
+       - IN : memberId, trainerId (map)
+       - RULE:
+         * 회원 계정만(role='member')
+         * 이미 배정된 경우 덮어쓰기 금지(assigned_trainer_id IS NULL)
+         * 업데이트 결과 1행이 아니면 서비스에서 상태 분기
+       ========================================================= -->
   <update id="assignTrainer" parameterType="map">
+    <![CDATA[
     UPDATE users
        SET assigned_trainer_id = #{trainerId}
-     WHERE user_id = #{userId}
+     WHERE user_id = #{memberId}
+       AND role = 'member'
+       AND assigned_trainer_id IS NULL
+    ]]>
   </update>
 
-  <!-- (K) NEW: 트레이너 배정 해제 (표에서만 제거) -->
+  <!-- (K) 트레이너 배정 해제 (내 회원일 때만) -->
   <update id="unassignTrainer" parameterType="map">
     <![CDATA[
     UPDATE users
@@ -165,20 +182,72 @@
        AND role = 'member'
     ]]>
   </update>
-  
-  <!-- NEW: login_id로 유저 기본정보 조회 -->
+
+  <!-- (L) 등록 모달: login_id로 기본정보 조회 (+배정상태 확인용) -->
   <select id="selectUserBasicByLoginId" parameterType="string" resultType="map">
-  <![CDATA[
+    <![CDATA[
     SELECT
       user_id                         AS memberId,
+      login_id                        AS loginId,
       user_name                       AS userName,
       phone_number                    AS phoneNumber,
-      DATE_FORMAT(birthdate,'%y%m%d') AS birth
+      DATE_FORMAT(birthdate,'%y%m%d') AS birth,
+      assigned_trainer_id             AS assignedTrainerId
     FROM users
     WHERE login_id = #{value}
+      AND role = 'member'
     LIMIT 1
     ]]>
   </select>
-  
+
+  <!-- =========================================================
+       (M) 수정 모달: 내 회원 상세 (편집용)
+       - IN : memberId, trainerId  => parameterType="map"
+       - RULE: role='member' + assigned_trainer_id=:trainerId
+       ========================================================= -->
+  <select id="selectMemberDetailForEdit" parameterType="map" resultType="map">
+    <![CDATA[
+    SELECT
+      u.user_id                           AS memberId,
+      u.login_id                          AS loginId,
+      u.user_name                         AS memberName,
+      u.phone_number                      AS phoneNumber,
+      DATE_FORMAT(u.birthdate,'%Y-%m-%d') AS birth,
+      mp.job                              AS job,
+      DATE_FORMAT(mp.consult_date,'%Y-%m-%d') AS consultDate,
+      mp.goal                             AS goal,
+      mp.memo                             AS memo,
+      COALESCE(pt_sum.total_sessions, 0)  AS ptRegisteredCnt
+    FROM users u
+    LEFT JOIN member_profile mp ON mp.member_id = u.user_id
+    LEFT JOIN (
+      SELECT pc.member_id, SUM(pc.total_sessions) AS total_sessions
+      FROM pt_contract pc
+      WHERE pc.trainer_id = #{trainerId}
+      GROUP BY pc.member_id
+    ) pt_sum ON pt_sum.member_id = u.user_id
+    WHERE u.user_id = #{memberId}
+      AND u.role = 'member'
+      AND u.assigned_trainer_id = #{trainerId}
+    LIMIT 1
+    ]]>
+  </select>
+
+  <!-- (N-2) 상세정보 업데이트 (member_profile) -->
+  <update id="updateMemberProfile" parameterType="com.javaex.vo.MemberVO">
+    <![CDATA[
+    UPDATE member_profile
+       SET job          = #{job},
+           consult_date = #{consultDate},
+           goal         = #{goal},
+           memo         = #{memo}
+     WHERE member_id    = #{memberId}
+    ]]>
+  </update>
+
+  <!-- =================== 삭제된 항목 안내 ===================
+       (C) updateUsersBasic  : (N-1)와 중복 → 제거
+       (I) insertUser        : 이 페이지에서 신규 회원 생성 금지 → 제거
+       ======================================================= -->
 
 </mapper>
