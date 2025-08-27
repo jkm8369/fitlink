@@ -15,3 +15,32 @@ FROM availability;
 
 ALTER TABLE availability DROP INDEX idx_avail_trainer_dt;
 CREATE UNIQUE INDEX uq_avail_trainer_dt ON availability (trainer_id, available_datetime);
+
+ALTER TABLE availability
+RENAME INDEX uq_avail_trainer_dt TO idx_avail_trainer_dt;
+
+CREATE INDEX idx_avail_trainer_workdate
+ON availability (trainer_id, (DATE(available_datetime)));
+
+SHOW INDEX FROM availability;
+
+EXPLAIN
+SELECT a.availability_id
+FROM availability a
+WHERE a.trainer_id = 1
+  AND a.available_datetime BETWEEN '2025-08-26 00:00:00' AND '2025-08-28 23:59:59';
+  
+  EXPLAIN
+SELECT a.availability_id
+FROM availability a
+WHERE a.trainer_id = 1
+  AND DATE(a.available_datetime) = '2025-08-27';
+  
+-- 유니크 인덱스의 이름을 매퍼가 기대하는 이름으로 변경
+ALTER TABLE availability
+RENAME INDEX uq_avail_trainer_dt TO idx_avail_trainer_dt;
+
+-- 최종 확인
+SHOW INDEX FROM availability;
+
+

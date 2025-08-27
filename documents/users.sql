@@ -21,7 +21,8 @@ CREATE TABLE users (
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-SELECT CONSTRAINT_NAME, DELETE_RULE, UPDATE_RULE
-FROM information_schema.REFERENTIAL_CONSTRAINTS
-WHERE CONSTRAINT_SCHEMA = 'aws_fitlink_db' AND TABLE_NAME = 'users';
+UPDATE users
+SET assigned_trainer_id = 1
+WHERE user_id IN (3, 4)
+  AND role = 'member';
 
