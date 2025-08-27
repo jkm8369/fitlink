@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="photo">
+
+  <!-- =========================================================
+       1) 사진 저장 (user_photo)
+       - IN : photoType, photoUrl, userId, writerId
+       - OUT: (useGeneratedKeys) photoId 를 파라미터에 채워줌
+       - upload_date 는 NOW() 로 DB에서 기록
+       ========================================================= -->
+  <insert id="insertUserPhoto" parameterType="map"
+          useGeneratedKeys="true" keyProperty="photoId">
+    INSERT INTO user_photo
+      (upload_date, photo_type, photo_url, user_id, writer_id)
+    VALUES
+      (NOW(), #{photoType}, #{photoUrl}, #{userId}, #{writerId})
+  </insert>
+
+  <!-- =========================================================
+       2) 단건 조회 (방금 INSERT 한 row 재확인/응답용)
+       - IN : photoId
+       - OUT: PhotoVO
+       ========================================================= -->
+  <select id="selectUserPhotoById" parameterType="int"
+          resultType="com.javaex.vo.PhotoVO">
+    SELECT
+      photo_id    AS photoId,
+      upload_date AS uploadDate,
+      photo_type  AS photoType,
+      photo_url   AS photoUrl,
+      user_id     AS userId,
+      writer_id   AS writerId
+    FROM user_photo
+    WHERE photo_id = #{photoId}
+  </select>
+
+</mapper>
+

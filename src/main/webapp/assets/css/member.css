@@ -1207,111 +1207,95 @@ h4 {
 /* //====================== booking status.html ============================ */
 
 /* =================================view.html================================= */
-/* ----------------------- 4. 사진 갤러리 */
-/* 각 사진 섹션 (운동, 식단)의 전체 컨테이너 */
+/* ----------------------- Photo View - Gallery ----------------------- */
+
+/* 섹션 전체 */
 .photo-gallery-section {
-	width: 859px;
-	margin-top: 40px;
-	/* 섹션 간의 상단 여백 */
+  width: 860px;            /* 상단 버튼 라인과 동일 폭 */
+  margin-top: 40px;
 }
 
-/* 제목(h4)과 버튼을 감싸는 헤더 */
+/* 제목 + 버튼 */
 .gallery-header {
-	display: flex;
-	justify-content: space-between;
-	/* 양쪽 끝으로 정렬 */
-	align-items: center;
-	/* 세로 중앙 정렬 */
-	margin-bottom: 20px;
-	/* 헤더와 사진 그리드 사이 여백 */
+  display: flex;
+  justify-content: space-between; /* 좌: 제목 / 우: 버튼 */
+  align-items: center;
+  margin-bottom: 20px;
 }
-
-/* 갤러리 제목 (운동사진, 식단사진) */
 .gallery-title {
-	font-size: 20px;
-	font-weight: 600;
-	color: #333;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
 }
-
-/* '사진 등록' 버튼 */
 .btn-add-photo {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	/* 아이콘과 텍스트 사이 간격 */
-	background-color: #ffffff;
-	border: 1px solid #dcdcdc;
-	border-radius: 5px;
-	padding: 6px 12px;
-	font-size: 14px;
-	font-weight: 500;
-	text-decoration: none;
-	color: #6b7280;
-	cursor: pointer;
-	transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
+.btn-add-photo:hover { background: #f3f4f6; }
 
-.btn-add-photo:hover {
-	background-color: #f3f4f6;
-}
-
-/* 버튼 내부 아이콘 스타일 */
-.btn-add-photo i {
-	font-size: 14px;
-	color: #777;
-}
-
-/* 사진들이 놓일 그리드 컨테이너(ul) */
+/* 그리드: 슬롯 기준으로 4열 정렬 */
 .photo-grid {
-	list-style: none;
-	/* li의 기본 점 제거 */
-	padding: 0;
-	margin: 0;
-	display: grid;
-	/* 4개의 열을 만들고, 각 열이 동일한 너비를 갖도록 설정 */
-	grid-template-columns: repeat(4, 1fr);
-	gap: 20px;
-	/* 그리드 아이템 사이의 간격 */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4열 */
+  gap: 20px;                             /* 슬롯 간격 */
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
-/* 개별 사진이 들어갈 자리(placeholder) */
-.photo-item-placeholder {
-	width: 100%;
-	aspect-ratio: 1/1;
-	/* 가로:세로 비율을 1:1로 유지하여 정사각형 모양 생성 */
-	background-color: #f7f7f7;
-	/* 옅은 회색 배경 */
-	border: 1px solid #b9b9b9;
-	/* 배경보다 약간 진한 테두리 */
-	border-radius: 8px;
-	/* 모서리를 둥글게 */
+/* 타일 (빈 슬롯과 동일 크기) */
+.ph-thumb {
+  position: relative;
+  width: 100%;              /* 1fr = 그리드 칸 가득 */
+  aspect-ratio: 1 / 1;      /* 정사각형 */
+  border: 1px solid #b9b9b9;
+  border-radius: 8px;
+  background: #f7f7f7;
+  overflow: hidden;
 }
 
-/* 삭제 버튼 위치 */
-.photo-item-placeholder {
-	position: relative;
-	/* 버튼의 기준점 */
+/* 이미지 꽉 채우기 */
+.ph-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
 }
 
-.btn-delete-photo {
-	position: absolute;
-	top: 4px;
-	right: 4px;
-	color: #6c757d;
-	border: none;
-	width: 20px;
-	height: 20px;
-	font-size: 16px;
-	font-weight: 600;
-	line-height: 18px;
-	text-align: center;
-	cursor: pointer;
-	transition: background-color 0.2s;
+/* 삭제 버튼 */
+.ph-thumb .ph-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #374151;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
 }
 
-.btn-delete-photo:hover {
-	background-color: rgba(255, 0, 0, 0.8);
-}
+
+/* ----------------------- End ----------------------- */
+
 
 /* //-----------------------4. 사진 갤러리 */
 /* //=================================view.html================================= */
@@ -1510,24 +1494,24 @@ h4 {
 }
 
 /* ================= Member page only ================= */
-.member-page .list-card .table-wrap{
-  overflow-x: auto;                 /* 가로 스크롤 */
-  -webkit-overflow-scrolling: touch;/* iOS 부드러운 스크롤 */
+.member-page .list-card .table-wrap {
+	overflow-x: auto; /* 가로 스크롤 */
+	-webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
 }
 
-.member-page .list-card .table{
-  /* 열이 많을 때 줄이지 말고 스크롤하도록 최소폭 지정
+.member-page .list-card .table {
+	/* 열이 많을 때 줄이지 말고 스크롤하도록 최소폭 지정
      (현재 colgroup 합 ≈ 1040px: 60+120+110+90+120+110+110+110+110+100) */
-  min-width: 1040px;
+	min-width: 1040px;
 }
 
 /* 헤더/셀은 줄바꿈 방지해서 행 높이 균일 */
-.member-page .table thead th,
-.member-page .table tbody td{
-  white-space: nowrap;
+.member-page .table thead th, .member-page .table tbody td {
+	white-space: nowrap;
 }
 
 /* (선택) 액션 열을 항상 보이게 하고 싶다면 sticky 적용 */
+<<<<<<< HEAD
 .member-page .table .actions{
   position: sticky;
   right: 0;
@@ -1656,3 +1640,11 @@ h4 {
 }
 
 /* ================// 인바디 모달창=========================== */
+=======
+.member-page .table .actions {
+	position: sticky;
+	right: 0;
+	background: #fff;
+}
+
+>>>>>>> branch 'master' of https://github.com/jkm8369/fitlink.git

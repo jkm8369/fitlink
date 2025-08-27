@@ -19,10 +19,12 @@
 		<mapper resource="mybatis/mappers/user.xml" />
 		<mapper resource="mybatis/mappers/workout.xml" />
 		<mapper resource="mybatis/mappers/memberExercise.xml" />
+		<mapper resource="mybatis/mappers/inbody.xml" />
+		
 		<mapper resource="mybatis/mappers/trainer-schedule.xml" />
 		<mapper resource="mybatis/mappers/booking.xml" />
+		<mapper resource="mybatis/mappers/photo.xml" />
 		<mapper resource="mybatis/mappers/memberList.xml" />
-		<mapper resource="mybatis/mappers/inbody.xml" />
 	</mappers>
 
 </configuration>
