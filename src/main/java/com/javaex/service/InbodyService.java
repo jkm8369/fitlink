@@ -22,12 +22,8 @@ public class InbodyService {
 	@Autowired
 	private UserRepository userRepository;
 
-    /**
-     * 특정 회원의 인바디 기록 목록과 페이징 정보를 가져옵니다.
-     * @param userId 회원 ID
-     * @param crtPage 현재 페이지 번호
-     * @return 인바디 목록과 페이징 정보를 담은 Map
-     */
+    
+    // 특정 회원의 인바디 기록 목록과 페이징 정보를 가져오기
     public Map<String, Object> exeGetList(int userId, int crtPage) {
         System.out.println("InbodyService.exeGetList()");
 
@@ -102,7 +98,8 @@ public class InbodyService {
     
     // 특정 인바디 기록 삭제
     public int exeDelete(int inbodyId) {
-        System.out.println("InbodyService.exeDelete()");
+        // [CHECK 2] 서비스 메소드가 잘 호출되었는지 확인
+        System.out.println("[CHECK 2] InbodyService: exeDelete 호출됨 (ID: " + inbodyId + ")");
         
         return inbodyRepository.delete(inbodyId);
     }
@@ -114,7 +111,7 @@ public class InbodyService {
  		params.put("memberId", memberId);
  		params.put("trainerId", trainerId);
  		
- 		// DB에 두 ID의 관계가 등록되어 있는지 확인합니다.
+ 		// DB에 두 ID의 관계가 등록되어 있는지 확인합니다.	
  		int count = userRepository.checkMemberAssignment(params);
  		
  		return count > 0; // 1 이상이면(관계가 존재하면) true를 반환

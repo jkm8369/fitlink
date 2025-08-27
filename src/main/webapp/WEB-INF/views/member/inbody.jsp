@@ -93,12 +93,9 @@
                     </div>
 
                     <div class="inbody-card-wrap">
-                        <button id="btn-open-upload" class="btn-floating">
+                        <button id="btn-open-modal" class="btn-floating">
                             <i class="fa-solid fa-chart-pie"></i> 인바디 등록
-                        </button>
-                        
-                        <!-- 파일 입력을 위한 숨겨진 input -->
-                        <input type="file" id="file-input" style="display: none;" accept="image/*">
+                        </button>      
 
                         <section class="card inbody-card">
                             <div class="inbody-detail">
@@ -107,6 +104,9 @@
                                 </div>
                                 <div id="inbody-panel-area" class="inbody-panel" style="display:none;">
                                     <!-- 상세 정보 패널 (기존 HTML 구조 사용) -->
+                                    <h4>계산 결과</h4>
+								    <p>BMI: <span id="bmi-value">-</span></p>
+								    <p>체지방률: <span id="pbf-value">-</span></p>
                                 </div>
                             </div>
                         </section>
@@ -126,34 +126,68 @@
         <c:import url="/WEB-INF/views/include/footer.jsp"></c:import>
         <!-- //------footer------ -->
     </div>
-
-
+	
+	<!------------------------------ 인바디 직접 입력 모달창 ------------------------------------->
+	<div id="manual-input-modal" class="modal-backdrop" style="display:none;">
+	    <div class="modal-content">
+	        <div class="modal-header">
+	            <h5 class="modal-title">인바디 정보 직접 입력</h5>
+	            <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
+	        </div>
+	        <div class="modal-body">
+	            <form id="inbody-form">
+	                <div class="form-group">
+	                    <label for="height">키 (cm)</label>
+	                    <input type="text" id="height" class="form-control" placeholder="예: 175">
+	                </div>
+	                <div class="form-group">
+	                    <label for="weight">체중 (kg)</label>
+	                    <input type="text" id="weight" class="form-control" placeholder="예: 70.5">
+	                </div>
+	                <div class="form-group">
+	                    <label for="muscleMass">골격근량 (kg)</label>
+	                    <input type="text" id="muscleMass" class="form-control" placeholder="예: 35.2">
+	                </div>
+	                <div class="form-group">
+	                    <label for="fatMass">체지방량 (kg)</label>
+	                    <input type="text" id="fatMass" class="form-control" placeholder="예: 15.8">
+	                </div>
+	            </form>
+	        </div>
+	        <div class="modal-footer">
+	            <button type="button" class="btn" id="btn-calculate">계산하기</button>
+	        </div>
+	    </div>
+	</div>
+	<!------------------------------ //인바디 직접 입력 모달창 ------------------------------------->
 
 <script>
 $(document).ready(function() {
+	// =================================================
+    // 초기 설정 (가장 위로 옮겨주세요)
     // =================================================
-    // 초기 설정 및 상태 변수
-    // =================================================
+    const contextPath = "${pageContext.request.contextPath}";
+    
     const authUser = {
         userId: Number("${sessionScope.authUser.userId}" || 0),
         role: "${sessionScope.authUser.role}"
     };
+    
     const currentMember = {
         userId: Number("${currentMember.userId}" || 0)
     };
+    
     const targetUserId = (authUser.role === 'trainer' && currentMember.userId > 0) 
                          ? currentMember.userId 
                          : authUser.userId;
-    
-    let selectedFile = null;
-
     // =================================================
     // 함수 정의
     // =================================================
 
+    // 리스트 가져오기 함수
     function fetchInbodyList(page) {
         $.ajax({
-            url: "${pageContext.request.contextPath}/api/inbody/list",
+            url: `${contextPath}/api/inbody/list`,
             type: "GET",
             data: { userId: targetUserId, crtPage: page },
             dataType: "json",
@@ -224,7 +258,7 @@ $(document).ready(function() {
     
     function fetchInbodyDetail(inbodyId) {
         $.ajax({
-            url: `\${pageContext.request.contextPath}/api/inbody/\${inbodyId}`,
+            url: `${contextPath}/api/inbody/${inbodyId}`,
             type: "GET",
             dataType: "json",
             success: (jsonResult) => {
@@ -244,26 +278,104 @@ $(document).ready(function() {
     // =================================================
     // 이벤트 핸들러
     // =================================================
+	
+    // 인바디 직접입력 버튼 클릭시 모달 열기
+    $("#btn-open-modal").on("click", function() {
+        $("#manual-input-modal").show();
+    });
 
+    // 모달 닫기 버튼
+    $("#btn-close-modal").on("click", function() {
+        $("#manual-input-modal").hide();
+    });
+
+    // 계산하기 버튼 클릭 이벤트
+    $("#btn-calculate").on("click", function(e) {
+    	e.preventDefault();
+    	
+	    console.log("'계산하기' 버튼 클릭됨!"); // <-- 1. 버튼 클릭이 감지되는지 확인
+	
+	    // 2. 각 input 요소에서 값 가져오기
+	    const heightVal = $("#height").val();
+	    const weightVal = $("#weight").val();
+	    const muscleMassVal = $("#muscleMass").val();
+	    const fatMassVal = $("#fatMass").val();
+	
+	    console.log("입력된 값 (문자열):", { heightVal, weightVal, muscleMassVal, fatMassVal }); // <-- 2. 값이 제대로 읽히는지 확인
+	
+	    // 3. 문자열을 숫자로 변환
+	    const height = parseFloat(heightVal);
+	    const weight = parseFloat(weightVal);
+	    const muscleMass = parseFloat(muscleMassVal);
+	    const fatMass = parseFloat(fatMassVal);
+	
+	    console.log("변환된 값 (숫자):", { height, weight, muscleMass, fatMass }); // <-- 3. 숫자로 잘 변환되었는지 확인
+	
+	    // 4. 유효성 검사
+	    if (!height || !weight || !muscleMass || !fatMass) {
+	        console.error("유효성 검사 실패: 하나 이상의 값이 비어있거나 숫자가 아닙니다."); // <-- 4. 유효성 검사 통과 여부 확인
+	        alert("모든 값을 숫자로 정확히 입력해주세요.");
+	        return;
+	    }
+	
+	    // 5. 주요 지표 계산
+	    console.log("계산을 시작합니다...");
+	    const heightInMeters = height / 100;
+	    const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
+	    const percentBodyFat = ((fatMass / weight) * 100).toFixed(2);
+	    console.log("계산 완료:", { bmi, percentBodyFat }); // <-- 5. 계산 결과 확인
+	
+	    // 6. 최종 결과 alert으로 표시
+	    alert(`계산 결과:\n- BMI: \${bmi}\n- 체지방률: \${percentBodyFat}%`);
+	    
+	    // 7. 모달 닫기
+	    $("#manual-input-modal").hide();
+	});
+    
+    // 상세보기 클릭 이벤트
     $("#inbody-list-tbody").on("click", "tr[data-inbody-id]", function() {
         fetchInbodyDetail($(this).data("inbody-id"));
     });
 
     $("#inbody-list-tbody").on("click", ".btn-delete", function(e) {
         e.stopPropagation();
-        if (!confirm("정말 삭제하시겠습니까?")) return;
+        if (!confirm("정말 삭제하시겠습니까?")) {
+            return;
+        }
         
+        // 1. 삭제할 ID 가져오기
+        const inbodyId = $(this).data("inbody-id");
+        console.log("삭제할 인바디 ID:", inbodyId);
+
+        // 2. 요청할 URL 만들기 (가장 안정적인 방식으로 변경!)
+        const url = contextPath + "/api/inbody/" + inbodyId;
+        console.log("요청할 URL:", url); // URL이 올바르게 만들어졌는지 확인
+
+        // 3. AJAX 요청 보내기
         $.ajax({
-            url: `\${pageContext.request.contextPath}/api/inbody/\${$(this).data("inbody-id")}`,
+            url: url, // 위에서 만든 URL 사용
             type: "DELETE",
             dataType: "json",
-            success: (jsonResult) => {
+            success: function(jsonResult) {
                 if (jsonResult.result === "success") {
                     alert("삭제되었습니다.");
-                    fetchInbodyList(1);
-                } else alert(jsonResult.message);
+                    fetchInbodyList(1); // 목록 새로고침
+                    
+                    // 상세 정보 영역 초기화
+                    $("#detail-date-pill").text("날짜를 선택해주세요");
+                    $("#inbody-scan-area").html('리스트에서 항목을 선택해주세요');
+                    $("#inbody-panel-area, #nutrition-info-area").hide();
+
+                } else {
+                    alert(jsonResult.message);
+                }
             },
-            error: (xhr, status, error) => console.error("삭제 실패:", error)
+            error: function(xhr, status, error) {
+                console.error("삭제 요청 실패:", error);
+                // 서버가 보내준 자세한 오류 메시지를 확인합니다.
+                console.error("서버 응답:", xhr.responseText); 
+                alert("삭제 처리 중 서버에서 오류가 발생했습니다.");
+            }
         });
     });
 

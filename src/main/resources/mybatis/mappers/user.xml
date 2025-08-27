@@ -26,6 +26,7 @@
 		limit 1
 	</select>
 	
+	<!-- 트레이너가 담당 회원 조회 -->
 	<select id="selectMembersByTrainerId" parameterType="int" resultType="com.javaex.vo.UserVO">
         select u.user_id as userId,
                u.user_name as userName,
@@ -41,7 +42,7 @@
         select count(*)
         from pt_contract
         where member_id = #{memberId}
-        and trainer_id = #{trainerId}
+       	and trainer_id = #{trainerId}
     </select>
 
 	<!-- user_id로 사용자의 기본 정보를 조회하는 쿼리 -->

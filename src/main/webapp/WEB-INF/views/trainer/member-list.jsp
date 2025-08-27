@@ -92,7 +92,7 @@
                     <td><c:out value="${st.index + 1}"/></td>
 
                     <td>
-                      <a href="#" class="link-member" data-member-id="${row.memberId}">
+                      <a href="${pageContext.request.contextPath}/workout/member/${memberId}" class="link-member" data-member-id="${row.memberId}">
                         <c:out value="${row.memberName}"/>
                       </a>
                     </td>

@@ -78,9 +78,12 @@ public class InbodyApiController {
         return JsonResult.success(newInbodyVO);
     }
 
-    // 인바디 기록 삭제
+ // 인바디 기록 삭제
     @DeleteMapping("/{inbodyId}")
     public JsonResult delete(@PathVariable("inbodyId") int inbodyId) {
+        // [CHECK 1] 컨트롤러에 요청이 잘 도착했는지 확인
+        System.out.println("[CHECK 1] InbodyApiController: 삭제 요청 받음 (ID: " + inbodyId + ")");
+        
         int count = inbodyService.exeDelete(inbodyId);
         
         if (count > 0) {

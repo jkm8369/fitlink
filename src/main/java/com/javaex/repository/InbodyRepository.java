@@ -48,7 +48,8 @@ public class InbodyRepository {
 
     // 특정 인바디 기록을 삭제
     public int delete(int inbodyId) {
-        System.out.println("InbodyRepository.delete()");
+        // [CHECK 3] 리포지토리(DB 직전)까지 잘 도착했는지 확인
+        System.out.println("[CHECK 3] InbodyRepository: delete 호출됨 (ID: " + inbodyId + ")");
         
         return sqlSession.delete("inbody.delete", inbodyId);
     }
