@@ -20,7 +20,7 @@
 			from inbody
 			where user_id = #{userId}
 			order by record_date desc
-			limit #{startRownum}, #{pageSize}
+			limit #{startRownum}, #{listCnt}
 		]]>
 	</select>
 	

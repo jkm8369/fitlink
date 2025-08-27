@@ -1,14 +1,16 @@
 package com.javaex.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.javaex.repository.InbodyRepository;
+import com.javaex.repository.UserRepository;
 import com.javaex.vo.InbodyVO;
 
 @Service
@@ -16,6 +18,9 @@ public class InbodyService {
 
 	@Autowired
 	private InbodyRepository inbodyRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
     /**
      * 특정 회원의 인바디 기록 목록과 페이징 정보를 가져옵니다.
@@ -38,7 +43,7 @@ public class InbodyService {
         Map<String, Object> params = new HashMap<>();
         params.put("userId", userId);
         params.put("startRownum", startRownum);
-        params.put("pageSize", listCnt);
+        params.put("listCnt", listCnt);
 
         List<InbodyVO> inbodyList = inbodyRepository.selectListByUserId(params);
 
@@ -61,6 +66,7 @@ public class InbodyService {
         resultMap.put("next", next);
         resultMap.put("startPageBtnNo", startPageBtnNo);
         resultMap.put("endPageBtnNo", endPageBtnNo);
+        resultMap.put("totalCount", totalCount);
 
         return resultMap;
     }
@@ -74,34 +80,19 @@ public class InbodyService {
     }
     
     
-    // 인바디 이미지 등록, OCR 처리 및 DB 저장을 수행
-    public InbodyVO exeUploadAndAnalyze(MultipartFile file, int userId) {
-        System.out.println("InbodyService.exeUploadAndAnalyze()");
+    // 인바디 직접 등록
+    public InbodyVO exeAdd(InbodyVO inbodyVO) {
+        System.out.println("InbodyService.exeAdd()");
 
-        // [1단계: 파일 저장] - 나중에 구현
-        // 1. 파일을 서버에 저장하고, 저장된 경로(URL)를 얻습니다.
-        // String imageUrl = fileService.save(file);
-        
-        // [2단계: OCR 분석] - 나중에 구현
-        // 2. 저장된 이미지로 OCR 분석을 요청하고 텍스트를 추출합니다.
-        // String ocrResultText = ocrService.analyze(imageUrl);
-        
-        // [3단계: 데이터 파싱 및 계산] - 나중에 구현
-        // 3. 추출된 텍스트에서 필요한 데이터(체중, 근육량 등)를 파싱합니다.
-        // 4. 파싱된 데이터로 영양 정보를 계산합니다.
-        
-        // [임시 데이터] - 기능 확인을 위해 임시 데이터를 사용합니다.
-        InbodyVO inbodyVO = new InbodyVO();
-        inbodyVO.setUserId(userId);
-        inbodyVO.setRecordDate("2025-08-26"); // 오늘 날짜
-        inbodyVO.setImageUrl("/upload/temp_inbody.jpg"); // 임시 이미지 경로
-        inbodyVO.setInbodyScore(82);
-        inbodyVO.setWeightKg(75.3);
-        inbodyVO.setMuscleMassKg(35.1);
-        inbodyVO.setFatMassKg(15.2);
-        // ... (나머지 임시 데이터)
+        // [수정] 측정 시간을 현재 시간으로 설정
+        // recordDate는 날짜만 넘어오므로, 현재 시간을 조합하여 DATETIME 형식에 맞게 만듭니다.
+        String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        inbodyVO.setRecordDate(currentDateTime);
 
-        // [4단계: DB 저장]
+        // [수정] 영양 정보 계산 로직 (나중에 추가할 위치)
+        // TODO: inbodyVO의 체중, 근육량 등을 기반으로 일일 권장 섭취량 등을 계산하는 로직 추가
+
+        // DB에 저장
         int newInbodyId = inbodyRepository.insert(inbodyVO);
         
         // 저장된 전체 데이터를 다시 조회하여 반환
@@ -115,5 +106,18 @@ public class InbodyService {
         
         return inbodyRepository.delete(inbodyId);
     }
+    
+    // -- 트레이너가 특정 회원을 조회할 권한이 있는지 확인하는 보안 메소드
+ 	public boolean exeCheckAuth(int memberId, int trainerId) {
+ 		System.out.println("WorkoutService.exeCheckAuth()");
+ 		Map<String, Object> params = new HashMap<>();
+ 		params.put("memberId", memberId);
+ 		params.put("trainerId", trainerId);
+ 		
+ 		// DB에 두 ID의 관계가 등록되어 있는지 확인합니다.
+ 		int count = userRepository.checkMemberAssignment(params);
+ 		
+ 		return count > 0; // 1 이상이면(관계가 존재하면) true를 반환
+ 	}
     
 }
