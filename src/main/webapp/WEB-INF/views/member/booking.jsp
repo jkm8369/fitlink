@@ -43,7 +43,7 @@
 		<!-- ------aside------ -->
 			<aside>
 				<div class="user-info">
-					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
+	            	<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
 				</div>
 			</aside>
 		<!-- ------aside------ -->

@@ -39,7 +39,7 @@
 
 
 		<div id="content">
-<<<<<<< HEAD
+
 		<!-- ------aside------ -->
 			<aside>
 				<div class="user-info">
@@ -47,18 +47,6 @@
 				</div>
 			</aside>
 		<!-- ------aside------ -->
-=======
-			<!-- ------aside------ -->
-			<c:choose>
-				<c:when test="${sessionScope.authUser.role == 'trainer'}">
-					<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
-				</c:when>
-				<c:otherwise>
-					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
-				</c:otherwise>
-			</c:choose>
-			<!-- //------aside------ -->
->>>>>>> branch 'master' of https://github.com/jkm8369/fitlink.git
 
 		<!-- main -->
 		<main>
