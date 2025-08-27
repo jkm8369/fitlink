@@ -244,3 +244,39 @@ ORDER BY u.user_name ASC
 
 select *
 from reservation;
+
+ALTER TABLE inbody ADD COLUMN inbody_score INT NULL;
+
+-- 3번 회원(조강민)에게 모든 컬럼을 채운 테스트용 인바디 데이터 15개를 추가합니다.
+INSERT INTO inbody (
+    record_date, image_url, weight_kg, muscle_mass_kg, fat_mass_kg, bmi, 
+    percent_body_fat, cid_type, visceral_fat_level, fat_control_kg, muscle_control_kg, 
+    upper_lower_balance, left_right_balance, target_calories, required_protein_g, 
+    carb_ratio, protein_ratio, fat_ratio, target_carb_kcal, target_protein_kcal, 
+    target_fat_kcal, target_carb_g, target_protein_g, target_fat_g, breakfast_kcal, 
+    breakfast_carb_g, breakfast_protein_g, breakfast_fat_g, lunch_kcal, lunch_carb_g, 
+    lunch_protein_g, lunch_fat_g, dinner_kcal, dinner_carb_g, dinner_protein_g, 
+    dinner_fat_g, user_id, inbody_score
+) VALUES
+('2025-08-25', '/upload/dummy.jpg', 75.3, 35.1, 15.2, 24.5, 20.2, 'D', 7, -5.2, 2.0, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 82),
+('2025-08-18', '/upload/dummy.jpg', 75.1, 34.9, 15.5, 24.4, 20.6, 'D', 7, -5.5, 2.2, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 81),
+('2025-08-11', '/upload/dummy.jpg', 74.8, 34.6, 15.8, 24.3, 21.1, 'I', 8, -5.8, 2.4, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 80),
+('2025-08-04', '/upload/dummy.jpg', 74.5, 34.4, 16.1, 24.2, 21.6, 'I', 8, -6.1, 2.6, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 79),
+('2025-07-28', '/upload/dummy.jpg', 74.2, 34.1, 16.4, 24.1, 22.1, 'I', 8, -6.4, 2.8, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 78),
+('2025-07-21', '/upload/dummy.jpg', 73.9, 33.8, 16.7, 24.0, 22.6, 'C', 9, -6.7, 3.0, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 77),
+('2025-07-14', '/upload/dummy.jpg', 73.5, 33.5, 17.0, 23.9, 23.1, 'C', 9, -7.0, 3.2, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 76),
+('2025-07-07', '/upload/dummy.jpg', 73.1, 33.2, 17.3, 23.8, 23.7, 'C', 9, -7.3, 3.4, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 75),
+('2025-06-30', '/upload/dummy.jpg', 72.8, 32.9, 17.6, 23.7, 24.2, 'C', 10, -7.6, 3.6, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 74),
+('2025-06-23', '/upload/dummy.jpg', 72.4, 32.6, 17.9, 23.6, 24.7, 'C', 10, -7.9, 3.8, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 73),
+('2025-06-16', '/upload/dummy.jpg', 72.0, 32.3, 18.2, 23.4, 25.3, 'C', 10, -8.2, 4.0, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 72),
+('2025-06-09', '/upload/dummy.jpg', 71.7, 32.0, 18.5, 23.3, 25.8, 'C', 11, -8.5, 4.2, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 71),
+('2025-06-02', '/upload/dummy.jpg', 71.3, 31.7, 18.8, 23.2, 26.4, 'C', 11, -8.8, 4.4, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 70),
+('2025-05-26', '/upload/dummy.jpg', 71.0, 31.4, 19.1, 23.1, 26.9, 'C', 11, -9.1, 4.6, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 69),
+('2025-05-19', '/upload/dummy.jpg', 70.6, 31.1, 19.4, 23.0, 27.5, 'C', 12, -9.4, 4.8, 'BALANCED', 'BALANCED', 2000, 150, 50, 30, 20, 1000, 600, 400, 250, 150, 44, 400, 50, 30, 8, 800, 100, 60, 18, 800, 100, 60, 18, 3, 68);
+
+-- 시간 나오게 DATETIME으로 변경
+ALTER TABLE inbody MODIFY COLUMN record_date DATETIME;
+
+select *
+from inbody
+;

@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.javaex.service.InbodyService;
 import com.javaex.util.JsonResult;
@@ -27,10 +27,23 @@ public class InbodyApiController {
 	private InbodyService inbodyService;
 	
 	// 인바디 목록 가져오기 (페이징)
-    @GetMapping("/list")
-    public JsonResult getList(@RequestParam("userId") int userId,
-                              @RequestParam(value = "crtPage", defaultValue = "1") int crtPage) {
-        Map<String, Object> listMap = inbodyService.exeGetList(userId, crtPage);
+	// jsp에서 보내주는 userId 대신, 세션을 확인하여 조회할 대상을 결정
+	@GetMapping("/list")
+    public JsonResult getList(@RequestParam(value="userId", required=false, defaultValue="0") int userId,
+                              @RequestParam(value = "crtPage", defaultValue = "1") int crtPage,
+                              HttpSession session) {
+    	
+    	UserVO authUser = (UserVO) session.getAttribute("authUser");
+    	int targetUserId;
+    		
+    	// jsp에서 userId를 보내줬고(트레이너가 회원 조회), 그 값이 유효하면 그 ID를 사용
+    	if (userId > 0 && "trainer".equals(authUser.getRole())) {
+    		targetUserId = userId;
+    	} else { // 그 외의 경우(회원 본인 조회 등)는 로그인한 본인 ID를 사용
+    		targetUserId = authUser.getUserId();
+    	}
+    	
+        Map<String, Object> listMap = inbodyService.exeGetList(targetUserId, crtPage);
         
         return JsonResult.success(listMap);
     }
@@ -47,17 +60,20 @@ public class InbodyApiController {
         }
     }
 
-    // 인바디 이미지 업로드 및 분석
-    @PostMapping("/upload")
-    public JsonResult upload(@RequestParam("file") MultipartFile file, HttpSession session) {
+    // 인바디 직접 등록
+    @PostMapping("/add")
+    public JsonResult add(@RequestBody InbodyVO inbodyVO, HttpSession session) {
         UserVO authUser = (UserVO) session.getAttribute("authUser");
         
         if (authUser == null) {
             return JsonResult.fail("로그인이 필요합니다.");
         }
+        
+        // 등록하려는 대상이 본인이 맞는지 확인 (트레이너는 아직 고려 안함)
+        inbodyVO.setUserId(authUser.getUserId());
 
-        // 서비스의 OCR 처리 메소드 호출 (현재는 임시 데이터로 동작)
-        InbodyVO newInbodyVO = inbodyService.exeUploadAndAnalyze(file, authUser.getUserId());
+        // 서비스의 등록 메소드 호출
+        InbodyVO newInbodyVO = inbodyService.exeAdd(inbodyVO);
         
         return JsonResult.success(newInbodyVO);
     }
@@ -73,6 +89,5 @@ public class InbodyApiController {
             return JsonResult.fail("삭제에 실패했습니다.");
         }
     }
-	
 	
 }
