@@ -50,7 +50,8 @@
     <select id="selectUserByNo" parameterType="int" resultType="com.javaex.vo.UserVO">
         select user_id as userId,
                user_name as userName,
-               role
+               role,
+               birthdate as birthDate
         from users
         where user_id = #{userId}
     </select>

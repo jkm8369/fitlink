@@ -29,7 +29,6 @@
 		<![CDATA[
 			select inbody_id as inbodyId,
 				   record_date as recordDate,
-				   image_url as imageUrl,
 				   weight_kg as weightKg,
 				   muscle_mass_kg as muscleMassKg,
 				   fat_mass_kg as fatMassKg,
@@ -39,8 +38,6 @@
 				   visceral_fat_level as visceralFatLevel,
 				   fat_control_kg as fatControlKg,
 				   muscle_control_kg as muscleControlKg,
-				   upper_lower_balance as upperLowerBalance,
-				   left_right_balance as leftRightBalance,
 				   target_calories as targetCalories,
 				   required_protein_g as requiredProteinG,
 				   carb_ratio as carbRatio,
@@ -65,7 +62,8 @@
 				   dinner_protein_g as dinnerProteinG,
 				   dinner_fat_g as dinnerFatG,
 				   user_id as userId,
-				   inbody_score as inbodyScore
+				   inbody_score as inbodyScore,
+				   height
 			from inbody
 			where inbody_id = #{inbodyId}
 		]]>
@@ -76,14 +74,14 @@
 		<![CDATA[
 			insert into inbody
 			values (
-				null, #{recordDate}, #{imageUrl}, #{weightKg}, #{muscleMassKg}, #{fatMassKg},
+				null, #{recordDate}, #{weightKg}, #{muscleMassKg}, #{fatMassKg},
 				#{bmi}, #{percentBodyFat}, #{cidType}, #{visceralFatLevel}, #{fatControlKg},
-				#{muscleControlKg}, #{upperLowerBalance}, #{leftRightBalance}, #{targetCalories},
+				#{muscleControlKg}, #{targetCalories},
 				#{requiredProteinG}, #{carbRatio}, #{proteinRatio}, #{fatRatio}, #{targetCarbKcal},
 				#{targetProteinKcal}, #{targetFatKcal}, #{targetCarbG}, #{targetProteinG}, #{targetFatG},
 				#{breakfastKcal}, #{breakfastCarbG}, #{breakfastProteinG}, #{breakfastFatG},
 				#{lunchKcal}, #{lunchCarbG}, #{lunchProteinG}, #{lunchFatG}, #{dinnerKcal},
-				#{dinnerCarbG}, #{dinnerProteinG}, #{dinnerFatG}, #{userId}, #{inbodyScore}
+				#{dinnerCarbG}, #{dinnerProteinG}, #{dinnerFatG}, #{userId}, #{inbodyScore}, #{height}
 			)
 		]]>
 		<selectKey keyProperty="inbodyId" resultType="int" order="AFTER">
