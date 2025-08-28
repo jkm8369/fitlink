@@ -27,7 +27,7 @@ public class WorkoutService {
 	public Map<String, Object> exeGetWorkoutData(int targetUserId) {
 		System.out.println("WorkoutService.exeGetWorkoutData()");
 		
-		// 1. 해당 회원의 운동 목록을 가져옵니다.
+		// 1. 해당 회원의 운동일지 목록을 가져옵니다.
 		List<WorkoutVO> workoutList = workoutRepository.workoutSelectList(targetUserId);
 		
 		// 2. 해당 회원의 기본 정보를 가져옵니다. (JSP에서 이름 등을 표시하기 위함)

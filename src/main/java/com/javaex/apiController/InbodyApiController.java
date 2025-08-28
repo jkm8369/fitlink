@@ -60,25 +60,7 @@ public class InbodyApiController {
         }
     }
 
-    // 인바디 직접 등록
-    @PostMapping("/add")
-    public JsonResult add(@RequestBody InbodyVO inbodyVO, HttpSession session) {
-        UserVO authUser = (UserVO) session.getAttribute("authUser");
-        
-        if (authUser == null) {
-            return JsonResult.fail("로그인이 필요합니다.");
-        }
-        
-        // 등록하려는 대상이 본인이 맞는지 확인 (트레이너는 아직 고려 안함)
-        inbodyVO.setUserId(authUser.getUserId());
-
-        // 서비스의 등록 메소드 호출
-        InbodyVO newInbodyVO = inbodyService.exeAdd(inbodyVO);
-        
-        return JsonResult.success(newInbodyVO);
-    }
-
- // 인바디 기록 삭제
+    // 인바디 기록 삭제
     @DeleteMapping("/{inbodyId}")
     public JsonResult delete(@PathVariable("inbodyId") int inbodyId) {
         // [CHECK 1] 컨트롤러에 요청이 잘 도착했는지 확인
@@ -93,4 +75,20 @@ public class InbodyApiController {
         }
     }
 	
+    // 인바디 수동 등록
+    @PostMapping("/manual-add")
+    public JsonResult manualAdd(@RequestBody InbodyVO inbodyVO, HttpSession session) {
+        System.out.println("InbodyApiController.manualAdd()");
+        
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+        if (authUser == null) {
+            return JsonResult.fail("로그인이 필요합니다.");
+        }
+
+        // 서비스의 등록 메소드 호출
+        InbodyVO newInbodyVO = inbodyService.exeManualAdd(inbodyVO, authUser);
+        
+        return JsonResult.success(newInbodyVO);
+    }
+    
 }

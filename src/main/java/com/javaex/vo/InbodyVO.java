@@ -42,6 +42,7 @@ public class InbodyVO {
     private double dinnerFatG;
     private int userId;
     private int inbodyScore;
+    private double height;
     
     //생성자
 	public InbodyVO() {
@@ -56,7 +57,7 @@ public class InbodyVO {
 			double targetProteinG, double targetFatG, double breakfastKcal, double breakfastCarbG,
 			double breakfastProteinG, double breakfastFatG, double lunchKcal, double lunchCarbG, double lunchProteinG,
 			double lunchFatG, double dinnerKcal, double dinnerCarbG, double dinnerProteinG, double dinnerFatG,
-			int userId, int inbodyScore) {
+			int userId, int inbodyScore, double height) {
 		super();
 		this.inbodyId = inbodyId;
 		this.recordDate = recordDate;
@@ -97,6 +98,7 @@ public class InbodyVO {
 		this.dinnerFatG = dinnerFatG;
 		this.userId = userId;
 		this.inbodyScore = inbodyScore;
+		this.height = height;
 	}
 
 	//메소드 gs
@@ -411,6 +413,14 @@ public class InbodyVO {
 	public void setInbodyScore(int inbodyScore) {
 		this.inbodyScore = inbodyScore;
 	}
+	
+	public double getHeight() {
+		return height;
+	}
+	
+	public void setHeight(double height) {
+		this.height = height;
+	}
 
 	//메소드 일반
 	@Override
@@ -428,8 +438,11 @@ public class InbodyVO {
 				+ breakfastProteinG + ", breakfastFatG=" + breakfastFatG + ", lunchKcal=" + lunchKcal + ", lunchCarbG="
 				+ lunchCarbG + ", lunchProteinG=" + lunchProteinG + ", lunchFatG=" + lunchFatG + ", dinnerKcal="
 				+ dinnerKcal + ", dinnerCarbG=" + dinnerCarbG + ", dinnerProteinG=" + dinnerProteinG + ", dinnerFatG="
-				+ dinnerFatG + ", userId=" + userId + ", inbodyScore=" + inbodyScore + "]";
+				+ dinnerFatG + ", userId=" + userId + ", inbodyScore=" + inbodyScore + ", height=" + height + "]";
 	}
+
+	
+	
 	
     
 }   

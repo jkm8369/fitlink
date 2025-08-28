@@ -556,7 +556,15 @@ h4 {
 	/* flex → grid */
 	grid-template-columns: 1fr 1fr;
 	align-items: start;
-	margin: 30px 0 8px;
+	margin: 0 10px 8px 30px;
+}
+
+.core {
+	display: grid;
+	/* flex → grid */
+	grid-template-columns: 1fr 1fr;
+	align-items: start;
+	margin: 30px 10px -0px 30px !important; 
 }
 
 .panel-head .label-pill:first-child {
@@ -601,7 +609,7 @@ h4 {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	align-items: center;
-	margin: 6px 0 18px;
+	margin: 6px 10px 18px 40px;
 }
 
 .options-row .option-group {
@@ -610,6 +618,7 @@ h4 {
 
 .options-row .option-group.right {
 	justify-self: start;
+	padding-top: 3px;
 }
 
 /* 오른쪽 컬럼도 왼쪽 정렬 */
@@ -658,13 +667,13 @@ h4 {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 0px;
-	margin-top: 80px;
+	mmargin-top: 10px !important;
 }
 
-/* 핵심지표/부위별 근육분석 블록을 전체적으로 조금 ↓ */
+/* 핵심지표를 전체적으로 조금 ↓ */
 .grid-2.tight .metric-box {
 	/* 두 칼럼 모두 적용 */
-	margin-top: 10px;
+	margin-top: 0px !important;
 	/* 필요하면 10~16px에서 조절 */
 }
 
@@ -675,12 +684,12 @@ h4 {
 
 /* 4) 체지방률 그래프 길이 줄이기(왼쪽 박스에만 적용) */
 .grid-2.tight .metric-box:first-child .progress {
-	width: 150px;
+	width: 400px;
 }
 
 /* '핵심지표' 내부 들여쓰기: 체지방률/체중조절을 안쪽으로 */
 .grid-2.tight .metric-box:first-child .metric {
-	padding-left: 14px;
+	padding-left: 0px;
 	/* ← 들여쓰기 값 (원하면 12~18px로 조절) */
 }
 
@@ -722,7 +731,7 @@ h4 {
 .grid-2.tight .metric-box:first-child .metric .metric-pair {
 	display: flex;
 	/* ← 이게 있어야 gap 적용됨 */
-	gap: 25px;
+	gap: 40px;
 	align-items: baseline;
 	/* 숫자 라인 예쁘게 맞춤(선택) */
 }
@@ -747,11 +756,12 @@ h4 {
 	border: none;
 	box-shadow: none;
 	background: transparent;
-	padding: 0
+	margin:0;
 }
 
 .metric {
 	margin-top: 14px;
+	margin-left: 38px;
 	position: relative
 }
 
@@ -762,7 +772,7 @@ h4 {
 .metric-name {
 	font-size: 14px;
 	color: #475569;
-	margin-bottom: 8px
+	margin-bottom: 8px;
 }
 
 /* 얇은 체지방률 바 + 값 빨강 */
@@ -947,8 +957,8 @@ h4 {
 .m-label {
 	color: #64748b;
 	font-size: 13px;
-	margin-bottom: 2px;
-	line-height: 1.4;
+	margin-bottom: -8px;
+	line-height: 1.2;
 }
 
 .m-label .m-label-sub {
