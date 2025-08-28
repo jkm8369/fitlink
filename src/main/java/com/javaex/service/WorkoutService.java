@@ -44,7 +44,9 @@ public class WorkoutService {
 	// -- 트레이너가 특정 회원을 조회할 권한이 있는지 확인하는 보안 메소드
 	public boolean exeCheckAuth(int memberId, int trainerId) {
 		System.out.println("WorkoutService.exeCheckAuth()");
+		
 		Map<String, Object> params = new HashMap<>();
+		
 		params.put("memberId", memberId);
 		params.put("trainerId", trainerId);
 		

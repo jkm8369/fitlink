@@ -40,10 +40,11 @@
 	<!-- 트레이너와 회원이 pt_members 테이블에 연결되어 있는지 확인,보안용 -->
     <select id="checkMemberAssignment" parameterType="map" resultType="int">
         select count(*)
-        from pt_contract
-        where member_id = #{memberId}
-       	and trainer_id = #{trainerId}
-    </select>
+        from users
+        where user_id = #{memberId}
+        and role = 'member'
+        and assigned_trainer_id = #{trainerId}
+	</select>
 
 	<!-- user_id로 사용자의 기본 정보를 조회하는 쿼리 -->
     <select id="selectUserByNo" parameterType="int" resultType="com.javaex.vo.UserVO">
