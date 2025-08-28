@@ -3,37 +3,33 @@
 
 <mapper namespace="photo">
 
-  <!-- =========================================================
-       1) 사진 저장 (user_photo)
-       - IN : photoType, photoUrl, userId, writerId
-       - OUT: (useGeneratedKeys) photoId 를 파라미터에 채워줌
-       - upload_date 는 NOW() 로 DB에서 기록
-       ========================================================= -->
-  <insert id="insertUserPhoto" parameterType="map"
-          useGeneratedKeys="true" keyProperty="photoId">
-    INSERT INTO user_photo
-      (upload_date, photo_type, photo_url, user_id, writer_id)
-    VALUES
-      (NOW(), #{photoType}, #{photoUrl}, #{userId}, #{writerId})
-  </insert>
+	<!-- 사진 INSERT: DB에서 upload_date 자동 기록 -->
+	<insert id="insertUserPhoto" parameterType="com.javaex.vo.PhotoVO" useGeneratedKeys="true" keyProperty="photoId">
+	  INSERT INTO user_photo
+	    (user_id, writer_id, photo_type, target_date, photo_url)
+	  VALUES
+	    (#{userId}, #{writerId}, #{photoType}, #{targetDate}, #{photoUrl})
+	</insert>
 
-  <!-- =========================================================
-       2) 단건 조회 (방금 INSERT 한 row 재확인/응답용)
-       - IN : photoId
-       - OUT: PhotoVO
-       ========================================================= -->
-  <select id="selectUserPhotoById" parameterType="int"
-          resultType="com.javaex.vo.PhotoVO">
-    SELECT
-      photo_id    AS photoId,
-      upload_date AS uploadDate,
-      photo_type  AS photoType,
-      photo_url   AS photoUrl,
-      user_id     AS userId,
-      writer_id   AS writerId
-    FROM user_photo
-    WHERE photo_id = #{photoId}
-  </select>
+	<!-- 사진 목록: 회원 본인 + 타입 + (옵션) 날짜 -->
+	<select id="selectUserPhotos" parameterType="map" resultType="com.javaex.vo.PhotoVO">
+	  SELECT
+	    photo_id   AS photoId,
+	    user_id    AS userId,
+	    writer_id  AS writerId,
+	    photo_type AS photoType,
+	    target_date AS targetDate,
+	    DATE_FORMAT(upload_date, '%Y-%m-%d %H:%i:%s') AS uploadDate,
+	    photo_url  AS photoUrl
+	  FROM user_photo
+	  WHERE user_id = #{userId}
+	    AND photo_type = #{photoType}
+	    <if test="targetDate != null and targetDate != ''">
+	      AND target_date = #{targetDate}
+	    </if>
+	  ORDER BY upload_date DESC
+	  <if test="limit != null"> LIMIT #{limit} </if>
+	  <if test="offset != null"> OFFSET #{offset} </if>
+	</select>
 
 </mapper>
-

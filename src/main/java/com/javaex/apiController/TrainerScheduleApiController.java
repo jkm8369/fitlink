@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.javaex.repository.TrainerScheduleRepository;
+import com.javaex.vo.UserVO;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/trainer/schedule")
@@ -31,9 +33,12 @@ public class TrainerScheduleApiController {
      *  - start, end 만 받고 trainerId는 세션에서 */
     @GetMapping("/bookings")
     public List<Map<String, Object>> getTrainerBookings(
-            @SessionAttribute("trainerId") Integer trainerId,
+            HttpSession session,
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
+    	
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+        Integer trainerId = authUser.getUserId();
 
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
@@ -46,10 +51,13 @@ public class TrainerScheduleApiController {
      *  - start, end 만 받고 trainerId는 세션에서 */
     @GetMapping("/slots")
     public List<Map<String, Object>> getTrainerSlots(
-            @SessionAttribute("trainerId") Integer trainerId,
+            HttpSession session,
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
-
+        
+    	UserVO authUser = (UserVO) session.getAttribute("authUser");
+        Integer trainerId = authUser.getUserId();
+    	
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
         param.put("start", start);
@@ -61,9 +69,12 @@ public class TrainerScheduleApiController {
      *  - date만 받고 trainerId는 세션에서 */
     @GetMapping("/slots/day")
     public List<Map<String, Object>> getDaySlots(
-            @SessionAttribute("trainerId") Integer trainerId,
+            HttpSession session,
             @RequestParam("date") String date) {
-
+        
+    	UserVO authUser = (UserVO) session.getAttribute("authUser");
+        Integer trainerId = authUser.getUserId();
+        
         Map<String, Object> param = new HashMap<>();
         param.put("trainerId", trainerId);
         param.put("workDate", date);
@@ -74,9 +85,12 @@ public class TrainerScheduleApiController {
      *  - Body의 trainerId는 무시하고(또는 없어도 됨), 세션 trainerId 사용 */
     @PostMapping("/availability")
     public ResponseEntity<Map<String, Object>> insertAvailabilities(
-            @SessionAttribute("trainerId") Integer trainerId,
+            HttpSession session,
             @RequestBody Map<String, Object> body) {
-
+        
+    	UserVO authUser = (UserVO) session.getAttribute("authUser");
+        Integer trainerId = authUser.getUserId();
+    	
         @SuppressWarnings("unchecked")
         List<String> datetimes = (List<String>) body.get("datetimes");
 
@@ -116,9 +130,12 @@ public class TrainerScheduleApiController {
      *  - Body의 trainerId는 무시하고 세션 trainerId 사용 */
     @PostMapping("/availability/delete")
     public ResponseEntity<Map<String, Object>> deleteAvailabilities(
-            @SessionAttribute("trainerId") Integer trainerId,
+            HttpSession session,
             @RequestBody Map<String, Object> body) {
-
+    	
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+        Integer trainerId = authUser.getUserId();        
+    	
         @SuppressWarnings("unchecked")
         List<String> datetimes = (List<String>) body.get("datetimes");
 
@@ -137,8 +154,11 @@ public class TrainerScheduleApiController {
      *  - trainerId 파라미터 제거, 세션값 사용 */
     @DeleteMapping("/reservation")
     public ResponseEntity<Map<String, Object>> forceCancelReservation(
-            @SessionAttribute("trainerId") Integer trainerId,
+            HttpSession session,
             @RequestParam("reservationId") int reservationId) {
+    	
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+        Integer trainerId = authUser.getUserId();        
 
         Map<String, Object> param = new HashMap<>();
         param.put("reservationId", reservationId);

@@ -53,11 +53,6 @@ input, select, textarea {
   outline: none;
 }
 
-img {
-  max-width: 100%;
-  vertical-align: middle;
-}
-
 /* clearfix */
 /* .clearfix{*zoom:1;} ->익스플로어에 적용 */
 .clearfix::before, .clearfix::after{
