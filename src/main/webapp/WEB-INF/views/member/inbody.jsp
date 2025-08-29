@@ -360,7 +360,7 @@ $(document).ready(function() {
                         <h4 class="card-title" style="font-size:16px; font-weight:bold;">일일 단백질 섭취량</h4>
                         <div class="mb3-metrics">
                             <div class="metric-line">
-                                <span class="m-label">현재체중(kg)<br><small>(체중 * 00)</small></span>
+                                <span class="m-label" style="padding-bottom: 10px;">현재체중(kg)</span>
                                 <span class="m-value blue">\${data.weightKg}</span>
                             </div>
                             <div class="metric-line">
@@ -382,7 +382,7 @@ $(document).ready(function() {
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>비율(5:3:2)</td>
+                                    <td>비율</td>
                                     <td>\${data.carbRatio / 100}</td>
                                     <td>\${data.proteinRatio / 100}</td>
                                     <td>\${data.fatRatio / 100}</td>

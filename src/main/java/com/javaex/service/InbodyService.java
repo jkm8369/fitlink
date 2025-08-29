@@ -98,15 +98,17 @@ public class InbodyService {
  	}
     
  	/**
-     * [추가] 사용자가 직접 입력한 값으로 인바디 전체 데이터를 계산하고 저장합니다.
+     * [최종 업그레이드] 사용자가 직접 입력한 값으로 인바디 전체 데이터를 계산하고 저장합니다.
+     * - 근육 조절량을 표준과 비교하여 현실적인 목표 제시
+     * - CID 유형과 목표(감량/유지/증량)에 따라 목표 칼로리 및 탄단지 비율을 동적으로 계산
      * @param inputVO 키, 체중, 골격근량, 체지방량, 인바디점수가 담긴 VO
      * @param authUser 로그인한 사용자 정보
      * @return 저장된 전체 인바디 정보가 담긴 VO
      */
  	public InbodyVO exeManualAdd(InbodyVO inputVO, UserVO authUser) {
-        System.out.println("InbodyService.exeManualAdd() - Final Version");
+        System.out.println("InbodyService.exeManualAdd() - Advanced Logic Version");
 
-        // 0. 계산에 필요한 사용자 정보 조회 (userRepository에 selectUserByNo가 있다고 가정)
+        // 0. 계산에 필요한 사용자 정보 조회
         UserVO fullUserVO = userRepository.selectUserByNo(authUser.getUserId());
         int age = java.time.LocalDate.now().getYear() - Integer.parseInt(fullUserVO.getBirthDate().substring(0, 4));
         String gender = fullUserVO.getGender();
@@ -138,29 +140,44 @@ public class InbodyService {
         // 체지방률
         double pbf = (fatMass / weight) * 100;
         fullData.setPercentBodyFat(Math.round(pbf * 10.0) / 10.0);
-
-        // 지방 및 근육 조절량 계산
-        double idealWeight = (height - 100) * 0.9;
-        double idealFatRatio = "male".equalsIgnoreCase(gender) ? 0.15 : 0.23; // 남성 15%, 여성 23% 목표
-        double idealFatMass = idealWeight * idealFatRatio;
         
-        double fatControl = Math.round((fatMass - idealFatMass) * 10.0) / 10.0;
-        // 근육 조절량은 우선 0으로 설정 (근육량 유지를 기본 목표로)
-        fullData.setFatControlKg(fatControl * -1); // 빼야 할 양이므로 음수로 표현
-        fullData.setMuscleControlKg(0.0);
+        // =======================================================================
+        // 지방 및 근육 조절량 계산 로직
+        // =======================================================================
         
-        // C-I-D 체형 타입 (간단한 로직)
-        double stdWeight = heightM * heightM * 22; // 표준 BMI 22 기준
-	    double stdMuscle = stdWeight * 0.45; // 표준 근육량 (체중의 45%)
-	    if (muscleMass > stdMuscle && pbf < idealFatRatio * 100) {
-	        fullData.setCidType("D"); // 근육형
-	    } else if (pbf > idealFatRatio * 100) {
-	        fullData.setCidType("C"); // 비만형
-	    } else {
-	        fullData.setCidType("I"); // 표준형
-	    }
+        // 성별에 따른 표준 값 설정
+        double idealBmi = "male".equalsIgnoreCase(gender) ? 22 : 21;
+        double idealMuscleRatio = "male".equalsIgnoreCase(gender) ? 0.45 : 0.40;
+        double idealFatRatio = "male".equalsIgnoreCase(gender) ? 0.15 : 0.23;
 
-        // 3. 영양 정보 자동 계산 (나이, 성별 반영)
+        // 표준 체중, 표준 골격근량, 표준 체지방량 계산
+        double idealWeight = idealBmi * (heightM * heightM);
+        double stdMuscle = idealWeight * idealMuscleRatio;
+        double stdFat = idealWeight * idealFatRatio;
+        
+        // 지방 조절량 계산 (현재값 - 목표값, 빼야 할 경우 음수)
+        double fatControl = fatMass - stdFat;
+        fullData.setFatControlKg(Math.round(fatControl * 10.0) / 10.0);
+        
+        // 근육 조절량 계산 (목표값 - 현재값, 늘려야 할 경우 양수)
+        double muscleControl = stdMuscle - muscleMass;
+        // 근육이 표준보다 많으면 0으로, 부족하면 늘려야 할 양을 양수로 표시
+        fullData.setMuscleControlKg(Math.round(Math.max(0, muscleControl) * 10.0) / 10.0);
+        
+        // CID 유형 판단 로직
+        if (muscleMass >= stdMuscle * 1.1) { // 표준보다 10% 이상 많으면 D형
+            fullData.setCidType("D");
+        } else if (fatMass >= stdFat * 1.1) { // 표준보다 10% 이상 많으면 C형
+            fullData.setCidType("C");
+        } else {
+            fullData.setCidType("I");
+        }
+        
+        // =======================================================================
+        // CID 유형별 목표 칼로리 및 탄단지 비율 설정
+        // =======================================================================
+        
+        // 3. 영양 정보 자동 계산
         // 기초대사량(BMR) - 미플린-세인트 지어 공식
         double bmr;
         if ("male".equalsIgnoreCase(gender)) {
@@ -168,45 +185,63 @@ public class InbodyService {
         } else {
             bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
         }
-        int targetCalories = (int)(bmr * 1.375); // 활동대사량 (가벼운 활동)
+        
+        // 활동대사량(유지 칼로리) 계산 (가벼운 활동 기준)
+        double maintenanceCalories = bmr * 1.375;
+        int targetCalories = 0;
+
+        fullData.setRequiredProteinG((int)(weight * 0.8));
+        // CID 유형에 따라 목표 칼로리 및 탄단지 비율 차등 적용
+        switch (fullData.getCidType()) {
+            case "C": // 비만형 -> 감량 목표
+                targetCalories = (int)(maintenanceCalories - 500);
+                fullData.setCarbRatio(40);
+                fullData.setProteinRatio(40);
+                fullData.setFatRatio(20);
+                break;
+            case "D": // 근육형 -> 증량/강화 목표
+                targetCalories = (int)(maintenanceCalories + 300);
+                fullData.setCarbRatio(50);
+                fullData.setProteinRatio(25);
+                fullData.setFatRatio(25);
+                break;
+            default: // "I" 표준형 -> 유지 목표
+                targetCalories = (int)maintenanceCalories;
+                fullData.setCarbRatio(50);
+                fullData.setProteinRatio(30);
+                fullData.setFatRatio(20);
+                break;
+        }
         fullData.setTargetCalories(targetCalories);
 
-        // 권장 단백질 섭취량
-        fullData.setRequiredProteinG((int)(weight * 0.8));
-
-        // 탄단지 비율 (5:3:2)에 따른 칼로리 및 그램 계산
-        fullData.setCarbRatio(50);
-        fullData.setProteinRatio(30);
-        fullData.setFatRatio(20);
-
-        int carbKcal = (int)(targetCalories * 0.5);
-        int proteinKcal = (int)(targetCalories * 0.3);
-        int fatKcal = (int)(targetCalories * 0.2);
+        // 설정된 비율에 따른 칼로리 및 그램 계산
+        int carbKcal = (int)(targetCalories * (fullData.getCarbRatio() / 100.0));
+        int proteinKcal = (int)(targetCalories * (fullData.getProteinRatio() / 100.0));
+        int fatKcal = (int)(targetCalories * (fullData.getFatRatio() / 100.0));
         
         fullData.setTargetCarbKcal(carbKcal);
         fullData.setTargetProteinKcal(proteinKcal);
         fullData.setTargetFatKcal(fatKcal);
         
-        int carbG = (int)(carbKcal / 4.0);
-        int proteinG = (int)(proteinKcal / 4.0);
-        int fatG = (int)(fatKcal / 9.0);
+        int carbG = carbKcal / 4;
+        int proteinG = proteinKcal / 4;
+        int fatG = fatKcal / 9;
         
         fullData.setTargetCarbG(carbG);
         fullData.setTargetProteinG(proteinG);
         fullData.setTargetFatG(fatG);
 
         // 아침/점심/저녁 식단 자동 계산 (칼로리 3:4:3 비율로 분배)
-	    // 아침 (30%)
 	    fullData.setBreakfastKcal((int)(targetCalories * 0.3));
 	    fullData.setBreakfastCarbG((int)(carbG * 0.3));
 	    fullData.setBreakfastProteinG((int)(proteinG * 0.3));
 	    fullData.setBreakfastFatG((int)(fatG * 0.3));
-	    // 점심 (40%)
+	    
 	    fullData.setLunchKcal((int)(targetCalories * 0.4));
 	    fullData.setLunchCarbG((int)(carbG * 0.4));
 	    fullData.setLunchProteinG((int)(proteinG * 0.4));
 	    fullData.setLunchFatG((int)(fatG * 0.4));
-	    // 저녁 (30%)
+	    
 	    fullData.setDinnerKcal((int)(targetCalories * 0.3));
 	    fullData.setDinnerCarbG((int)(carbG * 0.3));
 	    fullData.setDinnerProteinG((int)(proteinG * 0.3));

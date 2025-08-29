@@ -288,6 +288,9 @@ DROP COLUMN left_right_balance;
 ALTER TABLE inbody 
 ADD COLUMN height DECIMAL(5, 2) NULL COMMENT '측정 당시 키(cm)';
 
+ALTER TABLE inbody
+DROP COLUMN image_url;
+
 ALTER TABLE inbody 
 MODIFY COLUMN percent_body_fat DECIMAL(5, 2) NULL COMMENT '체지방률',
 MODIFY COLUMN bmi DECIMAL(5, 2) NULL COMMENT 'BMI';

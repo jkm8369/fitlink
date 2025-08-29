@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.javaex.service.MemberListService;
 import com.javaex.vo.MemberVO;
+import com.javaex.vo.UserVO;
 
 @Controller
 @RequestMapping("/trainer/member-list")
@@ -24,7 +25,8 @@ public class MemberListController {
 	}
 
 	@GetMapping
-	public String page(@SessionAttribute("trainerId") Integer trainerId, Model model) {
+	public String page(@SessionAttribute("authUser") UserVO authUser, Model model) {
+		int trainerId = authUser.getUserId();
 		List<MemberVO> rows = service.getMemberListForTrainer(trainerId);
 		model.addAttribute("rows", rows);
 		model.addAttribute("trainerId", trainerId);
