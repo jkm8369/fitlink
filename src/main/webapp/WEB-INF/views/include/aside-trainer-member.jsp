@@ -21,6 +21,11 @@
 				</c:choose>
 			</p>
 		</div>
+		
+        <div class="trainer-info">
+	        <i class="fa-solid fa-clipboard-user"></i>
+      		<span>Trainer → Member</span>
+        </div>
 	</div>
 
 	<div class="aside-menu">
@@ -41,7 +46,7 @@
 		            <span>InBody & Meal</span>
 		        </a>
 		        
-		        <a href="#" class="menu-item">
+		        <a href="${pageContext.request.contextPath}/trainer/photo/${currentMember.userId}" class="menu-item">
 		            <i class="fa-solid fa-images"></i>
 		            <span>사진</span>
 		        </a>

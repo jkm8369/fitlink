@@ -10,6 +10,12 @@
                 <small>(트레이너)</small>
 			</p>
 		</div>
+		
+     	<div class="trainer-info">
+	    	<i class="fa-solid fa-clipboard-user"></i>
+        	<span>Trainer</span>
+        </div>
+        
 	</div>
     <div class="aside-menu">
       <a href="${pageContext.request.contextPath}/trainer/member-list" class="menu-item">
@@ -20,10 +26,7 @@
         <i class="fa-solid fa-calendar-days"></i>
         <span>일정</span>
       </a>
-      <a href="${pageContext.request.contextPath}/exercise" class="menu-item">
-        <i class="fa-solid fa-list-ul"></i>
-        <span>운동종류</span>
-      </a>
+
     </div>
 
 </aside>

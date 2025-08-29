@@ -89,10 +89,13 @@
                 <!-- rows 반복 -->
                 <c:forEach var="row" items="${rows}" varStatus="st">
                   <tr data-member-id="${row.memberId}">
+                    
+                    <!-- 순서 -->
                     <td><c:out value="${st.index + 1}"/></td>
 
+                    <!-- 이름 -->
                     <td>
-                      <a href="${pageContext.request.contextPath}/workout/member/${row.memberId}" class="link-member" data-member-id="${row.memberId}">
+                      <a href="${pageContext.request.contextPath}/workout/member/${row.memberId}" class="link-member" data-member-id="${row.memberId}" target="_blank">
                         <c:out value="${row.memberName}"/>
                       </a>
                     </td>

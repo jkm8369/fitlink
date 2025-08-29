@@ -9,9 +9,14 @@
                 ${sessionScope.authUser.userName}<br>
                 <small>(회원)</small>
             </p>
+        </div>            
+        
+        <div class="trainer-info">
+	        <i class="fa-solid fa-clipboard-user"></i>
+         <span>Member</span>
         </div>
-
     </div>
+    
     <div class="aside-menu">
         <a href="${pageContext.request.contextPath}/workout" class="menu-item">
             <i class="fa-solid fa-book"></i>
@@ -21,11 +26,11 @@
             <i class="fa-solid fa-chart-pie"></i>
             <span>InBody & Meal</span>
         </a>
-        <a href="#" class="menu-item">
+        <a href="${pageContext.request.contextPath}/member/photo" class="menu-item">
             <i class="fa-solid fa-images"></i>
             <span>사진</span>
         </a>
-        <a href="#" class="menu-item">
+        <a href="${pageContext.request.contextPath}/member/booking" class="menu-item">
             <i class="fa-solid fa-calendar-check"></i>
             <span>예약현황</span>
         </a>

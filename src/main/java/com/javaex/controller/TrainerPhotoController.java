@@ -1,10 +1,12 @@
 package com.javaex.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import com.javaex.service.MemberExerciseService;
 import com.javaex.vo.UserVO;
 
 import jakarta.servlet.http.HttpSession;
@@ -12,18 +14,23 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class TrainerPhotoController {
 	
-	@GetMapping("/trainer/photo")
+	@Autowired
+	private	MemberExerciseService memberExerciseService;
+	
+	@GetMapping("/trainer/photo/{memberId}")
 	public String trainerPhotoPage(HttpSession session,
-	                               @RequestParam(value="memberId", required=false) Integer memberId,
+	                               @PathVariable int memberId,
 	                               Model model) {
 	    UserVO authUser = (UserVO) session.getAttribute("authUser");
 	    if (authUser == null) return "redirect:/user/loginform";
 
-	    if (memberId == null) return "redirect:/trainer/member-list";
-
-	    model.addAttribute("memberId", memberId);
+	    
+	    UserVO userVO = memberExerciseService.exeGetMemberInfo(memberId);
+	    
+	    
+	    model.addAttribute("currentMember", userVO);
 	    model.addAttribute("trainerId", authUser.getUserId());
 	    return "trainer/photo";
 	}
-	 
+
 }

@@ -135,7 +135,10 @@ aside {
 }
 
 .trainer-info span {
+	background: #ffff00;
     cursor: pointer;
+    width: 120px;
+    text-align: center;
 }
 
 .check-icon {
