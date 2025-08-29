@@ -441,14 +441,14 @@ $(document).ready(function() {
                         <tfoot>
                             <tr>
                                 <td>총량</td>
-                                <td>\${Math.round(data.breakfastKcal + data.lunchKcal + data.dinnerKcal)}</td>
+                                <td></td>
                                 <td>\${Math.round(data.breakfastCarbG + data.lunchCarbG + data.dinnerCarbG)}</td>
                                 <td>\${Math.round(data.breakfastProteinG + data.lunchProteinG + data.dinnerProteinG)}</td>
                                 <td>\${Math.round(data.breakfastFatG + data.lunchFatG + data.dinnerFatG)}</td>
                             </tr>
                              <tr>
                                 <td>칼로리합</td>
-                                <td></td>
+                                <td>\${Math.round(data.breakfastKcal + data.lunchKcal + data.dinnerKcal)}</td>
                                 <td>\${Math.round((data.breakfastCarbG + data.lunchCarbG + data.dinnerCarbG)*4)}</td>
                                 <td>\${Math.round((data.breakfastProteinG + data.lunchProteinG + data.dinnerProteinG)*4)}</td>
                                 <td>\${Math.round((data.breakfastFatG + data.lunchFatG + data.dinnerFatG)*9)}</td>
