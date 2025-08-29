@@ -331,6 +331,11 @@
 	color: #1c7ed6 !important;
 }
 
+/* 사진 있는 날 배경색 */
+.calendar-card .fc .fc-bg-event.has-photos,
+.calendar-card .fc .has-photos { background: rgba(76,175,80,.28); }
+
+
 /* //-----------------------1. 달력 */
 
 /* ----------------------- 3. 회원리스트*/

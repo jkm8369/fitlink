@@ -10,10 +10,7 @@
                 <small>(회원)</small>
             </p>
         </div>
-        <div class="trainer-info">
-            <i class="fa-solid fa-clipboard-user"></i>
-            <span>1 Trainer</span>
-        </div>
+
     </div>
     <div class="aside-menu">
         <a href="${pageContext.request.contextPath}/workout" class="menu-item">

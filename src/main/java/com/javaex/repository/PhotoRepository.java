@@ -1,5 +1,6 @@
 package com.javaex.repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,4 +25,38 @@ public class PhotoRepository {
 	public List<PhotoVO> selectList(Map<String, Object> p) {
 		return sqlSession.selectList("photo.selectUserPhotos", p);
 	}
+	
+	public PhotoVO selectByIdAndUser(int photoId, int userId) {
+        Map<String,Object> p = new HashMap<>();
+        p.put("photoId", photoId);
+        p.put("userId", userId);
+        return sqlSession.selectOne("photo.selectByIdAndUser", p);
+    }
+
+    // 회원 삭제 전용 (writer까지 확인)
+    public int deleteByIdAndUserAndWriter(int photoId, int userId, int writerId) {
+        Map<String,Object> p = new HashMap<>();
+        p.put("photoId", photoId);
+        p.put("userId", userId);
+        p.put("writerId", writerId);
+        return sqlSession.delete("photo.deleteByIdAndUserAndWriter", p);
+    }
+	
+    // 삭제(소유권 조건)
+    public int deleteByIdAndUser(int photoId, int userId) {
+        Map<String,Object> p = new HashMap<>();
+        p.put("photoId", photoId);
+        p.put("userId", userId);
+        return sqlSession.delete("photo.deleteByIdAndUser", p);
+    }
+    
+    // 단건 조회 (photoId만)
+    public PhotoVO selectById(int photoId) {
+        return sqlSession.selectOne("photo.selectById", photoId);
+    }
+    
+    public List<Map<String,Object>> selectCalendarCounts(Map<String,Object> p){
+        return sqlSession.selectList("photo.selectCalendarCounts", p);
+    }
+
 }

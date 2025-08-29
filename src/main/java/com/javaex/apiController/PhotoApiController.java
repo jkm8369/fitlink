@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,4 +66,38 @@ public class PhotoApiController {
         var rows = photoService.getMyPhotos(auth.getUserId(), photoType, targetDate, limit);
         return Map.of("ok", true, "data", rows);
     }
+    
+    @DeleteMapping("/{photoId}")
+    public ResponseEntity<?> delete(HttpSession session, @PathVariable("photoId") int photoId) {
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+        if (authUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("ok", false, "message", "로그인이 필요합니다."));
+        }
+        try {
+            boolean deleted = photoService.deleteMyPhoto(authUser.getUserId(), photoId);
+            if (deleted) {
+                return ResponseEntity.ok(Map.of("ok", true));
+            } else {
+                // 내가 가진 사진이 아니거나 이미 삭제된 경우
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("ok", false, "message", "대상이 없거나 권한이 없습니다."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("ok", false, "message", "삭제 실패"));
+        }
+    }
+    
+    @GetMapping("/calendar")
+    public Map<String, Object> calendar(HttpSession session,
+                                        @RequestParam("start") String start,   // YYYY-MM-DD
+                                        @RequestParam("end")   String end) {   // YYYY-MM-DD (미포함)
+        UserVO auth = (UserVO) session.getAttribute("authUser");
+        if (auth == null) return Map.of("ok", false, "message", "로그인이 필요합니다.");
+
+        var rows = photoService.getCalendarCounts(auth.getUserId(), start, end);
+        return Map.of("ok", true, "data", rows); // [{date: "2025-08-29", count: 3}, ...]
+    }
+
 }

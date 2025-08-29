@@ -31,5 +31,64 @@
 	  <if test="limit != null"> LIMIT #{limit} </if>
 	  <if test="offset != null"> OFFSET #{offset} </if>
 	</select>
+	
+	<!-- 내가 가진 단일 사진 조회 (파일삭제용 path/권한 확인) -->
+	<select id="selectByIdAndUser" parameterType="map" resultType="com.javaex.vo.PhotoVO">
+	  SELECT
+	    photo_id   AS photoId,
+	    user_id    AS userId,
+	    writer_id  AS writerId,
+	    photo_type AS photoType,
+	    target_date AS targetDate,
+	    DATE_FORMAT(upload_date, '%Y-%m-%d %H:%i:%s') AS uploadDate,
+	    photo_url  AS photoUrl
+	  FROM user_photo
+	  WHERE photo_id = #{photoId}
+	    AND user_id  = #{userId}
+	</select>
+	
+	<!-- 소유자 조건 삭제 -->
+	<delete id="deleteByIdAndUser" parameterType="map">
+	  DELETE FROM user_photo
+	  WHERE photo_id = #{photoId}
+	    AND user_id  = #{userId}
+	</delete>
+
+	<!-- 캘린더 -->	
+	<select id="selectCalendarCounts" parameterType="map" resultType="map">
+	  <![CDATA[
+	  SELECT
+	    target_date AS date,
+	    COUNT(*)    AS count
+	  FROM user_photo
+	  WHERE user_id = #{userId}
+	    AND target_date >= #{start}
+	    AND target_date <  #{end}   -- end 미포함
+	  GROUP BY target_date
+	  ORDER BY target_date
+	]]>
+	</select>
+	
+	<!-- ★ 회원: 본인 업로드만 삭제 (user + writer 동시 확인) -->
+	<delete id="deleteByIdAndUserAndWriter" parameterType="map">
+	  DELETE FROM user_photo
+	  WHERE photo_id = #{photoId}
+	    AND user_id  = #{userId}
+	    AND writer_id = #{writerId}
+	</delete>
+	
+	<!-- ★ 단건 조회: photoId만으로 -->
+	<select id="selectById" parameterType="int" resultType="com.javaex.vo.PhotoVO">
+	  SELECT
+	    photo_id   AS photoId,
+	    user_id    AS userId,
+	    writer_id  AS writerId,
+	    photo_type AS photoType,
+	    target_date AS targetDate,
+	    DATE_FORMAT(upload_date, '%Y-%m-%d %H:%i:%s') AS uploadDate,
+	    photo_url  AS photoUrl
+	  FROM user_photo
+	  WHERE photo_id = #{value}
+	</select>
 
 </mapper>

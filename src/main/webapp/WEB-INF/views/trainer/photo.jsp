@@ -32,7 +32,7 @@
 			<!-- ------aside------ -->
 			<aside>
 				<div class="user-info">
-					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
+					<c:import url="/WEB-INF/views/include/aside-trainer-member.jsp"></c:import>
 				</div>
 			</aside>
 			<!-- ------aside------ -->
@@ -93,6 +93,11 @@
 	  // ================= 공통 유틸 =================
 	  function abs(path){ if(!path) return ''; return path.startsWith('http') ? path : (window.location.origin + path); }
 	
+	  // [트레이너용 변경] 지금 페이지가 "어느 회원의 갤러리인지" 인지 → data-member-id에서 memberId 추출
+	  const $page     = $('#photo-page');
+	  const memberId  = Number($page.data('member-id'));   // 사진 주인(회원) → 모든 API에 전달
+	  const trainerId = Number($page.data('trainer-id'));  // 작성자(트레이너) → 서버는 세션으로 확인, 클라에서는 표시용(현재 사용 안 함)
+	
 	  // 선택된 날짜(기본: 오늘)
 	  let selectedDate = new Date().toISOString().slice(0,10);
 	
@@ -107,16 +112,24 @@
 	      img.alt   = 'photo';
 	      img.src   = abs(p.photoUrl) + '?t=' + Date.now(); // 캐시 우회
 	      li.append(img);
-	      // 삭제 버튼 (이미 구현되어 있음: data-id 필요)
+	
+	      // 삭제 버튼
 	      const $btn = $('<button class="ph-remove" type="button">×</button>').attr('data-id', p.photoId);
 	      li.append($btn);
+	
 	      $g.append(li);
 	    });
 	  }
 	
 	  // ================= 목록 불러오기 (선택날짜 반영) =================
 	  function load(type, targetDate){
-	    $.get('/api/photo/list', { photoType: type, targetDate: targetDate || '', limit: 12 })
+	    // [트레이너용 변경] API prefix 변경 + userId(=memberId) 필수 전달
+	    $.get('/api/trainer/photo/list', {
+	        userId: memberId,                     // ← 대상 회원 고정
+	        photoType: type,
+	        targetDate: targetDate || '',
+	        limit: 12
+	      })
 	      .done(function(res){
 	        if (res && res.ok){
 	          renderList(type === 'body' ? '#photo-grid-body' : '#photo-grid-meal', res.data || []);
@@ -141,18 +154,20 @@
 	    fd.append('photoType', type);
 	    fd.append('targetDate', day);
 	
+	    // [트레이너용 변경] 트레이너가 "대상 회원"에게 저장 → userId를 명시적으로 추가
+	    fd.append('userId', String(memberId));
+	
 	    $.ajax({
-	      url: '/api/photo/upload',
+	      url: '/api/trainer/photo/upload',      // [트레이너용 변경] 업로드 엔드포인트 교체
 	      method: 'POST',
 	      data: fd,
 	      processData: false,
 	      contentType: false
 	    }).done(function(res){
 	      if (res && res.ok){
-	        load(type, day); // 해당 섹션만 리로드
-	        if (window.__photoCal) {         // 달력 배경 즉시 갱신
-	            refreshCalendar(window.__photoCal);}
-	        
+	        load(type, day);                     // 해당 섹션만 리로드
+	        // 업로드 직후 달력 배경 즉시 갱신
+	        if (window.__photoCal) { refreshCalendar(window.__photoCal); }
 	      } else {
 	        alert('업로드 실패');
 	      }
@@ -160,46 +175,43 @@
 	  });
 	
 	  // ================= FullCalendar =================
-	function fetchPhotoDays(startStr, endStr, calendar){
-	  const s = startStr.slice(0,10);
-	  const e = endStr.slice(0,10);
+	  function fetchPhotoDays(startStr, endStr, calendar){
+	    const s = startStr.slice(0,10);
+	    const e = endStr.slice(0,10);
 	
-	  $.get('/api/photo/calendar', { start: s, end: e })
-	    .done(function(res){
-	      if (!(res && res.ok)) return;
-	      calendar.removeAllEvents();
+	    // [트레이너용 변경] 달력 집계도 대상 회원 기준 → userId 포함
+	    $.get('/api/trainer/photo/calendar', { userId: memberId, start: s, end: e })
+	      .done(function(res){
+	        if (!(res && res.ok)) return;
+	        calendar.removeAllEvents();
 	
-	      const evts = (res.data || []).map(function(row){
-	        // end는 "다음날"로 (FullCalendar는 end-미포함)
-	        const d = new Date(row.date);
-	        d.setDate(d.getDate() + 1);
-	        const end = d.toISOString().slice(0,10);
+	        const evts = (res.data || []).map(function(row){
+	          // end는 "다음날"로 (FullCalendar는 end-미포함)
+	          const d = new Date(row.date);
+	          d.setDate(d.getDate() + 1);
+	          const end = d.toISOString().slice(0,10);
 	
-	        return { start: row.date, end: end, display: 'background', classNames:['has-photos'] };
+	          return { start: row.date, end: end, display: 'background', classNames:['has-photos'] };
+	        });
+	        calendar.addEventSource(evts);
 	      });
-	      calendar.addEventSource(evts);
-	    });
-	}
+	  }
 	
 	  $(function(){
-	    // 초기 목록: 오늘
-	    load('body', selectedDate);
-	    load('meal', selectedDate);
-	
-	    // FullCalendar 생성
+	    // FullCalendar 생성 (대상 엘리먼트: #photo-calendar 유지)
 	    const el = document.getElementById('photo-calendar');
 	    const calendar = new FullCalendar.Calendar(el, {
 	      initialView: 'dayGridMonth',
 	      height: 'auto',
 	      locale: 'ko',
 	      headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,dayGridWeek,dayGridDay' },
-	      
+	
 	      dateClick: function(info){
-	        selectedDate = info.dateStr;        // 선택 날짜 업데이트
+	        selectedDate = info.dateStr;   // 선택 날짜 업데이트
 	        load('body', selectedDate);
 	        load('meal', selectedDate);
 	      },
-	      
+	
 	      // 보이는 범위 바뀔 때마다 집계 재로딩
 	      datesSet: function(info){
 	        fetchPhotoDays(info.startStr, info.endStr, calendar);
@@ -207,19 +219,19 @@
 	    });
 	    window.__photoCal = calendar;
 	    calendar.render();
-	    
-	    // 초기 로딩
+	
+	    // [정리] 초기 로딩은 한 번만 (중복 호출 제거)
 	    load('body', selectedDate);
 	    load('meal', selectedDate);
-	    refreshCalendar(calendar);  
+	    refreshCalendar(calendar);
 	  });
-		
-	// 삭제 버튼 (×) 클릭
+	
+	  // 삭제 버튼 (×) 클릭
 	  $(document).on('click', '.ph-remove', function(){
 	    const photoId = $(this).data('id');
 	    if (!photoId) return;
 	    if (!confirm('이 사진을 삭제할까요?')) return;
-
+	
 	    // 이 버튼이 속한 그리드의 타입(body/meal) 결정
 	    const $grid = $(this).closest('ul.photo-grid');
 	    let type = $grid.data('type');
@@ -227,17 +239,16 @@
 	      const id = $grid.attr('id') || '';
 	      type = id.includes('body') ? 'body' : 'meal';
 	    }
-
+	
+	    // [트레이너용 변경] 삭제도 트레이너 전용 엔드포인트 사용
 	    $.ajax({
-	      url: '/api/photo/' + encodeURIComponent(photoId),
+	      url: '/api/trainer/photo/' + encodeURIComponent(photoId),
 	      method: 'DELETE'
 	    })
 	    .done(function(res){
 	      if (res && res.ok){
-	        // 현재 선택 날짜 그대로 다시 로딩
-	        load(type, selectedDate);
-	        // 달력 배경도 즉시 갱신
-	        if (window.__photoCal) refreshCalendar(window.__photoCal);
+	        load(type, selectedDate);                 // 현재 선택 날짜 그대로 다시 로딩
+	        if (window.__photoCal) refreshCalendar(window.__photoCal); // 달력 배경 갱신
 	      } else {
 	        alert((res && res.message) ? res.message : '삭제 실패');
 	      }
@@ -248,29 +259,30 @@
 	    });
 	  });
 	
-	  // 캘린더 초기화	  
+	  // 달력 집계 재조회 (현재 뷰 범위)
 	  function refreshCalendar(cal){
-		  const s = cal.view.activeStart.toISOString().slice(0,10);
-		  const e = cal.view.activeEnd  .toISOString().slice(0,10);
-
-		  $.get('/api/photo/calendar', { start: s, end: e })
-		    .done(function(res){
-		      if (!(res && res.ok)) return;
-		      cal.removeAllEvents();
-
-		      const bg = (res.data || []).map(function(row){
-		        const d = new Date(row.date);
-		        d.setDate(d.getDate() + 1); // end(미포함) = 다음날
-		        return {
-		          start: row.date,
-		          end: d.toISOString().slice(0,10),
-		          display: 'background',
-		          classNames: ['has-photos']
-		        };
-		      });
-		      cal.addEventSource(bg);
-		    });
-		}
+	    const s = cal.view.activeStart.toISOString().slice(0,10);
+	    const e = cal.view.activeEnd  .toISOString().slice(0,10);
+	
+	    // [트레이너용 변경] userId 포함하여 배경 이벤트 갱신
+	    $.get('/api/trainer/photo/calendar', { userId: memberId, start: s, end: e })
+	      .done(function(res){
+	        if (!(res && res.ok)) return;
+	        cal.removeAllEvents();
+	
+	        const bg = (res.data || []).map(function(row){
+	          const d = new Date(row.date);
+	          d.setDate(d.getDate() + 1); // end(미포함) = 다음날
+	          return {
+	            start: row.date,
+	            end: d.toISOString().slice(0,10),
+	            display: 'background',
+	            classNames: ['has-photos']
+	          };
+	        });
+	        cal.addEventSource(bg);
+	      });
+	  }
 	</script>
 
 </body>
