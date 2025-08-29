@@ -196,14 +196,14 @@ public class InbodyService {
         // [수정] 그램(g)을 먼저 계산하고, 칼로리는 그램을 기준으로 역산
         // =======================================================================
 
-        // 1. 일일 총 목표 그램(g) 계산
-        int totalCarbKcal = (int)(targetCalories * (fullData.getCarbRatio() / 100.0));
-        int totalProteinKcal = (int)(targetCalories * (fullData.getProteinRatio() / 100.0));
-        int totalFatKcal = targetCalories - totalCarbKcal - totalProteinKcal;
+     // 1. 일일 총 목표 그램(g) 계산
+        double totalCarbKcal = targetCalories * (fullData.getCarbRatio() / 100.0);
+        double totalProteinKcal = targetCalories * (fullData.getProteinRatio() / 100.0);
+        double totalFatKcal = targetCalories - totalCarbKcal - totalProteinKcal;
         
-        int totalCarbG = totalCarbKcal / 4;
-        int totalProteinG = totalProteinKcal / 4;
-        int totalFatG = totalFatKcal / 9;
+        double totalCarbG = totalCarbKcal / 4;
+        double totalProteinG = totalProteinKcal / 4;
+        double totalFatG = totalFatKcal / 9;
 
         fullData.setTargetCarbG(totalCarbG);
         fullData.setTargetProteinG(totalProteinG);
@@ -215,23 +215,23 @@ public class InbodyService {
         fullData.setTargetCalories( (totalCarbG*4) + (totalProteinG*4) + (totalFatG*9) );
 
         // 2. 끼니별 그램(g) 분배 (오차 보정)
-        int breakfastCarbG = (int)(totalCarbG * 0.3);
-        int lunchCarbG = (int)(totalCarbG * 0.4);
-        int dinnerCarbG = totalCarbG - breakfastCarbG - lunchCarbG;
+        double breakfastCarbG = totalCarbG * 0.3;
+        double lunchCarbG = totalCarbG * 0.4;
+        double dinnerCarbG = totalCarbG - breakfastCarbG - lunchCarbG;
         fullData.setBreakfastCarbG(breakfastCarbG);
         fullData.setLunchCarbG(lunchCarbG);
         fullData.setDinnerCarbG(dinnerCarbG);
 
-        int breakfastProteinG = (int)(totalProteinG * 0.3);
-        int lunchProteinG = (int)(totalProteinG * 0.4);
-        int dinnerProteinG = totalProteinG - breakfastProteinG - lunchProteinG;
+        double breakfastProteinG = totalProteinG * 0.3;
+        double lunchProteinG = totalProteinG * 0.4;
+        double dinnerProteinG = totalProteinG - breakfastProteinG - lunchProteinG;
         fullData.setBreakfastProteinG(breakfastProteinG);
         fullData.setLunchProteinG(lunchProteinG);
         fullData.setDinnerProteinG(dinnerProteinG);
 
-        int breakfastFatG = (int)(totalFatG * 0.3);
-        int lunchFatG = (int)(totalFatG * 0.4);
-        int dinnerFatG = totalFatG - breakfastFatG - lunchFatG;
+        double breakfastFatG = totalFatG * 0.3;
+        double lunchFatG = totalFatG * 0.4;
+        double dinnerFatG = totalFatG - breakfastFatG - lunchFatG;
         fullData.setBreakfastFatG(breakfastFatG);
         fullData.setLunchFatG(lunchFatG);
         fullData.setDinnerFatG(dinnerFatG);
