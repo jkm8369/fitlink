@@ -32,6 +32,18 @@ public class WorkoutController {
 		return getWorkoutPage(authUser, authUser.getUserId(), model);
 	}
 	
+	// 일반 회원이 자신의 운동일지(모바일 버전)를 볼 때 사용
+	@GetMapping(value="/mobile")
+	public String workoutMobile(HttpSession session, Model model) {
+		System.out.println("WorkoutController.workoutMobile() for member (Mobile)");
+		
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		getWorkoutPage(authUser, authUser.getUserId(), model);
+		
+		// 바로 모바일 jsp 파일을 보여줍니다.
+		return "member/workout-mobile";
+	}
 	
 	// -- 트레이너가 담당 회원의 운동일지를 볼 때 사용
 	@GetMapping(value="/member/{memberId}")

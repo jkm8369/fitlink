@@ -24,4 +24,5 @@ public class UserApiController {
         boolean ok = (data != null);
         return Map.of("ok", ok, "data", data);
     }
+    
 }
