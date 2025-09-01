@@ -18,40 +18,68 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
-	//로그인 폼
-	@RequestMapping(value="/loginform", method = {RequestMethod.GET, RequestMethod.POST})
-	public String loginform() {
-		//System.out.println("UserController.loginform()");
-		
-		return "/user/loginform";
-	}
-	
-	//로그인
-	@RequestMapping(value="/login", method= {RequestMethod.GET, RequestMethod.POST})
-	public String login(@ModelAttribute UserVO userVO, HttpSession session) {
-		//System.out.println("UserController.login()");
-		
-		UserVO authUser = userService.exeLogin(userVO);
-		
-		if(authUser != null) {
-			System.out.println("로그인 성공: " + authUser);
-			session.setAttribute("authUser", authUser);
-			return "member/workout";
-		} else {
-			System.out.println("로그인 실패");
-			return "redirect:/";
-		}
-		
-	}
-	
-	//로그아웃
-	@RequestMapping(value="/logout", method= {RequestMethod.GET, RequestMethod.POST})
-	public String logout(HttpSession session) {
-		//System.out.println("UserController.logout()");
-		
-		session.invalidate();
-		
-		return "redirect:/";
-	}
-	
+	 // -------------------------------
+    // 1) 로그인 폼
+    // -------------------------------
+    @RequestMapping(value = "/loginform", method = { RequestMethod.GET, RequestMethod.POST })
+    public String loginform(HttpSession session) {
+
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+        if (authUser != null) {
+            
+        	String role = "member"; // 기본값
+            if (authUser.getRole() != null) {
+                role = authUser.getRole().trim().toLowerCase(); // 'member' / 'trainer'
+            }
+
+            if ("trainer".equals(role)) {
+                return "redirect:/trainer/schedule";
+            
+            } else {
+                return "/member/workout";
+            }
+        }
+
+        // 로그인 화면 열기
+        return "/user/loginform";
+    }
+
+    // -------------------------------
+    // 2) 로그인 처리
+    // -------------------------------
+    @RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
+    public String login(@ModelAttribute UserVO userVO, HttpSession session) {
+
+        UserVO authUser = userService.exeLogin(userVO);
+
+        // 실패: 메인(또는 로그인폼)으로
+        if (authUser == null) {
+            return "redirect:/";
+            // return "redirect:/user/loginform";
+        }
+
+        session.setAttribute("authUser", authUser);
+
+        String role = "member";
+        if (authUser.getRole() != null) {
+            role = authUser.getRole().trim().toLowerCase(); // 'member' / 'trainer'
+        }
+
+        // 역할별 리다이렉트
+        if ("trainer".equals(role)) {
+            return "redirect:/trainer/schedule";   // 트레이너 스케줄
+
+        } else {
+            return "/member/workout";     // 회원 운동일지
+        }
+    }
+
+    // -------------------------------
+    // 3) 로그아웃
+    // -------------------------------
+    @RequestMapping(value = "/logout", method = { RequestMethod.GET, RequestMethod.POST })
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/user/loginform";
+    }
 }
