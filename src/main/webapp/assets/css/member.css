@@ -180,7 +180,7 @@ h4 {
 	max-height: 56px;
 	display: grid;
 	/* 입력 폼의 select/input/텍스트와 동일한 column 비율 사용 */
-	grid-template-columns: 145px 210px 130px 50px 40px 135px 35px 30px;
+	grid-template-columns: 140px 215px 130px 50px 40px 135px 35px 30px;
 	align-items: center;
 	gap: 8px;
 	padding: 12px 16px;
@@ -624,9 +624,9 @@ h4 {
 /* 오른쪽 컬럼도 왼쪽 정렬 */
 .radios-compact {
 	display: flex;
-	gap: 16px;
+	gap: 20px;
 	align-items: center;
-	margin-top: 4px;
+	padding-top: 20px;
 }
 
 .radio {
@@ -808,11 +808,12 @@ h4 {
 }
 
 .metric-value.red {
-	color: #E15241
+	color: #E15241;
 }
 
 .metric-pair.bold {
-	font-weight: 800
+	font-weight: 800;
+	padding-top: 5px;
 }
 
 .metric-pair .blue {
@@ -1661,41 +1662,103 @@ h4 {
 	background: #fff;
 }
 
-/* ==============box2 추가===================== */
-/* 3개의 라벨을 한 줄로 묶기 위한 스타일 */
-.panel-head.combined-head {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 0 10px 8px 30px;
-}
-
-/* 체지방률 섹션 스타일 */
-.pbf-section {
-    margin-top: 15px;
-    padding-left: 30px;
-}
-
-/* 체지방률 그래프와 값 위치 조정 */
-.pbf-section .metric.metric-pbf {
+/* 3등분 그리드 추가 (새로 추가된 코드) */
+.grid-3.tight {
     display: grid;
-    grid-template-columns: 150px auto;
-    column-gap: 10px;
-    align-items: center;
-    margin-left: 0;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px; /* 컬럼 간격 조절 */
+    margin-top: 20px;
 }
-.pbf-section .metric.metric-pbf .metric-name {
-    grid-column: 1 / -1;
-    margin-bottom: 6px;
-}
-.pbf-section .metric.metric-pbf .progress {
-    grid-column: 1;
-    height: 4px;
-}
-.pbf-section .metric.metric-pbf .metric-value {
-    grid-column: 2;
-    position: static;
-    line-height: 1;
+
+/* 3등분 그리드 내부 스타일 (새로 추가된 코드) */
+.grid-3.tight .metric-box {
     margin: 0;
+    padding: 16px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #f8fafc;
 }
-/* ==============///box2 추가===================== */
+
+/* 3등분 그리드 내부 라벨/값 스타일 (새로 추가된 코드) */
+.grid-3.tight .metric-box .metric-name {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* 라디오 버튼 스타일 수정 (새로 추가된 코드) */
+.grid-3.tight .metric-box .radios-compact {
+    justify-content: center;
+    margin-top: 0;
+}
+
+/* 1. 내장지방 레벨 값 박스 밖으로 넘어가지 않게 내부 고정 */
+.visceral-fat-value-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.metric-value.large {
+    font-size: 24px; /* 필요에 따라 폰트 크기 조절 */
+    line-height: 1;
+}
+
+/* 2. "C·I·D 유형 분석" 섹션 제목과 라디오 그룹 간 여백 확보 */
+.metric-box .metric-name {
+    display: block;
+    margin-bottom: 12px; /* 제목과 라디오 그룹 사이의 여백 추가 */
+}
+
+/* 3. 3개 핵심 박스 아래 2열 반응형 배치 */
+.core-analysis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2열 그리드 */
+    gap: 20px; /* 열 사이 간격 */
+    margin-top: 20px;
+}
+
+.core-analysis .metric-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f8fafc;
+}
+
+.core-analysis .metric-box .metric-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    color: #334155;
+}
+
+.core-analysis .metric-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 4px 0;
+}
+
+.core-analysis .metric-item span {
+    color: #64748b;
+}
+
+.core-analysis .metric-item strong {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* 화면 너비가 768px 이하일 때 1열로 변경 */
+@media (max-width: 768px) {
+    .core-analysis {
+        grid-template-columns: 1fr;
+    }
+}
+
+

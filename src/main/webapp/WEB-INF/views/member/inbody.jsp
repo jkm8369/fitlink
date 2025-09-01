@@ -5,174 +5,142 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InBody&Meal - FitLink</title>    
-    
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/include.css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/member.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-    
-    <script src="${pageContext.request.contextPath}/assets/js/jquery/jquery-3.7.1.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>InBody&Meal - FitLink</title>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/include.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/member.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+<script src="${pageContext.request.contextPath}/assets/js/jquery/jquery-3.7.1.js"></script>
 </head>
 
 <body>
-    <div id="wrap">
+	<div id="wrap">
 
-        <!-- ------헤더------ -->
-        <c:import url="/WEB-INF/views/include/header.jsp"></c:import>
-        <!-- //------헤더------ -->
+		<c:import url="/WEB-INF/views/include/header.jsp"></c:import>
+		<div id="content">
 
-        <!-- --aside + main-- -->
-        <div id="content">
-
-            <!-- ------aside------ -->
 			<c:choose>
-		        <c:when test="${sessionScope.authUser.role == 'trainer'}">
-		            <c:choose>
-		                <c:when test="${not empty currentMember}">
-		                    <c:import url="/WEB-INF/views/include/aside-trainer-member.jsp"></c:import>
-		                </c:when>
-		                <c:otherwise>
-		                    <c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
-		                </c:otherwise>
-		            </c:choose>
-		        </c:when>
-		        <c:otherwise>
-		            <c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
-		        </c:otherwise>
-		    </c:choose>
-			<!-- //------aside------ -->
+				<c:when test="${sessionScope.authUser.role == 'trainer'}">
+					<c:choose>
+						<c:when test="${not empty currentMember}">
+							<c:import url="/WEB-INF/views/include/aside-trainer-member.jsp"></c:import>
+						</c:when>
+						<c:otherwise>
+							<c:import url="/WEB-INF/views/include/aside-trainer.jsp"></c:import>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:otherwise>
+					<c:import url="/WEB-INF/views/include/aside-member.jsp"></c:import>
+				</c:otherwise>
+			</c:choose>
+			<main>
+				<div class="main-box1">
+					<div class="page-header">
+						<h3 class="page-title">InBody &amp; Meal</h3>
+					</div>
 
-            <main>
-                <!-- main-box1: 인바디 리스트 -->
-                <div class="main-box1">
-                    <div class="page-header">
-                        <h3 class="page-title">InBody &amp; Meal</h3>
-                    </div>
+					<section class="card list-card">
+						<div class="card-header">
+							<h4 class="card-title list-title">인바디 리스트</h4>
+						</div>
 
-                    <section class="card list-card">
-                        <div class="card-header">
-                            <h4 class="card-title list-title">인바디 리스트</h4>
-                        </div>
+						<table class="table inbody-table">
+							<thead>
+								<tr>
+									<th class="w-90">순서</th>
+									<th class="w-200">날짜</th>
+									<th class="w-140">시간</th>
+									<th class="w-140">인바디 점수</th>
+									<th class="w-120 actions-head"></th>
+								</tr>
+							</thead>
+							<tbody id="inbody-list-tbody">
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="5">
+										<div class="pagination" id="inbody-pagination"></div>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</section>
 
-                        <table class="table inbody-table">
-                            <thead>
-                                <tr>
-                                    <th class="w-90">순서</th>
-                                    <th class="w-200">날짜</th>
-                                    <th class="w-140">시간</th>
-                                    <th class="w-140">인바디 점수</th>
-                                    <th class="w-120 actions-head"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="inbody-list-tbody">
-                                <!-- AJAX로 채워질 영역 -->
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="5">
-                                        <div class="pagination" id="inbody-pagination">
-                                            <!-- AJAX로 채워질 영역 -->
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </section>
+					<hr class="section-divider">
+				</div>
+				
+				<div class="main-box2">
+					<div class="date-row">
+						<div id="detail-date-pill" class="pill pill--date">날짜를 선택해주세요</div>
+					</div>
 
-                    <hr class="section-divider">
-                </div>
-                <!-- //main-box1 -->
+					<div class="inbody-card-wrap">
+						<button id="btn-open-modal" class="btn-floating">
+							<i class="fa-solid fa-chart-pie"></i> 인바디 등록
+						</button>
 
-                <!-- main-box2: 인바디 상세 정보 -->
-                <div class="main-box2">
-                    <div class="date-row">
-                        <div id="detail-date-pill" class="pill pill--date">날짜를 선택해주세요</div>
-                    </div>
+						<section class="card inbody-card" id="inbody-detail-card"></section>
+					</div>
+				</div>
+				
+				<div id="nutrition-info-area" class="main-box3" style="display: none;"></div>
+				
 
-                    <div class="inbody-card-wrap">
-                        <button id="btn-open-modal" class="btn-floating">
-                            <i class="fa-solid fa-chart-pie"></i> 인바디 등록
-                        </button>      
+			</main>
+		</div>
 
-                        <section class="card inbody-card" id="inbody-detail-card">
-                            <!-- AJAX로 채워질 인바디 상세 정보 -->
-                        </section>
-                    </div>
-                </div>
-                <!-- //main-box2 -->
-
-                <!-- main-box3: 영양 정보 -->
-                <div id="nutrition-info-area" class="main-box3" style="display:none;">
-                    <!-- AJAX로 채워질 영양 정보 -->
-                </div>
-                <!-- //main-box3 -->
-            </main>
-        </div>
-
-		<!-- ------footer------ -->
-        <c:import url="/WEB-INF/views/include/footer.jsp"></c:import>
-        <!-- //------footer------ -->
-    </div>
-	
-	<!------------------------------ 인바디 직접 입력 모달창 ------------------------------------->
-	<div id="manual-input-modal" class="modal-backdrop" style="display:none;">
-	    <div class="modal-content">
-	        <div class="modal-header">
-	            <h5 class="modal-title">인바디 정보 직접 입력</h5>
-	            <button type="button" class="modal-close" id="btn-close-modal">&times;</button>
-	        </div>
-	        <div class="modal-body">
-	            <div class="form-group">
-	                <label for="height">키 (cm)</label>
-	                <input type="number" id="height" class="form-control" placeholder="예: 175">
-	            </div>
-	            <div class="form-group">
-	                <label for="weight">체중 (kg)</label>
-	                <input type="number" id="weight" class="form-control" placeholder="예: 70.5">
-	            </div>
-	            <div class="form-group">
-	                <label for="muscleMass">골격근량 (kg)</label>
-	                <input type="number" id="muscleMass" class="form-control" placeholder="예: 35.2">
-	            </div>
-	            <div class="form-group">
-	                <label for="fatMass">체지방량 (kg)</label>
-	                <input type="number" id="fatMass" class="form-control" placeholder="예: 15.8">
-	            </div>
-	            <div class="form-group">
-	                <label for="inbodyScore">인바디 점수</label>
-	                <input type="number" id="inbodyScore" class="form-control" placeholder="예: 82">
-	            </div>
-                 <div class="form-group">
-	                <label for="visceralFatLevel">내장지방레벨</label>
-	                <input type="number" id="visceralFatLevel" class="form-control" placeholder="예: 8">
-	            </div>
-	        </div>
-	        <div class="modal-footer">
-	            <button type="button" class="btn" id="btn-register-inbody">등록하기</button>
-	        </div>
-	    </div>
+		<c:import url="/WEB-INF/views/include/footer.jsp"></c:import>
 	</div>
-	<!------------------------------ //인바디 직접 입력 모달창 ------------------------------------->
 
-<script>
+	<div id="manual-input-modal" class="modal-backdrop" style="display: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">인바디 정보 직접 입력</h5>
+				<button type="button" class="modal-close" id="btn-close-modal">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="height">키 (cm)</label> <input type="number" id="height" class="form-control" placeholder="예: 175">
+				</div>
+				<div class="form-group">
+					<label for="weight">체중 (kg)</label> <input type="number" id="weight" class="form-control" placeholder="예: 70.5">
+				</div>
+				<div class="form-group">
+					<label for="muscleMass">골격근량 (kg)</label> <input type="number" id="muscleMass" class="form-control" placeholder="예: 35.2">
+				</div>
+				<div class="form-group">
+					<label for="fatMass">체지방량 (kg)</label> <input type="number" id="fatMass" class="form-control" placeholder="예: 15.8">
+				</div>
+				<div class="form-group">
+					<label for="inbodyScore">인바디 점수</label> <input type="number" id="inbodyScore" class="form-control" placeholder="예: 82">
+				</div>
+				<div class="form-group">
+					<label for="visceralFatLevel">내장지방레벨</label> <input type="number" id="visceralFatLevel" class="form-control" placeholder="예: 8">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn" id="btn-register-inbody">등록하기</button>
+			</div>
+		</div>
+	</div>
+	<script>
 $(document).ready(function() {
 	// =================================================
     // 초기 설정
     // =================================================
     const contextPath = "${pageContext.request.contextPath}";
-    
     const authUser = {
         userId: Number("${sessionScope.authUser.userId}" || 0),
         role: "${sessionScope.authUser.role}"
     };
-    
     const currentMember = {
         userId: Number("${currentMember.userId}" || 0)
     };
-    
     const targetUserId = (authUser.role === 'trainer' && currentMember.userId > 0) 
                          ? currentMember.userId 
                          : authUser.userId;
@@ -272,7 +240,6 @@ $(document).ready(function() {
     // 인바디 상세 정보 가져오기
     function fetchInbodyDetail(inbodyId) {
     	$("#nutrition-info-area").show();
-        
         $.ajax({
             url: `\${contextPath}/api/inbody/\${inbodyId}`,
             type: "GET",
@@ -297,53 +264,56 @@ $(document).ready(function() {
         let formatted = parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
         $("#detail-date-pill").text(formatted);
 
-        // main-box2: 인바디 상세 정보 패널 업데이트 (수정된 부분)
+        // main-box2: 인바디 상세 정보 패널 업데이트
         const panelHtml = `
-            <div class="inbody-analysis-section">
-                <div class="panel-head combined-head">
-                    <span class="label-pill pill-salmon">핵심지표</span>
-                    <span class="label-pill pill-sky">골격근 · 지방분석</span>
-                    <span class="label-pill pill-rose">내장지방레벨</span>
+        	<div class="core-indicators-section">
+	            <div class="grid-3 tight">
+	                <div class="metric-box no-outline">
+	                    <span class="metric-name">C·I·D 유형</span>
+	                    <div class="radios-compact">
+	                        <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'C' ? 'checked' : ''} disabled><span></span> C형</label>
+	                        <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'I' ? 'checked' : ''} disabled><span></span> I형</label>
+	                        <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'D' ? 'checked' : ''} disabled><span></span> D형</label>
+	                    </div>
+	                </div>
+	                <div class="metric-box no-outline">
+	                    <span class="metric-name">체중조절</span>
+	                    <div class="metric-pair bold">
+	                        <span class="label">지방 </span>
+	                        <%-- toFixed(1)을 사용해 항상 소수점 첫째 자리까지 표시하도록 통일성을 줌 --%>
+	                        <span class="value red">\${Number(data.fatControlKg).toFixed(1)}kg</span>
+	                    </div>
+	                    <div class="metric-pair bold">
+	                        <span class="label">근육 </span>
+	                        <%-- toFixed(1)을 사용해 항상 소수점 첫째 자리까지 표시하도록 통일성을 줌 --%>
+	                        <span class="value blue">\${data.muscleControlKg > 0 ? '+' : ''}\${Number(data.muscleControlKg).toFixed(1)}kg</span>
+	                    </div>
+	                </div>
+	                <div class="metric-box no-outline">
+	                    <span class="metric-name">내장지방레벨</span>
+	                    <div class="visceral-fat-value-wrapper">
+	                        <span class="metric-value blue large" style="position: static; margin-bottom: 30px;">\${data.visceralFatLevel}</span>
+	                    </div>
+	                </div>
+	            </div>
+        	</div>
+        	
+            <div class="core-analysis">
+                <div class="metric-box">
+                    <span class="metric-name">골격근 · 지방분석</span>
+                    <div class="metric-item"><span>체중</span><strong>\${data.weightKg}kg</strong></div>
+                    <div class="metric-item"><span>골격근량</span><strong>\${data.muscleMassKg}kg</strong></div>
+                    <div class="metric-item"><span>체지방량</span><strong>\${data.fatMassKg}kg</strong></div>
                 </div>
-                <div class="grid-2 tight">
-                    <div class="metric-box no-outline">
-                        <div class="metric metric-control" style="margin-left: 0;">
-                            <span class="metric-name">체중조절</span>
-                            <div class="metric-pair bold">
-                                <span class="label">지방</span>
-                                <span class="value red">\${data.fatControlKg}kg</span>
-                                <span class="label">근육</span>
-                                <span class="value blue">\${data.muscleControlKg > 0 ? '+' : ''}\${data.muscleControlKg}kg</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="metric-box no-outline">
-                         <div class="options-row" style="margin-top:35px; margin-left:10px;">
-                            <div class="option-group">
-                                <div class="radios-compact">
-                                    <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'C' ? 'checked' : ''} disabled><span></span> C형</label>
-                                    <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'I' ? 'checked' : ''} disabled><span></span> I형</label>
-                                    <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'D' ? 'checked' : ''} disabled><span></span> D형</label>
-                                </div>
-                            </div>
-                            <div class="option-group right">
-                                <span>레벨 : \${data.visceralFatLevel}</span>
-                            </div>
-                        </div>
-                    </div>
+
+                <div class="metric-box">
+                    <span class="metric-name">비만분석</span>
+                    <div class="metric-item"><span>BMI</span><strong>\${data.bmi}</strong></div>
+                    <div class="metric-item"><span>체지방률 (%)</span><strong>\${data.percentBodyFat}</strong></div>
                 </div>
             </div>
-            <div class="pbf-section">
-                 <div class="metric metric-pbf">
-                    <span class="metric-name">체지방률</span>
-                     <div class="progress progress-pink">
-                        <span class="progress-fill" style="width: \${data.percentBodyFat}%;"></span>
-                    </div>
-                    <span class="metric-value red">\${data.percentBodyFat}%</span>
-                </div>
-            </div>
+           
         `;
-    
         $("#inbody-detail-card").html(panelHtml);
 
         // main-box3: 영양 정보 업데이트
@@ -470,12 +440,10 @@ $(document).ready(function() {
     	resetInbodyForm();
         $("#manual-input-modal").show();
     });
-
     // 모달 닫기 버튼
     $("#btn-close-modal").on("click", function() {
         $("#manual-input-modal").hide();
     });
-
     // 등록하기 버튼 클릭 이벤트
     $("#btn-register-inbody").on("click", function() {
     
@@ -517,14 +485,12 @@ $(document).ready(function() {
 	        }
 	    });
 	});
-    
     // 리스트의 행(tr) 클릭 이벤트
     $("#inbody-list-tbody").on("click", "tr[data-inbody-id]", function() {
         fetchInbodyDetail($(this).data("inbody-id"));
         // 활성화된 행 스타일링
         $(this).addClass('active').siblings().removeClass('active');
     });
-
     // 삭제 버튼 클릭 이벤트
     $("#inbody-list-tbody").on("click", ".btn-delete", function(e) {
         e.stopPropagation(); // 행 클릭 이벤트가 같이 실행되는 것을 방지
@@ -568,6 +534,60 @@ $(document).ready(function() {
     // 페이지 최초 로딩
     // =================================================
     fetchInbodyList(1);
+
+
+    // =================================================
+    // 체중조절 로직 검증
+    // =================================================
+    function verifyWeightControlLogic() {
+        const testCases = [
+            { name: "Case 1: 일반 남성 (과체중)", gender: "male", height: 175, weight: 85, muscleMass: 34, fatMass: 25 },
+            { name: "Case 2: 마른 여성 (근육 부족)", gender: "female", height: 165, weight: 48, muscleMass: 18, fatMass: 12 },
+            { name: "Case 3: 근육형 남성 (표준)", gender: "male", height: 180, weight: 80, muscleMass: 40, fatMass: 14 }
+        ];
+
+        let resultsHtml = '<ul>';
+        console.log("===== 체중조절 로직 검증 시작 =====");
+
+        testCases.forEach(tc => {
+            const heightM = tc.height / 100.0;
+            const idealBmi = (tc.gender === "male") ? 22 : 21;
+            const idealMuscleRatio = (tc.gender === "male") ? 0.45 : 0.40;
+            const idealFatRatio = (tc.gender === "male") ? 0.15 : 0.23;
+
+            const idealWeight = idealBmi * (heightM * heightM);
+            const stdMuscle = idealWeight * idealMuscleRatio;
+            const stdFat = idealWeight * idealFatRatio;
+            
+            const fatControl = tc.fatMass - stdFat;
+            const muscleControl = stdMuscle - tc.muscleMass;
+
+            const fatControlRounded = Math.round(fatControl * 10.0) / 10.0;
+            const muscleControlRounded = Math.round(Math.max(0, muscleControl) * 10.0) / 10.0;
+
+            // 콘솔 출력
+            console.log(`[${tc.name}]`);
+            console.log(`  - 입력값: 키=${tc.height}cm, 체중=${tc.weight}kg, 골격근량=${tc.muscleMass}kg, 체지방량=${tc.fatMass}kg`);
+            console.log(`  - 표준값: 표준체중=${idealWeight.toFixed(1)}kg, 표준근육량=${stdMuscle.toFixed(1)}kg, 표준지방량=${stdFat.toFixed(1)}kg`);
+            console.log(`  - 계산결과: 지방조절=${fatControlRounded}kg, 근육조절=${muscleControlRounded}kg`);
+            
+            // 화면 출력용 HTML
+            resultsHtml += `
+                <li>
+                    <strong>${tc.name}</strong>
+                    <div>입력: H:${tc.height} W:${tc.weight} M:${tc.muscleMass} F:${tc.fatMass}</div>
+                    <div>표준: W:${idealWeight.toFixed(1)} M:${stdMuscle.toFixed(1)} F:${stdFat.toFixed(1)}</div>
+                    <div>결과: 지방 \${fatControlRounded}kg, 근육 \${muscleControlRounded > 0 ? '+' : ''}\${muscleControlRounded}kg</div>
+                </li>
+            `;
+        });
+        
+        console.log("===== 체중조절 로직 검증 종료 =====");
+        resultsHtml += '</ul>';
+        
+    }
+
+    verifyWeightControlLogic();
 });
 </script>
 
