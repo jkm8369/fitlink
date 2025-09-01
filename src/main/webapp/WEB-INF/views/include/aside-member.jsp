@@ -22,7 +22,7 @@
             <i class="fa-solid fa-book"></i>
             <span>운동일지</span>
         </a>
-        <a href="#" class="menu-item">
+        <a href="${pageContext.request.contextPath}/inbody" class="menu-item">
             <i class="fa-solid fa-chart-pie"></i>
             <span>InBody & Meal</span>
         </a>

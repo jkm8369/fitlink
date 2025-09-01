@@ -46,18 +46,21 @@
 			       creator_id as creatorId
 			from exercise
 			where body_part = #{bodyPart}
+			and (creator_id is null or creator_id = #{userId, javaType=int, jdbcType=INTEGER})
 			order by exercise_name asc
 		]]>
 	</select>
 
+	<!-- #{userId, javaType=int, jdbcType=INTEGER}) => MyBatis에게 userId 파라미터가 자바에서는 int 타입이고, 데이터베이스에서는 INTEGER 타입이라고 정확하게 알려줌  -->
+
 	<!-- 특정 부위에 대한 사용자 운동 선택 기록 삭제 -->
 	<delete id="deleteUserExercisesByPart" parameterType="map">
 		<![CDATA[
-			delete from selected_exercises
-			where user_id = #{userId}
-			and exercise_id in (select exercise_id 
-			  					  from exercise 
-			  					  where body_part = #{bodyPart})
+			delete se
+			from selected_exercises se
+			join exercise e on se.exercise_id = e.exercise_id
+			where se.user_id = #{userId}
+			  and e.body_part = #{bodyPart}
 		]]>
 	</delete>
 
@@ -89,4 +92,12 @@
         ]]>
     </delete>
 
+	<!-- selected_exercises 테이블에서 특정 사용자의 특정 운동 선택 기록 1개를 삭제 -->
+	<delete id="deleteUserExerciseSelection" parameterType="map">
+		<![CDATA[
+			DELETE FROM selected_exercises
+			WHERE user_id = #{userId}
+			  AND exercise_id = #{exerciseId}
+		]]>
+	</delete>
 </mapper>

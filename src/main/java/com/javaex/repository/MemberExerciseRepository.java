@@ -43,7 +43,7 @@ public class MemberExerciseRepository {
 	}
 	
 	// -- 특정 부위의 모든 운동 리스트 가져오기
-	public List<MemberExerciseVO> selectAllByPart(String bodyPart) {
+	public List<MemberExerciseVO> selectAllByPart(Map<String, Object> bodyPart) {
 		//System.out.println("MemberExerciseRepository.selectAllByPart()");
 		
 		
@@ -88,5 +88,10 @@ public class MemberExerciseRepository {
     }
     
     
+    // selected_exercises 테이블에서 특정 사용자의 특정 운동 선택 기록 1개를 삭제
+    public int deleteUserExerciseSelection(Map<String, Object> params) {
+        //System.out.println("MemberExerciseRepository.deleteUserExerciseSelection()");
+        return sqlSession.delete("memberExercise.deleteUserExerciseSelection", params);
+    }
     
 }

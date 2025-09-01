@@ -207,6 +207,7 @@ body {
 /* 폼 - 단위가 있는 인풋 */
 .input-group {
 	position: relative;
+	margin-top: 5px;
 }
 
 .input-group .fld {
@@ -304,6 +305,53 @@ body {
 
 .mini-item .remove-btn:hover {
   color: #343a40; /* 마우스 올리면 진하게 */
+}
+
+/* 운동 기록 한 줄 (li)의 전체적인 틀 */
+.mini-item {
+  display: flex; /* 내부 요소(정보 영역, 액션 영역)를 가로로 배치 */
+  align-items: center; /* 세로 중앙 정렬 */
+  
+  /* [핵심] 주석: 카드 안쪽 여백(padding)을 추가하여 텍스트가 가장자리에 붙지 않게 합니다. */
+  padding: 16px;
+  
+  background-color: #ffffff;
+  border: 1px solid #e9ecef; /* 옅은 회색 테두리 */
+  border-radius: 12px; /* 둥근 모서리 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* 왼쪽의 모든 텍스트 정보를 감싸는 영역 */
+.info-area {
+  flex-grow: 1; /* 삭제 버튼을 제외한 모든 공간을 차지 */
+  padding-right: 16px; /* 오른쪽 버튼과 간격 확보 */
+}
+
+/* 윗줄: 운동 이름 */
+.info-area .main-info {
+  font-size: 1.05rem; /* 기본 글씨보다 약간 크게 */
+  font-weight: 600; /* 굵게 */
+  color: #333;
+  margin-bottom: 6px; /* 아랫줄과의 간격 */
+  word-break: keep-all; 
+}
+
+/* 아랫줄: 운동 부위 + 무게/횟수 */
+.info-area .sub-info {
+  display: flex;
+  font-size: 0.9rem;
+  color: #888; /* 보조 정보이므로 연한 색상으로 */
+}
+
+/* 아랫줄 안에서 운동 부위와 무게/횟수 사이에 구분점(·) 추가 */
+.info-area .sub-info span:first-child::after {
+  content: '·'; /* 가상 요소를 사용해 점을 추가 */
+  margin: 0 8px; /* 점 좌우에 여백 */
+}
+
+/* 오른쪽: 삭제 버튼이 있는 영역 */
+.action-area {
+  flex-shrink: 0; /* 공간이 부족해도 찌그러들지 않음 */
 }
 
 /* ==========================================================================
@@ -519,3 +567,4 @@ body {
 #m-workout > section {
   margin-bottom: 24px;
 }
+

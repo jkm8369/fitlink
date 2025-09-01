@@ -1,27 +1,21 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Workout (Mobile)</title>
 <!-- reset 먼저 -->
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/assets/css/reset.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/reset.css" />
 
 
 <!-- 모바일 전용 css -->
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/assets/css/workout-mobile.css" />
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/workout-mobile.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-<script
-	src="${pageContext.request.contextPath}/assets/js/jquery/jquery-3.7.1.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/jquery/jquery-3.7.1.js"></script>
 </head>
 
 <body>
@@ -39,8 +33,7 @@
 				<li><a href="#">운동 기록 (예시)</a></li>
 			</ul>
 			<div class="menu-footer">
-				<a href="${pageContext.request.contextPath}/user/logout"
-					class="btn-logout-mobile">로그아웃</a>
+				<a href="${pageContext.request.contextPath}/user/logout" class="btn-logout-mobile">로그아웃</a>
 			</div>
 		</nav>
 		<div class="menu-backdrop"></div>
@@ -50,15 +43,12 @@
 
 		<!-- 상단 헤더 (햄버거 / 타이틀 / 달력버튼) -->
 		<div class="m-top-icons">
-			<button type="button" class="icon-btn" aria-label="메뉴"
-				style="color: #6B829A;">☰</button>
-			<button id="btnToggleCalendar" class="icon-btn" type="button"
-				aria-haspopup="true" aria-expanded="false"
-				aria-controls="inlineCalendar" style="padding-top: 2px;">
+			<button type="button" class="icon-btn" aria-label="메뉴" style="color: #6B829A;">☰</button>
+			<button id="btnToggleCalendar" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="inlineCalendar"
+				style="padding-top: 2px;">
 				<svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true">
 				      <path d="M7 10h5v5H7z"></path>
-				      <path
-						d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v12
+				      <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v12
 				            c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H5V9h14v9z"></path>
 				</svg>
 			</button>
@@ -72,8 +62,7 @@
 		</header>
 
 		<!-- 인라인 캘린더(토글) -->
-		<section id="inlineCalendar" class="cal-popover"
-			style="display: none;">
+		<section id="inlineCalendar" class="cal-popover" style="display: none;">
 			<div class="cal-nav">
 				<button id="calPrev" type="button" class="nav-btn" aria-label="이전 달">‹</button>
 				<span id="calTitle" class="cal-title">2025년 7월</span>
@@ -136,8 +125,7 @@
 						</select>
 					</div>
 					<div class="select-wrap">
-						<select id="select-exercise-name" name="userExerciseId"
-							class="fld select">
+						<select id="select-exercise-name" name="userExerciseId" class="fld select">
 							<option value="">운동</option>
 						</select>
 					</div>
@@ -146,14 +134,10 @@
 				<!-- 인풋 2열 (오른쪽 안에 단위 표시) -->
 				<div class="grid-2">
 					<div class="input-group">
-						<input id="input-weight" name="weight" type="number"
-							inputmode="decimal" placeholder="무게" class="fld" /> <span
-							class="suffix">kg</span>
+						<input id="input-weight" name="weight" type="number" inputmode="decimal" placeholder="무게" class="fld" /> <span class="suffix">kg</span>
 					</div>
 					<div class="input-group">
-						<input id="input-reps" name="reps" type="number"
-							inputmode="numeric" placeholder="몇" class="fld" /> <span
-							class="suffix">회</span>
+						<input id="input-reps" name="reps" type="number" inputmode="numeric" placeholder="몇" class="fld" /> <span class="suffix">회</span>
 					</div>
 				</div>
 
@@ -204,30 +188,23 @@
 				<div class="input-group-labeled">
 					<label>벤치프레스</label>
 					<div class="input-group">
-						<input type="number" class="fld rm-input"
-							data-exercise-name="벤치프레스" placeholder="최고 무게"
-							inputmode="decimal"> <span class="suffix">kg</span>
+						<input type="number" class="fld rm-input" data-exercise-name="벤치프레스" placeholder="최고 무게" inputmode="decimal"> <span class="suffix">kg</span>
 					</div>
 				</div>
 				<div class="input-group-labeled">
 					<label>데드리프트</label>
 					<div class="input-group">
-						<input type="number" class="fld rm-input"
-							data-exercise-name="데드리프트" placeholder="최고 무게"
-							inputmode="decimal"> <span class="suffix">kg</span>
+						<input type="number" class="fld rm-input" data-exercise-name="데드리프트" placeholder="최고 무게" inputmode="decimal"> <span class="suffix">kg</span>
 					</div>
 				</div>
 				<div class="input-group-labeled">
 					<label>스쿼트</label>
 					<div class="input-group">
-						<input type="number" class="fld rm-input" data-exercise-name="스쿼트"
-							placeholder="최고 무게" inputmode="decimal"> <span
-							class="suffix">kg</span>
+						<input type="number" class="fld rm-input" data-exercise-name="스쿼트" placeholder="최고 무게" inputmode="decimal"> <span class="suffix">kg</span>
 					</div>
 				</div>
 
-				<button type="submit" class="btn-primary full btn-lg">＋ 기록
-					저장</button>
+				<button type="submit" class="btn-primary full btn-lg">＋ 기록 저장</button>
 			</form>
 
 		</section>
@@ -623,26 +600,42 @@ $("#form-save-1rm").on("submit", function(e) {
 
   // ------------------- 렌더러 -------------------
   // NORMAL 로그 → 오늘의 운동 리스트 컨테이너로
-  function renderLogList(rows){
-    // 우선순위: todayMiniList 있으면 거기에, 없으면 기존 #workoutLogList
-    const $container = $("#todayMiniList").length ? $("#todayMiniList") : $("#workoutLogList");
-    $container.empty();
+  function renderLogList(rows) {
+    const $container = $("#todayMiniList");
+    $container.empty(); // 기존 목록 비우기
 
-    const normalLogs = rows.filter(log => log.logType==='NORMAL');
-    for(let i=0;i<normalLogs.length;i++){
-      const log = normalLogs[i];
-      const bodyPart = (log.bodyPart||'-');
-      const exerciseName = (log.exerciseName||'-');
-      const right = (log.weight||0)+"kg × "+(log.reps||0)+"회";
-      // 모바일 미니/기존 리스트 모두 커버
-      const html =
-        '<li class="mini-item set-item" data-log-id="'+log.logId+'">'+
-          '<div class="left">'+ '<strong>' + bodyPart +'</strong>' +' (' + exerciseName + ')' + '</div>'+
-          '<div class="right">'+right+' <button class="remove-btn" type="button" aria-label="삭제">—</button></div>'+
-        '</li>';
-      $container.append(html);
+    const normalLogs = rows.filter(log => log.logType === 'NORMAL');
+
+    for (let i = 0; i < normalLogs.length; i++) {
+        const log = normalLogs[i];
+        
+        // 주석: 화면에 표시할 텍스트들을 준비합니다.
+        const exerciseNameText = log.exerciseName || '-';
+        const bodyPartText = log.bodyPart || '-';
+        const statsText = (log.weight || 0) + "kg × " + (log.reps || 0) + "회";
+
+        // 정보를 두 줄로 표시하기 위한 새로운 HTML 구조
+        // - .info-area: 모든 텍스트 정보를 감싸는 영역
+        //   - .main-info: 운동 이름 (윗줄)
+        //   - .sub-info: 운동 부위와 무게/횟수 정보 (아랫줄)
+        // - .action-area: 삭제 버튼을 감싸는 영역
+        const html =
+            '<li class="mini-item" data-log-id="' + log.logId + '">' +
+                '<div class="info-area">' +
+                    '<div class="main-info">' + exerciseNameText + '</div>' +
+                    '<div class="sub-info">' +
+                        '<span>' + bodyPartText + '</span>' +
+                        '<span>' + statsText + '</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="action-area">' +
+                    '<button class="remove-btn" type="button" aria-label="삭제">—</button>' +
+                '</div>' +
+            '</li>';
+
+        $container.append(html);
     }
-  }
+}
 
   // 상단 통계 + 상단 1RM 숫자
   function renderSummary(rows) {

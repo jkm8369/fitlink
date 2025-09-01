@@ -53,8 +53,11 @@ public class MemberExerciseApiController {
         // 세션에서 현재 로그인한 사용자 정보를 가져옵니다.
         UserVO authUser = (UserVO) session.getAttribute("authUser");
 
-        // 서비스에 exerciseId와 현재 로그인한 사용자의 ID를 넘겨 삭제를 시도
+        // exercise 테이블에서 직접 운동을 삭제하는 서비스 메소드를 호출
+        // 이 때, 현재 로그인한 사용자의 ID(authUser.getUserId())를 넘겨주어
+        // 운동을 등록한 사람(creator_id)과 동일한 경우에만 삭제가 되도록 함
         boolean isDeleted = memberExerciseService.exeDeleteExercise(exerciseId, authUser.getUserId());
+
 
         if (isDeleted) {
             // 삭제에 성공하면, 삭제된 ID를 데이터로 함께 보내줌

@@ -291,59 +291,59 @@ $(document).ready(function() {
 	
     // 상세 정보 그리기 (main-box2, main-box3) - CSS 클래스 기반으로 수정
     function renderDetail(data) {
-        // 날짜 업데이트
+    	// 날짜 업데이트
         let dateStr = data.recordDate.substring(0, 10);
         let parts = dateStr.split("-");
         let formatted = parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일";
         $("#detail-date-pill").text(formatted);
 
-        // main-box2: 인바디 상세 정보 패널 업데이트
+        // main-box2: 인바디 상세 정보 패널 업데이트 (수정된 부분)
         const panelHtml = `
             <div class="inbody-analysis-section">
-                <div class="panel-head">
-                    <span class="label-pill pill-sky">골격근 · 지방분석 (C-I-D그래프)</span>
-                    <span class="label-pill pill-rose">내장지방레벨(안전기준 레벨9 이하)</span>
+                <div class="panel-head combined-head">
+                    <span class="label-pill pill-salmon">핵심지표</span>
+                    <span class="label-pill pill-sky">골격근 · 지방분석</span>
+                    <span class="label-pill pill-rose">내장지방레벨</span>
                 </div>
-                <div class="options-row">
-                    <div class="option-group">
-                        <div class="radios-compact">
-                            <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'C' ? 'checked' : ''} disabled><span></span> C형</label>
-                            <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'I' ? 'checked' : ''} disabled><span></span> I형</label>
-                            <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'D' ? 'checked' : ''} disabled><span></span> D형</label>
+                <div class="grid-2 tight">
+                    <div class="metric-box no-outline">
+                        <div class="metric metric-control" style="margin-left: 0;">
+                            <span class="metric-name">체중조절</span>
+                            <div class="metric-pair bold">
+                                <span class="label">지방</span>
+                                <span class="value red">\${data.fatControlKg}kg</span>
+                                <span class="label">근육</span>
+                                <span class="value blue">\${data.muscleControlKg > 0 ? '+' : ''}\${data.muscleControlKg}kg</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="option-group right">
-                        <span>레벨 : \${data.visceralFatLevel}</span>
+                    <div class="metric-box no-outline">
+                         <div class="options-row" style="margin-top:35px; margin-left:10px;">
+                            <div class="option-group">
+                                <div class="radios-compact">
+                                    <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'C' ? 'checked' : ''} disabled><span></span> C형</label>
+                                    <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'I' ? 'checked' : ''} disabled><span></span> I형</label>
+                                    <label class="radio sm"><input type="radio" name="cid" \${data.cidType === 'D' ? 'checked' : ''} disabled><span></span> D형</label>
+                                </div>
+                            </div>
+                            <div class="option-group right">
+                                <span>레벨 : \${data.visceralFatLevel}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="core-indicators-section">
-                <div class="panel-head core">
-                     <span class="label-pill pill-salmon">핵심지표</span>
-                </div>
-                <div class="grid-2 tight">
-	                <div class="metric-box no-outline">
-	                    <div class="metric metric-pbf">
-	                        <span class="metric-name">체지방률</span>
-	                        <div class="progress progress-pink">
-	                            <span class="progress-fill" style="width: \${data.percentBodyFat}%;"></span>
-	                        </div>
-	                        <span class="metric-value red">\${data.percentBodyFat}%</span>
-	                    </div>
-	                    <div class="metric metric-control">
-	                        <span class="metric-name">체중조절</span>
-	                        <div class="metric-pair bold">
-	                            <span class="label">지방</span>
-	                            <span class="value red">\${data.fatControlKg}kg</span>
-	                            <span class="label">근육</span>
-	                            <span class="value blue">\${data.muscleControlKg > 0 ? '+' : ''}\${data.muscleControlKg}kg</span>
-	                        </div>
-	                    </div>
-	                </div>
+            <div class="pbf-section">
+                 <div class="metric metric-pbf">
+                    <span class="metric-name">체지방률</span>
+                     <div class="progress progress-pink">
+                        <span class="progress-fill" style="width: \${data.percentBodyFat}%;"></span>
+                    </div>
+                    <span class="metric-value red">\${data.percentBodyFat}%</span>
                 </div>
             </div>
         `;
+    
         $("#inbody-detail-card").html(panelHtml);
 
         // main-box3: 영양 정보 업데이트

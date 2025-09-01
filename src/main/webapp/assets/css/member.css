@@ -180,7 +180,7 @@ h4 {
 	max-height: 56px;
 	display: grid;
 	/* 입력 폼의 select/input/텍스트와 동일한 column 비율 사용 */
-	grid-template-columns: 155px 200px 130px 50px 40px 135px 35px 30px;
+	grid-template-columns: 145px 210px 130px 50px 40px 135px 35px 30px;
 	align-items: center;
 	gap: 8px;
 	padding: 12px 16px;
@@ -1661,5 +1661,41 @@ h4 {
 	background: #fff;
 }
 
+/* ==============box2 추가===================== */
+/* 3개의 라벨을 한 줄로 묶기 위한 스타일 */
+.panel-head.combined-head {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 10px 8px 30px;
+}
 
+/* 체지방률 섹션 스타일 */
+.pbf-section {
+    margin-top: 15px;
+    padding-left: 30px;
+}
 
+/* 체지방률 그래프와 값 위치 조정 */
+.pbf-section .metric.metric-pbf {
+    display: grid;
+    grid-template-columns: 150px auto;
+    column-gap: 10px;
+    align-items: center;
+    margin-left: 0;
+}
+.pbf-section .metric.metric-pbf .metric-name {
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+}
+.pbf-section .metric.metric-pbf .progress {
+    grid-column: 1;
+    height: 4px;
+}
+.pbf-section .metric.metric-pbf .metric-value {
+    grid-column: 2;
+    position: static;
+    line-height: 1;
+    margin: 0;
+}
+/* ==============///box2 추가===================== */
