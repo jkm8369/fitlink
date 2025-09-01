@@ -1,0 +1,60 @@
+name: Deploy WAR to EC2 Tomcat  # 자동화 작업 흐름 이름 (워크플로)
+
+on:
+  #push:
+    #branches: [ "master" ]  # master 브랜치에 push 될 때 실행됨
+
+  workflow_dispatch:        # 👉 GitHub 화면에서 수동으로 버튼 눌러 실행할 수 있게 해줌
+  # 위 설정을 넣으면 GitHub Actions 탭에서 버튼 클릭하여 이 워크플로를 수동 실행 가능함
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # GitHub Actions가 명령을 실행할 가상의 Ubuntu 리눅스 서버 (작업 종료 후 자동 삭제됨)
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v3   # GitHub 저장소의 코드를 현재 가상 서버로 복사해옴
+
+    - name: Set up Java
+      uses: actions/setup-java@v3  # 서버에 Java 환경 설치
+      with:
+        java-version: '17'         # Java 17 버전 사용
+        distribution: 'temurin'    # OpenJDK 배포판 중 하나인 temurin 사용
+
+    - name: Build WAR with Maven
+      run: mvn clean package  # Maven으로 WAR 파일 빌드 (기존 빌드 결과는 삭제하고 새로 생성)
+
+    - name: Copy WAR to EC2
+      uses: appleboy/scp-action@v0.1.7  # 로컬에서 서버(EC2)로 파일을 복사하는 명령어 모음 (appleboy가 만듬)
+      with:
+        host: ${{ secrets.EC2_HOST }}             # EC2 IP
+        username: ${{ secrets.EC2_USER }}         # EC2 ID
+        key: ${{ secrets.EC2_SSH_KEY }}           # web.pem (SSH 접속에 사용하는 키)
+        source: target/ROOT.war                   # 복사할 WAR 파일 경로
+        target: /home/ec2-user/                   # EC2 서버 내부에 복사될 위치
+        overwrite: true                           # 같은 파일이 있으면 덮어쓰기
+        strip_components: 1                       # 'target/' 경로 제거하고 ROOT.war 파일만 복사
+
+    - name: Move WAR to Tomcat's webapps
+      uses: appleboy/ssh-action@v1.0.3  # EC2 서버에 SSH로 접속하여 아래 명령들을 실행함
+      with:
+        host: ${{ secrets.EC2_HOST }}         # EC2 IP
+        username: ${{ secrets.EC2_USER }}     # EC2 ID
+        key: ${{ secrets.EC2_SSH_KEY }}       # web.pem (SSH 접속용 키)
+        script: |
+          echo "[1] 기존 ROOT.war 및 ROOT 폴더 삭제"
+          sudo rm -rf /usr/local/tomcat/webapps/ROOT.war     # 기존 ROOT.war 파일 삭제
+          sudo rm -rf /usr/local/tomcat/webapps/ROOT         # 기존 ROOT 폴더 삭제
+
+          echo "[2] 새 WAR 파일 이동"
+          sudo mv /home/ec2-user/ROOT.war /usr/local/tomcat/webapps/ROOT.war  # 새 WAR 파일을 Tomcat 경로로 이동
+
+          echo "[3] 톰캣 종료"
+          sudo /usr/local/tomcat/bin/shutdown.sh || true
+          # shutdown.sh 명령에 오류가 나도 무시하고 정상 처리함 (워크플로우가 중단되지 않게)
+
+          echo "[4] 잠시 대기..."
+          sleep 5  # 톰캣이 완전히 종료될 시간을 주기 위해 5초 대기
+
+          echo "[5] 톰캣 재시작"
+          sudo /usr/local/tomcat/bin/startup.sh  # 톰캣 서버 재시작
