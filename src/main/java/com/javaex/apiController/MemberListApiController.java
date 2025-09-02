@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.javaex.service.MemberListService;
 import com.javaex.vo.MemberVO;
+import com.javaex.vo.UserVO;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/trainer/member-list")
@@ -25,17 +27,18 @@ public class MemberListApiController {
 		this.service = service;
 	}
 
-	/** 세션 trainerId 없을 때 개발용 기본값(1) */
-	private int trainer(Integer trainerId) {
-		return (trainerId != null) ? trainerId : 1;
-	}
+	
 
 	// ------------------------------------------------------------
 	// [리스트 조회] 내 회원만
 	// ------------------------------------------------------------
 	@GetMapping
-	public Map<String, Object> list(@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		List<MemberVO> rows = service.getMemberListForTrainer(trainer(trainerId));
+	public Map<String, Object> list (HttpSession session) {
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		int trainerId = authUser.getUserId();
+		
+		List<MemberVO> rows = service.getMemberListForTrainer(trainerId);
 		return Map.of("ok", true, "data", rows);
 	}
 
@@ -43,9 +46,12 @@ public class MemberListApiController {
 	// [상세 조회] (소유 검증 포함)
 	// ------------------------------------------------------------
 	@GetMapping("/{memberId}")
-	public Map<String, Object> detail(@PathVariable int memberId,
-			@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		MemberVO vo = service.getMemberDetail(trainer(trainerId), memberId);
+	public Map<String, Object> detail(@PathVariable int memberId, HttpSession session) {
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		int trainerId = authUser.getUserId();
+		
+		MemberVO vo = service.getMemberDetail(trainerId, memberId);
 		return Map.of("ok", true, "data", vo);
 	}
 
@@ -53,9 +59,12 @@ public class MemberListApiController {
 	// [편집용 상세] (소유 검증 포함) - edit 모달에서 사용
 	// ------------------------------------------------------------
 	@GetMapping("/{memberId}/edit")
-	public Map<String, Object> detailForEdit(@PathVariable int memberId,
-			@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		Map<String, Object> data = service.getMemberDetailForEdit(trainer(trainerId), memberId);
+	public Map<String, Object> detailForEdit(@PathVariable int memberId, HttpSession session) {
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		int trainerId = authUser.getUserId();
+		
+		Map<String, Object> data = service.getMemberDetailForEdit(trainerId, memberId);
 		return Map.of("ok", true, "data", data);
 	}
 
@@ -85,9 +94,12 @@ public class MemberListApiController {
 	// [PT 계약 추가]
 	// ------------------------------------------------------------
 	@PostMapping("/{memberId}/pt-contract")
-	public Map<String, Object> addPt(@PathVariable int memberId, @RequestParam int totalSessions,
-			@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		service.addPtContract(trainer(trainerId), memberId, totalSessions);
+	public Map<String, Object> addPt(@PathVariable int memberId, @RequestParam int totalSessions, HttpSession session) {
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		int trainerId = authUser.getUserId();
+		
+		service.addPtContract(trainerId, memberId, totalSessions);
 		return Map.of("ok", true);
 	}
 
@@ -97,9 +109,16 @@ public class MemberListApiController {
 	// - 반환 code: OK_ASSIGNED / ALREADY_ASSIGNED_THIS / ASSIGNED_OTHER / NOT_FOUND
 	// ------------------------------------------------------------
 	@PostMapping("/assign")
-	public Map<String, Object> assignByLoginId(@RequestParam String loginId,
-			@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		String code = service.assignExistingMemberByLoginId(trainer(trainerId), loginId);
+	public Map<String, Object> assignByLoginId(@RequestParam String loginId, HttpSession session) {
+		UserVO authUser =(UserVO) session.getAttribute("authUser");
+		int trainerId = authUser.getUserId();
+		
+		// [문제 해결을 위한 디버깅 코드]
+	    // 이 코드는 현재 로그인한 트레이너의 ID가 세션에서 올바르게 로드되었는지 확인하기 위해 추가되었습니다.
+	    // 콘솔에서 "[MemberListApiController] trainerId from session: 3"과 같이 출력되어야 합니다.
+	    System.out.println("[MemberListApiController] trainerId from session: " + trainerId);
+		
+		String code = service.assignExistingMemberByLoginId(trainerId, loginId);
 		return Map.of("ok", true, "code", code);
 	}
 
@@ -114,16 +133,22 @@ public class MemberListApiController {
 	// [배정 해제] — 이력 보존 (예약/계약 삭제 안 함)
 	// ------------------------------------------------------------
 	@PostMapping("/{memberId}/unassign")
-	public Map<String, Object> unassignByPost(@PathVariable int memberId,
-			@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		service.unassignMember(trainer(trainerId), memberId);
+	public Map<String, Object> unassignByPost(@PathVariable int memberId, HttpSession session) {
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		int trainerId = authUser.getUserId();
+		
+		service.unassignMember(trainerId, memberId);
 		return Map.of("ok", true);
 	}
 
 	@DeleteMapping("/{memberId}")
-	public Map<String, Object> unassign(@PathVariable int memberId,
-			@SessionAttribute(value = "trainerId", required = false) Integer trainerId) {
-		service.unassignMember(trainer(trainerId), memberId);
+	public Map<String, Object> unassign(@PathVariable int memberId, HttpSession session) {
+		UserVO authUser = (UserVO)session.getAttribute("authUser");
+		
+		int trainerId = authUser.getUserId();
+		
+		service.unassignMember(trainerId, memberId);
 		return Map.of("ok", true);
 	}
 }

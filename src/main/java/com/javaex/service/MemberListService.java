@@ -65,6 +65,11 @@ public class MemberListService {
 	 */
 	@Transactional
 	public String assignExistingMemberByLoginId(int trainerId, String loginId) {
+		// [문제 해결을 위한 디버깅 코드]
+	    // 이 코드는 Controller에서 Service로 trainerId가 올바르게 전달되었는지 확인하기 위해 추가되었습니다.
+	    // 콘솔에서 "[MemberListService] trainerId received: 3"과 같이 출력되어야 합니다.
+	    System.out.println("[MemberListService] trainerId received: " + trainerId);
+		
 		Map<String, Object> user = repo.selectUserBasicByLoginId(loginId);
 		if (user == null) {
 			return NOT_FOUND; // 해당 loginId 없음
