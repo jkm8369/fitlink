@@ -33,7 +33,7 @@
 				<li><a href="#">운동 기록 (예시)</a></li>
 			</ul>
 			<div class="menu-footer">
-				<a href="${pageContext.request.contextPath}/user/logout" class="btn-logout-mobile">로그아웃</a>
+				<a href="${pageContext.request.contextPath}/user/logout/mobile" class="btn-logout-mobile">로그아웃</a>
 			</div>
 		</nav>
 		<div class="menu-backdrop"></div>

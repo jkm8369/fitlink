@@ -114,4 +114,12 @@ public class UserController {
         session.invalidate();
         return "redirect:/user/loginform";
     }
+    
+    @RequestMapping(value = "/logout/mobile", method = { RequestMethod.GET, RequestMethod.POST })
+    public String logoutMobile(HttpSession session) {
+        session.invalidate();
+        return "redirect:/user/loginform/mobile";
+    }
+    
+    
 }
