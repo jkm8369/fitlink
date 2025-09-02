@@ -26,7 +26,7 @@ public class InbodyController {
 	// 회원이 본인 인바디 페이지를 볼 때
     @GetMapping("")
     public String inbody(HttpSession session, Model model) {
-        System.out.println("InbodyController.inbody() for member");
+        //System.out.println("InbodyController.inbody() for member");
         
         UserVO authUser = (UserVO) session.getAttribute("authUser");
         
@@ -36,7 +36,7 @@ public class InbodyController {
     // 트레이너가 회원의 인바디 페이지를 볼 때
     @GetMapping("/member/{memberId}")
     public String inbodyByTrainer(@PathVariable("memberId") int memberId, HttpSession session, Model model) {
-        System.out.println("InbodyController.inbodyByTrainer() for trainer");
+        //System.out.println("InbodyController.inbodyByTrainer() for trainer");
         
         UserVO authUser = (UserVO) session.getAttribute("authUser");
         
@@ -53,7 +53,7 @@ public class InbodyController {
     
     // 인바디 페이지에 필요한 데이터를 준비하고 뷰를 반환하는 공통 메소드
     private String getInbodyPage(UserVO authUser, int targetUserId, Model model) {
-        System.out.println("InbodyController.getInbodyPage()");
+        //System.out.println("InbodyController.getInbodyPage()");
     	
         if ("trainer".equals(authUser.getRole())) {
             // 트레이너가 볼 때, 사이드 메뉴에 표시할 회원 정보를 모델에 추가

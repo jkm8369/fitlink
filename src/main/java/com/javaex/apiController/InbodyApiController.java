@@ -64,7 +64,7 @@ public class InbodyApiController {
     @DeleteMapping("/{inbodyId}")
     public JsonResult delete(@PathVariable("inbodyId") int inbodyId) {
         // [CHECK 1] 컨트롤러에 요청이 잘 도착했는지 확인
-        System.out.println("[CHECK 1] InbodyApiController: 삭제 요청 받음 (ID: " + inbodyId + ")");
+        //System.out.println("[CHECK 1] InbodyApiController: 삭제 요청 받음 (ID: " + inbodyId + ")");
         
         int count = inbodyService.exeDelete(inbodyId);
         
@@ -78,7 +78,7 @@ public class InbodyApiController {
     // 인바디 수동 등록
     @PostMapping("/manual-add")
     public JsonResult manualAdd(@RequestBody InbodyVO inbodyVO, HttpSession session) {
-        System.out.println("InbodyApiController.manualAdd()");
+        //System.out.println("InbodyApiController.manualAdd()");
         
         UserVO authUser = (UserVO) session.getAttribute("authUser");
         if (authUser == null) {

@@ -25,7 +25,7 @@ public class InbodyService {
 
 	// 특정 회원의 인바디 기록 목록과 페이징 정보를 가져오기
 	public Map<String, Object> exeGetList(int userId, int crtPage) {
-		System.out.println("InbodyService.exeGetList()");
+		//System.out.println("InbodyService.exeGetList()");
 
 		// 한페이지 리스트 출력 갯수
 		int listCnt = 5;
@@ -77,14 +77,14 @@ public class InbodyService {
 	// 특정 인바디 기록 삭제
 	public int exeDelete(int inbodyId) {
 		// [CHECK 2] 서비스 메소드가 잘 호출되었는지 확인
-		System.out.println("[CHECK 2] InbodyService: exeDelete 호출됨 (ID: " + inbodyId + ")");
+		//System.out.println("[CHECK 2] InbodyService: exeDelete 호출됨 (ID: " + inbodyId + ")");
 
 		return inbodyRepository.delete(inbodyId);
 	}
 
 	// -- 트레이너가 특정 회원을 조회할 권한이 있는지 확인하는 보안 메소드
 	public boolean exeCheckAuth(int memberId, int trainerId) {
-		System.out.println("WorkoutService.exeCheckAuth()");
+		//System.out.println("WorkoutService.exeCheckAuth()");
 		Map<String, Object> params = new HashMap<>();
 		params.put("memberId", memberId);
 		params.put("trainerId", trainerId);
@@ -104,7 +104,7 @@ public class InbodyService {
 	 * @return 저장된 전체 인바디 정보가 담긴 VO
 	 */
 	public InbodyVO exeManualAdd(InbodyVO inputVO, UserVO authUser) {
-		System.out.println("InbodyService.exeManualAdd() - Final Data Consistency Version");
+		//System.out.println("InbodyService.exeManualAdd() - Final Data Consistency Version");
 
 		// ... (0. 사용자 정보 ~ 1. 기본 정보 설정 코드는 이전과 동일)
 		UserVO fullUserVO = userRepository.selectUserByNo(authUser.getUserId());

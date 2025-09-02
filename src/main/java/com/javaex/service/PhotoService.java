@@ -20,12 +20,21 @@ public class PhotoService {
 	private final PhotoRepository repo;
 
 	// 업로드 루트 (WebMvcConfig의 ResourceHandler와 일치)
-	private static final String UPLOAD_DIR = "C:/javaStudy/upload/";
+	private final String UPLOAD_DIR;
 	private static final long MAX_SIZE = 10L * 1024 * 1024; // 10MB
 	private static final Set<String> ALLOWED = Set.of("jpg", "jpeg", "png", "gif");
 
 	public PhotoService(PhotoRepository repo) {
 		this.repo = repo;
+		
+		String osName = System.getProperty("os.name").toLowerCase();
+		if (osName.contains("win")) {
+			// 윈도우일 경우 (WebMvcConfig와 동일하게)
+			this.UPLOAD_DIR = "///C:/javaStudy/upload/";
+		} else {
+			// 리눅스(서버)일 경우 (WebMvcConfig와 동일하게)
+			this.UPLOAD_DIR = "/data/upload/";
+		}
 	}
 
 	// 회원 본인 업로드
@@ -52,8 +61,13 @@ public class PhotoService {
 
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String saveName = uuid + "." + ext;
+        
+        
         File dir = new File(UPLOAD_DIR);
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) { 
+        	dir.mkdirs();
+        }
+        
         file.transferTo(new File(dir, saveName));
 
         PhotoVO vo = new PhotoVO();

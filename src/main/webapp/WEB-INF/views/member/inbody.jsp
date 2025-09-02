@@ -571,15 +571,7 @@ $(document).ready(function() {
             console.log(`  - 표준값: 표준체중=${idealWeight.toFixed(1)}kg, 표준근육량=${stdMuscle.toFixed(1)}kg, 표준지방량=${stdFat.toFixed(1)}kg`);
             console.log(`  - 계산결과: 지방조절=${fatControlRounded}kg, 근육조절=${muscleControlRounded}kg`);
             
-            // 화면 출력용 HTML
-            resultsHtml += `
-                <li>
-                    <strong>${tc.name}</strong>
-                    <div>입력: H:${tc.height} W:${tc.weight} M:${tc.muscleMass} F:${tc.fatMass}</div>
-                    <div>표준: W:${idealWeight.toFixed(1)} M:${stdMuscle.toFixed(1)} F:${stdFat.toFixed(1)}</div>
-                    <div>결과: 지방 \${fatControlRounded}kg, 근육 \${muscleControlRounded > 0 ? '+' : ''}\${muscleControlRounded}kg</div>
-                </li>
-            `;
+            
         });
         
         console.log("===== 체중조절 로직 검증 종료 =====");
