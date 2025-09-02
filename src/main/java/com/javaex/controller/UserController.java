@@ -88,8 +88,7 @@ public class UserController {
 
         // 실패: 메인(또는 로그인폼)으로
         if (authUser == null) {
-            return "redirect:/";
-            // return "redirect:/user/loginform/mobile";
+            return "redirect:/user/loginform/mobile";
         }
 
         session.setAttribute("authUser", authUser);
