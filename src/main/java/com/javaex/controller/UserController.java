@@ -44,6 +44,13 @@ public class UserController {
         return "/user/loginform";
     }
 
+    // 모바일용 로그인 폼
+    @RequestMapping(value = "/loginform/mobile", method = { RequestMethod.GET, RequestMethod.POST })
+    public String loginformMobile() {
+    	
+        return "user/loginform-mobile";
+    }
+    
     // -------------------------------
     // 2) 로그인 처리
     // -------------------------------
@@ -71,6 +78,32 @@ public class UserController {
 
         } else {
             return "/member/workout";     // 회원 운동일지
+        }
+    }
+    // -- 로그인처리 (모바일)
+    @RequestMapping(value = "/login/mobile", method = { RequestMethod.GET, RequestMethod.POST })
+    public String loginMobile(@ModelAttribute UserVO userVO, HttpSession session) {
+
+        UserVO authUser = userService.exeLogin(userVO);
+
+        // 실패: 메인(또는 로그인폼)으로
+        if (authUser == null) {
+            return "redirect:/";
+            // return "redirect:/user/loginform/mobile";
+        }
+
+        session.setAttribute("authUser", authUser);
+
+        String role = "member";
+        if (authUser.getRole() != null) {
+            role = authUser.getRole().trim().toLowerCase(); // 'member' / 'trainer'
+        }
+
+        // 역할별 리다이렉트
+        if ("member".equals(role)) {
+        	return "redirect:/workout/mobile";     // 회원 운동일지(모바일)
+        } else {
+        	return "redirect:/user/loginform/mobile";
         }
     }
 

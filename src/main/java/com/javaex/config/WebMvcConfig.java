@@ -37,6 +37,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/",                 // 메인
                         "/user/loginform",  // 로그인 폼
                         "/user/login",      // 로그인 처리
+                        "/user/login/mobile", //로그인(모바일)
+                        "/user/loginform/mobile", // 로그인 폼-모바일
                         "/api/**",          // 공개 API
                         "/assets/**",       // 정적 리소스
                         "/upload/**",       // 업로드 리소스 (리소스핸들러와 일치)
