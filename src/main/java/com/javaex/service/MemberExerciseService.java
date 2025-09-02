@@ -173,6 +173,7 @@ public class MemberExerciseService {
 	}
 
 	// -- 새로운 운동 종류 1개 추가
+	@Transactional
 	public MemberExerciseVO exeAddExercise(MemberExerciseVO memberExerciseVO, int creatorId) {
 		// System.out.println("ExerciseService.exeAddExercise()");
 
@@ -183,6 +184,10 @@ public class MemberExerciseService {
 		int count = memberExerciseRepository.insertExercise(memberExerciseVO);
 
 		if (count > 0) {
+			// 새로 생성된 운동을 'selected_exercises' 테이블에도 추가해줌
+			// 이렇게 해야 방금 추가한 운동이 바로 회원의 운동 목록에 나타남
+			// creatorId는 운동을 '만든 사람(트레이너)'이고, 동시에 이 운동을 리스트에 추가할 '대상 회원'임
+			exeSelectAddedExercise(creatorId, memberExerciseVO.getExerciseId());
 			// 성공 시, ID가 포함된 exerciseVO를 반환합니다.
 			return memberExerciseVO;
 		} else {

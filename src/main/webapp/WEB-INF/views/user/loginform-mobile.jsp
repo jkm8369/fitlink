@@ -56,7 +56,7 @@
             <span class="separator">|</span>
             <a href="#">아이디 찾기</a>
             <span class="separator">|</span>
-            <a href="${pageContext.request.contextPath}/user/joinform">회원가입</a>
+            <a href="">회원가입</a>
         </div>
         
     </div>
