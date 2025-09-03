@@ -81,23 +81,32 @@
 	</select>
 	
 	<!-- 인바디 기록 저장하기 -->
-	<insert id="insert" parameterType="com.javaex.vo.InbodyVO">
+	<insert id="insert" parameterType="com.javaex.vo.InbodyVO" useGeneratedKeys="true" keyProperty="inbodyId">
 		<![CDATA[
-			insert into inbody
-			values (
-				null, #{recordDate}, #{weightKg}, #{muscleMassKg}, #{fatMassKg},
-				#{bmi}, #{percentBodyFat}, #{cidType}, #{visceralFatLevel}, #{fatControlKg},
-				#{muscleControlKg}, #{targetCalories},
-				#{requiredProteinG}, #{carbRatio}, #{proteinRatio}, #{fatRatio}, #{targetCarbKcal},
-				#{targetProteinKcal}, #{targetFatKcal}, #{targetCarbG}, #{targetProteinG}, #{targetFatG},
-				#{breakfastKcal}, #{breakfastCarbG}, #{breakfastProteinG}, #{breakfastFatG},
-				#{lunchKcal}, #{lunchCarbG}, #{lunchProteinG}, #{lunchFatG}, #{dinnerKcal},
-				#{dinnerCarbG}, #{dinnerProteinG}, #{dinnerFatG}, #{userId}, #{inbodyScore}, #{height}
+			insert into `inbody` (
+			  `record_date`, `weight_kg`, `muscle_mass_kg`, `fat_mass_kg`,
+			  `bmi`, `percent_body_fat`, `cid_type`, `visceral_fat_level`,
+			  `fat_control_kg`, `muscle_control_kg`, `target_calories`,
+			  `required_protein_g`, `carb_ratio`, `protein_ratio`, `fat_ratio`,
+			  `target_carb_kcal`, `target_protein_kcal`, `target_fat_kcal`,
+			  `target_carb_g`, `target_protein_g`, `target_fat_g`,
+			  `breakfast_kcal`, `breakfast_carb_g`, `breakfast_protein_g`, `breakfast_fat_g`,
+			  `lunch_kcal`, `lunch_carb_g`, `lunch_protein_g`, `lunch_fat_g`,
+			  `dinner_kcal`, `dinner_carb_g`, `dinner_protein_g`, `dinner_fat_g`,
+			  `user_id`, `inbody_score`, `height`
+			) values (
+			  #{recordDate}, #{weightKg}, #{muscleMassKg}, #{fatMassKg},
+			  #{bmi}, #{percentBodyFat}, #{cidType}, #{visceralFatLevel},
+			  #{fatControlKg}, #{muscleControlKg}, #{targetCalories},
+			  #{requiredProteinG}, #{carbRatio}, #{proteinRatio}, #{fatRatio},
+			  #{targetCarbKcal}, #{targetProteinKcal}, #{targetFatKcal},
+			  #{targetCarbG}, #{targetProteinG}, #{targetFatG},
+			  #{breakfastKcal}, #{breakfastCarbG}, #{breakfastProteinG}, #{breakfastFatG},
+			  #{lunchKcal}, #{lunchCarbG}, #{lunchProteinG}, #{lunchFatG},
+			  #{dinnerKcal}, #{dinnerCarbG}, #{dinnerProteinG}, #{dinnerFatG},
+			  #{userId}, #{inbodyScore}, #{height}
 			)
 		]]>
-		<selectKey keyProperty="inbodyId" resultType="int" order="AFTER">
-			select last_insert_id()
-		</selectKey>
 	</insert>
 	
 	<!-- 인바디 기록 삭제하기 -->
