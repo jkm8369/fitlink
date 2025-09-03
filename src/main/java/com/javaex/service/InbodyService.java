@@ -279,6 +279,6 @@ public class InbodyService {
 		inbodyRepository.insert(fullData);
 
 		// 5. 저장된 전체 데이터를 다시 조회하여 반환
-		return inbodyRepository.selectOneByInbodyId(fullData.getInbodyId());
+		return fullData;
 	}
 }
