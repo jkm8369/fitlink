@@ -156,11 +156,13 @@ public class InbodyService {
 		double stdFat = idealWeight * idealFatRatio;
 
 		// 현재 체지방량에서 표준 체지방량을 빼서 감량 목표(+kg) 또는 초과분(-kg)을 계산
-		double fatControl = stdFat - fatMass;
+		double fatControl = fatMass - stdFat;
+		if (fatControl < 0) fatControl = 0; 
 		fullData.setFatControlKg(Math.round(fatControl * 10.0) / 10.0);
 
 		// 사용자는 근육이 부족한지, 아니면 이미 충분하거나 초과했는지 명확히 알 수 있음
 		double muscleControl = stdMuscle - muscleMass;
+		if (muscleControl < 0) muscleControl = 0;
 		fullData.setMuscleControlKg(Math.round(muscleControl * 10.0) / 10.0);
 
 		// C형(비만) 판별을 D형(근육)보다 먼저 하도록 순서를 변경

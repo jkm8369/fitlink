@@ -13,6 +13,9 @@ CREATE TABLE availability (
 SELECT *
 FROM availability;
 
+DELETE FROM availability
+WHERE availability_id = 17;
+
 ALTER TABLE availability DROP INDEX idx_avail_trainer_dt;
 CREATE UNIQUE INDEX uq_avail_trainer_dt ON availability (trainer_id, available_datetime);
 
