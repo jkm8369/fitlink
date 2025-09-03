@@ -24,26 +24,26 @@ public class MemberExerciseApiController {
 
     /**
      * 새로운 운동 종류를 DB에 추가하는 API
-     * @param exerciseVO JSON으로 받은 운동 정보 (bodyPart, exerciseName)
+     * @param exerciseVO JSON으로 받은 운동 정보 (bodyPart, exerciseName, 트레이너가 추가 시 memberId 포함)
      * @return 성공 여부와 추가된 운동 정보를 담은 JsonResult
      */
     @PostMapping("/add")
     public JsonResult addExercise(@RequestBody MemberExerciseVO memberExerciseVO, HttpSession session) {
-        //System.out.println("ExerciseApiController.addExercise()");
-        
-        UserVO authUser = (UserVO)session.getAttribute("authUser");
-        
-        try {
-            MemberExerciseVO newExercise = memberExerciseService.exeAddExercise(memberExerciseVO, authUser.getUserId());
-            if (newExercise != null) {
-                return JsonResult.success(newExercise);
-            } else {
-                return JsonResult.fail("운동 등록에 실패했습니다.");
-            }
-        } catch (Exception e) {
-            // 데이터베이스 제약 조건 위반 등 예외 처리
-            return JsonResult.fail("이미 등록된 운동이거나 오류가 발생했습니다.");
-        }
+        System.out.println("MemberExerciseApiController.addExercise()");
+
+        // --- 여기부터 수정 ---
+
+        // 1. 세션에서 현재 로그인한 사용자 정보를 가져옵니다.
+        UserVO authUser = (UserVO) session.getAttribute("authUser");
+
+        // 2. memberExerciseVO에 creatorId를 현재 로그인한 사용자(트레이너)의 ID로 설정합니다.
+        memberExerciseVO.setCreatorId(authUser.getUserId());
+
+        // --- 수정 끝 ---
+
+        MemberExerciseVO vo = memberExerciseService.exeAddExercise(memberExerciseVO);
+
+        return JsonResult.success(vo);
     }
     
     @DeleteMapping("/delete/{exerciseId}")

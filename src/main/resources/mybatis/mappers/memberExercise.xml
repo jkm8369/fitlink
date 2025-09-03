@@ -18,7 +18,8 @@
 	<select id="selectAllBodyParts" resultType="String">
 		select distinct body_part as bodyPart
 		from exercise
-		order by field('가슴', '등', '어깨', '팔', '하체', '복근', '역도','유산소', '기타')
+		order by field('가슴', '등', '어깨', '팔', '하체', '복근',
+		'역도','유산소', '기타')
 	</select>
 
 
@@ -38,20 +39,24 @@
 	</select>
 
 	<!-- 특정 부위의 모든 운동 리스트 가져오기 -->
-	<select id="selectAllByPart" parameterType="String" resultType="com.javaex.vo.MemberExerciseVO">
-		<![CDATA[
-			select exercise_id as exerciseId,
-				   body_part as bodyPart,
-			       exercise_name as exerciseName,
-			       creator_id as creatorId
-			from exercise
-			where body_part = #{bodyPart}
-			and (creator_id is null or creator_id = #{userId, javaType=int, jdbcType=INTEGER})
-			order by exercise_name asc
-		]]>
+	<select id="selectAllByPart" parameterType="map" resultType="com.javaex.vo.MemberExerciseVO">
+    <![CDATA[
+        select exercise_id as exerciseId,
+               body_part as bodyPart,
+               exercise_name as exerciseName,
+               creator_id as creatorId
+        from exercise
+        where body_part = #{bodyPart}
+        and (
+            creator_id is null or                               -- 1. 시스템 기본 운동
+            creator_id = #{userId} or                           -- 2. 회원 본인이 만든 운동
+            creator_id = (select assigned_trainer_id from users where user_id = #{userId}) -- 3. 담당 트레이너가 만든 운동
+        )
+        order by exercise_name asc
+    ]]>
 	</select>
 
-	<!-- #{userId, javaType=int, jdbcType=INTEGER}) => MyBatis에게 userId 파라미터가 자바에서는 int 타입이고, 데이터베이스에서는 INTEGER 타입이라고 정확하게 알려줌  -->
+	<!-- #{userId, javaType=int, jdbcType=INTEGER}) => MyBatis에게 userId 파라미터가 자바에서는 int 타입이고, 데이터베이스에서는 INTEGER 타입이라고 정확하게 알려줌 -->
 
 	<!-- 특정 부위에 대한 사용자 운동 선택 기록 삭제 -->
 	<delete id="deleteUserExercisesByPart" parameterType="map">
@@ -82,7 +87,7 @@
 			select last_insert_id()
 		</selectKey>
 	</insert>
-	
+
 	<!-- 사용자가 직접 추가한 운동을 삭제 -->
 	<delete id="deleteExerciseByIdAndCreator" parameterType="map">
         <![CDATA[
@@ -90,7 +95,7 @@
             where exercise_id = #{exerciseId}
             and creator_id = #{creatorId}
         ]]>
-    </delete>
+	</delete>
 
 	<!-- selected_exercises 테이블에서 특정 사용자의 특정 운동 선택 기록 1개를 삭제 -->
 	<delete id="deleteUserExerciseSelection" parameterType="map">
