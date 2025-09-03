@@ -1473,7 +1473,7 @@ h4 {
 /* 2) 모든 셀 높이/정렬 통일 */
 .table tbody td {
 	text-align: center;
-	padding: 12px 10px; /* 살짝 여유 */
+	padding: 12px 2px; /* 살짝 여유 */
 	border-bottom: 1px solid #F0F4F8;
 	color: #374151;
 	vertical-align: middle; /* ★ 행 높이 튐 방지 */
