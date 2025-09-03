@@ -454,7 +454,8 @@ $(document).ready(function() {
 	        muscleMassKg: parseFloat($("#muscleMass").val()),
 	        fatMassKg: parseFloat($("#fatMass").val()),
 	        inbodyScore: parseInt($("#inbodyScore").val()),
-	        visceralFatLevel: parseInt($("#visceralFatLevel").val())
+	        visceralFatLevel: parseInt($("#visceralFatLevel").val()),
+	        userId: targetUserId
 	    };
 	
 	    // 2. 유효성 검사
