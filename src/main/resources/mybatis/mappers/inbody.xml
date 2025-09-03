@@ -14,9 +14,20 @@
 	<!-- 한 회원의 인바디 리스트 가져오기 (페이징 적용) -->
 	<select id="selectListByUserId" parameterType="map" resultType="com.javaex.vo.InbodyVO">
 		<![CDATA[
-			select inbody_id as inbodyId,
-				   record_date as recordDate,
-				   inbody_score as inbodyScore
+			select
+			  inbody_id             as inbodyId,
+			  record_date           as recordDate,
+			  inbody_score          as inbodyScore,
+			  weight_kg             as weightKg,
+			  muscle_mass_kg        as muscleMassKg,
+			  fat_mass_kg           as fatMassKg,
+			  height,
+			  bmi,
+			  percent_body_fat      as percentBodyFat,
+			  cid_type              as cidType,
+			  visceral_fat_level    as visceralFatLevel,
+			  fat_control_kg        as fatControlKg,
+			  muscle_control_kg     as muscleControlKg
 			from inbody
 			where user_id = #{userId}
 			order by record_date desc
