@@ -42,19 +42,26 @@ jobs:
         username: ${{ secrets.EC2_USER }}     # EC2 ID
         key: ${{ secrets.EC2_SSH_KEY }}       # web.pem (SSH 접속용 키)
         script: |
-          echo "[1] 기존 ROOT.war 및 ROOT 폴더 삭제"
+          # 각 단계에 대한 설명 메시지를 추가합니다.
+          echo "✅ 배포 시작!"
+
+          echo "[1] 기존 ROOT.war 및 ROOT 폴더 삭제 중..."
           sudo rm -rf /usr/local/tomcat/webapps/ROOT.war     # 기존 ROOT.war 파일 삭제
           sudo rm -rf /usr/local/tomcat/webapps/ROOT         # 기존 ROOT 폴더 삭제
+          echo "✅ 이전 버전 애플리케이션 삭제 완료"
 
-          echo "[2] 새 WAR 파일 이동"
+          echo "[2] 새 WAR 파일 이동 중..."
           sudo mv /home/ec2-user/ROOT.war /usr/local/tomcat/webapps/ROOT.war  # 새 WAR 파일을 Tomcat 경로로 이동
+          echo "✅ 새 WAR 파일 이동 완료"
 
-          echo "[3] 톰캣 종료"
+          echo "[3] 톰캣 종료 중..."
           sudo /usr/local/tomcat/bin/shutdown.sh || true
           # shutdown.sh 명령에 오류가 나도 무시하고 정상 처리함 (워크플로우가 중단되지 않게)
+          echo "✅ 톰캣 종료 완료"
 
-          echo "[4] 잠시 대기..."
+          echo "[4] 5초 대기..."
           sleep 5  # 톰캣이 완전히 종료될 시간을 주기 위해 5초 대기
 
-          echo "[5] 톰캣 재시작"
+          echo "[5] 톰캣 재시작 중..."
           sudo /usr/local/tomcat/bin/startup.sh  # 톰캣 서버 재시작
+          echo "🚀 배포 성공적으로 완료!"
