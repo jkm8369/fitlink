@@ -155,15 +155,27 @@ public class InbodyService {
 		double stdMuscle = idealWeight * idealMuscleRatio;
 		double stdFat = idealWeight * idealFatRatio;
 
-		// 현재 체지방량에서 표준 체지방량을 빼서 감량 목표(+kg) 또는 초과분(-kg)을 계산
-		double fatControl = fatMass - stdFat;
-		if (fatControl < 0) fatControl = 0; 
-		fullData.setFatControlKg(Math.round(fatControl * 10.0) / 10.0);
+		// ======================= 체성분 조절 계산 =======================
 
-		// 사용자는 근육이 부족한지, 아니면 이미 충분하거나 초과했는지 명확히 알 수 있음
+		// 지방 조절량: 현재 - 표준 → 감량해야 할 양 (음수면 0)
+		double fatControl = fatMass - stdFat;
+		if (fatControl < 0) fatControl = 0;
+		fatControl = Math.round(fatControl * 10.0) / 10.0;
+		fullData.setFatControlKg(fatControl);
+
+		// 근육 조절량: 표준 - 현재 → 증량해야 할 양 (음수면 0)
 		double muscleControl = stdMuscle - muscleMass;
 		if (muscleControl < 0) muscleControl = 0;
-		fullData.setMuscleControlKg(Math.round(muscleControl * 10.0) / 10.0);
+		muscleControl = Math.round(muscleControl * 10.0) / 10.0;
+		fullData.setMuscleControlKg(muscleControl);
+
+		// 안전장치: 혹시라도 음수가 내려가면 0으로 강제
+		fullData.setFatControlKg(Math.max(0.0, fullData.getFatControlKg()));
+		fullData.setMuscleControlKg(Math.max(0.0, fullData.getMuscleControlKg()));
+
+		// 로그 확인 (개발 시만)
+		System.out.println("[INBODY] fatControlKg=" + fullData.getFatControlKg()
+		    + ", muscleControlKg=" + fullData.getMuscleControlKg());
 
 		// C형(비만) 판별을 D형(근육)보다 먼저 하도록 순서를 변경
 		// 이렇게 하면, 근육과 지방이 모두 많은 사용자가 D형이 아닌 C형으로 정확하게 분류되어
