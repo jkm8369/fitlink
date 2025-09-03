@@ -224,7 +224,7 @@
 
         // 모달의 '저장' 버튼 클릭 시 (form 전송 이벤트)
         $("#form-add-exercise").on("submit", function(e) {
-            e.preventDefault(); 
+        	e.preventDefault(); 
 
             let bodyPart = $("#modal-exercise-type").val();
             let exerciseName = $("#modal-exercise-name").val().trim();
@@ -238,6 +238,11 @@
                 bodyPart: bodyPart,
                 exerciseName: exerciseName
             };
+            
+            // 트레이너가 회원 페이지를 보고 있을 경우, 회원 ID를 데이터에 추가
+            if (currentMemberId > 0) {
+                exerciseData.memberId = currentMemberId;
+            }
 
             $.ajax({
                 url: "${pageContext.request.contextPath}/api/exercise/add",
@@ -249,7 +254,6 @@
                     if (jsonResult.result === "success") {
                         alert("운동이 성공적으로 등록되었습니다.");
                         
-                     	// 현재 상황에 맞는 URL을 동적으로 생성
                         let redirectUrl = "";
                         let bodyPart = $("#modal-exercise-type").val();
                         

@@ -175,24 +175,22 @@ public class MemberExerciseService {
 	@Transactional // exercise 와 selected_exercises 두 테이블을 함께 수정하므로 트랜잭션 처리
 	// -- 새로운 운동 종류 1개 추가
 	public MemberExerciseVO exeAddExercise(MemberExerciseVO memberExerciseVO) {
-	    System.out.println("MemberExerciseService.addExercise()");
+		System.out.println("MemberExerciseService.addExercise()");
 
-	    // 1. 새로운 운동을 exercise 테이블에 추가합니다.
-	    // insert -> insertExercise로 메소드명 수정
-	    memberExerciseRepository.insertExercise(memberExerciseVO);
-	    
-	    // 2. (선택사항) 새로 추가된 운동을 해당 운동을 추가한 사용자(트레이너)의
-	    //    '선택한 운동 목록'에도 바로 추가해주는 로직입니다.
-	    //    이렇게 하면, 운동을 추가한 후 트레이너가 바로 해당 운동을 체크된 상태로 볼 수 있습니다.
-	    Map<String, Object> params = new HashMap<>();
-	    params.put("userId", memberExerciseVO.getCreatorId());
-	    params.put("exerciseId", memberExerciseVO.getExerciseId());
-	    memberExerciseRepository.insertUserExercise(params);
+		/* * 트레이너가 특정 회원을 위해 운동을 추가하는 경우(memberId가 넘어옴),
+	     * 이 운동이 해당 회원을 위한 것임을 명시하기 위해 forUserId에 회원 ID를 설정합니다.
+	     * 회원이 직접 추가하거나 트레이너가 자신을 위해 추가하면 memberId가 없으므로 forUserId는 null이 됩니다.
+	     */
+	    if (memberExerciseVO.getMemberId() != null) {
+	        memberExerciseVO.setForUserId(memberExerciseVO.getMemberId());
+	    }
+		
+		// 새로운 운동을 exercise 테이블에 추가
+		memberExerciseRepository.insertExercise(memberExerciseVO);
 
+		
 
-	    // 3. 컨트롤러에 추가된 운동 정보를 반환합니다.
-	    // (selectOne 메소드가 없으므로, exerciseId가 포함된 VO를 그대로 반환)
-	    return memberExerciseVO;
+		return memberExerciseVO; // exerciseId가 담긴 vo를 컨트롤러로 반환
 	}
 
 	@Transactional

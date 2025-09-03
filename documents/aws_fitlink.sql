@@ -297,3 +297,6 @@ DROP COLUMN image_url;
 ALTER TABLE inbody 
 MODIFY COLUMN percent_body_fat DECIMAL(5, 2) NULL COMMENT '체지방률',
 MODIFY COLUMN bmi DECIMAL(5, 2) NULL COMMENT 'BMI';
+
+ALTER TABLE exercise
+ADD COLUMN for_user_id INT NULL COMMENT '이 운동이 지정된 사용자(회원)의 ID. null이면 생성자 본인 또는 모두를 위한 운동.';

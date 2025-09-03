@@ -6,17 +6,20 @@ public class MemberExerciseVO {
     private String bodyPart;
     private String exerciseName;
     private Integer creatorId;   // null 허용하기 위해 Integer 사용
+    private Integer memberId;
+    private Integer forUserId;  // 이 운동이 지정된 사용자의 ID
     
 	public MemberExerciseVO() {
 		super();
 	}
 
-	public MemberExerciseVO(int exerciseId, String bodyPart, String exerciseName, Integer creatorId) {
+	public MemberExerciseVO(int exerciseId, String bodyPart, String exerciseName, Integer creatorId, Integer memberId) {
 		super();
 		this.exerciseId = exerciseId;
 		this.bodyPart = bodyPart;
 		this.exerciseName = exerciseName;
 		this.creatorId = creatorId;
+		this.memberId = memberId;
 	}
 
 	public int getExerciseId() {
@@ -51,14 +54,28 @@ public class MemberExerciseVO {
 		this.creatorId = creatorId;
 	}
 
+	public Integer getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
+	}
+
+	public Integer getForUserId() {
+	    return forUserId;
+	}
+
+	public void setForUserId(Integer forUserId) {
+	    this.forUserId = forUserId;
+	}
+
 	@Override
 	public String toString() {
 		return "MemberExerciseVO [exerciseId=" + exerciseId + ", bodyPart=" + bodyPart + ", exerciseName="
-				+ exerciseName + ", creatorId=" + creatorId + "]";
+				+ exerciseName + ", creatorId=" + creatorId + ", memberId=" + memberId + ", forUserId=" + forUserId
+				+ "]";
 	}
-    
 	
-    
-    
 	
 }

@@ -29,20 +29,17 @@ public class MemberExerciseApiController {
      */
     @PostMapping("/add")
     public JsonResult addExercise(@RequestBody MemberExerciseVO memberExerciseVO, HttpSession session) {
-        System.out.println("MemberExerciseApiController.addExercise()");
+        //System.out.println("MemberExerciseApiController.addExercise()");
 
-        // --- 여기부터 수정 ---
-
-        // 1. 세션에서 현재 로그인한 사용자 정보를 가져옵니다.
+        // 1. 세션에서 현재 로그인한 사용자 정보를 가져옴
         UserVO authUser = (UserVO) session.getAttribute("authUser");
 
-        // 2. memberExerciseVO에 creatorId를 현재 로그인한 사용자(트레이너)의 ID로 설정합니다.
+        // 2. memberExerciseVO에 creatorId를 현재 로그인한 사용자(트레이너)의 ID로 설정
         memberExerciseVO.setCreatorId(authUser.getUserId());
 
-        // --- 수정 끝 ---
-
+        // 서비스 레이어에 memberId를 함께 전달
         MemberExerciseVO vo = memberExerciseService.exeAddExercise(memberExerciseVO);
-
+        
         return JsonResult.success(vo);
     }
     
@@ -50,7 +47,7 @@ public class MemberExerciseApiController {
     public JsonResult deleteExercise(@PathVariable("exerciseId") int exerciseId, HttpSession session) {
         //System.out.println("ExerciseApiController.deleteExercise(): " + exerciseId);
 
-        // 세션에서 현재 로그인한 사용자 정보를 가져옵니다.
+        // 세션에서 현재 로그인한 사용자 정보를 가져옴
         UserVO authUser = (UserVO) session.getAttribute("authUser");
 
         // exercise 테이블에서 직접 운동을 삭제하는 서비스 메소드를 호출
