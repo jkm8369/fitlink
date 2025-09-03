@@ -278,16 +278,25 @@ $(document).ready(function() {
 	                </div>
 	                <div class="metric-box no-outline">
 	                    <span class="metric-name">체중조절</span>
-	                    <div class="metric-pair bold">
-	                        <span class="label">지방 </span>
-	                        <%-- toFixed(1)을 사용해 항상 소수점 첫째 자리까지 표시하도록 통일성을 줌 --%>
-	                        <span class="value red">\${Number(data.fatControlKg).toFixed(1)}kg 감량</span>
-	                    </div>
-	                    <div class="metric-pair bold">
-	                        <span class="label">근육 </span>
-	                        <%-- toFixed(1)을 사용해 항상 소수점 첫째 자리까지 표시하도록 통일성을 줌 --%>
-	                        <span class="value blue">\${Number(data.muscleControlKg).toFixed(1)}kg 증량</span>
-	                    </div>
+	                    
+                    <div class="metric-pair bold">
+	                    <span class="label">지방 </span>
+	                    <span class="value red">
+	                        \${(Number(data.fatControlKg) > 0
+	                            ? Number(data.fatControlKg).toFixed(1) + 'kg 감량'
+	                            : '유지')}
+	                    </span>
+	                </div>
+
+	                <div class="metric-pair bold">
+	                    <span class="label">근육 </span>
+	                    <span class="value blue">
+	                        \${(Number(data.muscleControlKg) > 0
+	                            ? Number(data.muscleControlKg).toFixed(1) + 'kg 증량'
+	                            : '유지')}
+	                    </span>
+	                </div>
+	                
 	                </div>
 	                <div class="metric-box no-outline">
 	                    <span class="metric-name">내장지방레벨</span>
