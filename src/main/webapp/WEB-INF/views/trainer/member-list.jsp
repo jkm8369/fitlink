@@ -377,7 +377,7 @@
 	        $('#c-user-phone-number').val(u.phoneNumber || '');
 	        $('#c-birth-date').val(u.birth || '');            // hidden (yyMMdd)
 	      },
-	      error: function () { alert('회원 정보 조회 실패'); }
+	      error: function () { alert('회원 정보 조회 실패에 실패하였습니다.'); }
 	    });
 	  }
 	
@@ -414,8 +414,8 @@
 	    const totalSessions = ($('#c-pt-days').val()||'').trim();
 	
 	    if(!loginId){ alert('아이디를 입력해주세요.'); return; }
-	    if(!memberId){ alert('아이디로 회원 조회부터 해주세요.'); return; }
-	    if(!userFullName){ alert('이름은 필수입니다.'); return; }
+	    if(!memberId){ alert('먼저 아이디로 회원을 조회해주세요.'); return; }
+	    if(!userFullName){ alert('이름을 입력해주세요.'); return; }
 	
 	    // (2) 배정 시도
 	    $.ajax({
@@ -424,7 +424,7 @@
 	      data: { loginId: loginId }, // application/x-www-form-urlencoded
 	      dataType: 'json',
 	      success: function(res){
-	        if(!(res && res.ok)){ alert('배정 실패'); return; }
+	        if(!(res && res.ok)){ alert('회원 배정에 실패했습니다.'); return; }
 	        const code = res.code;
 	        if(code === 'ASSIGNED_OTHER'){
 	          alert('이미 다른 트레이너에 배정된 회원입니다.');
@@ -440,7 +440,7 @@
 	            data: { job: job, consultDate: consultDate, goal: goal, memo: memo },
 	            dataType: 'json',
 	            success: function(){ next(); },
-	            error: function(){ alert('프로필 저장 실패'); next(); }
+	            error: function(){ alert('프로필 저장에 실패했습니다.'); next(); }
 	          });
 	        }
 	
@@ -454,13 +454,13 @@
 	            data: { totalSessions: n },
 	            dataType: 'json',
 	            success: function(){ done(); },
-	            error: function(){ alert('PT 계약 추가 실패'); done(); }
+	            error: function(){ alert('PT 계약 추가에 실패했습니다.'); done(); }
 	          });
 	        }
 	
 	        saveProfileIfNeeded(function(){
 	          addPtIfNeeded(function(){
-	            alert(code === 'OK_ASSIGNED' ? '배정 및 저장되었습니다.' : '이미 내 회원이라 저장만 완료했습니다.');
+	            alert(code === 'OK_ASSIGNED' ? '배정 및 저장되었습니다.' : '이미 등록된 회원입니다. 입력하신 정보로 수정되었습니다.');
 	            $('#member-create-modal').hide();
 	            reloadMemberTable();
 	          });
@@ -480,7 +480,7 @@
 	      type: 'GET',
 	      dataType: 'json',
 	      success: function (res) {
-	        if (!(res && res.ok && res.data)) { alert('회원 조회 실패'); return; }
+	        if (!(res && res.ok && res.data)) { alert('회원 조회에 실패했습니다.'); return; }
 	        const d = res.data;
 	        const $modal = $('#member-edit-modal');
 	
@@ -500,7 +500,7 @@
 	        $modal.show();
 	        $modal.find('#e-user-full-name').trigger('focus');
 	      },
-	      error: function () { alert('회원 조회 실패'); }
+	      error: function () { alert('회원 조회에 실패했습니다.'); }
 	    });
 	  });
 	
@@ -521,7 +521,7 @@
 	    const ptDaysStr   = ($('#e-pt-days').val()||'').trim();
 	
 	    if(!memberId){ alert('회원 ID가 없습니다.'); return; }
-	    if(!userName){ alert('이름은 필수입니다.'); return; }
+	    if(!userName){ alert('이름을 입력해주세요.'); return; }
 	
 	    // (1) 기본정보 저장
 	    $.ajax({
@@ -556,16 +556,16 @@
 	                reloadMemberTable();
 	              },
 	              error: function(){
-	                alert('PT 계약 추가 실패(나머지는 저장됨).');
+	                alert('PT 계약 추가에 실패했습니다. (입력한 다른 정보는 저장되었습니다.)');
 	                $('#member-edit-modal').hide();
 	                reloadMemberTable();
 	              }
 	            });
 	          },
-	          error: function(){ alert('프로필 저장 실패'); }
+	          error: function(){ alert('프로필 저장에 실패했습니다.'); }
 	        });
 	      },
-	      error: function(){ alert('기본정보 저장 실패'); }
+	      error: function(){ alert('기본 정보 저장에 실패했습니다.'); }
 	    });
 	  });
 	
@@ -581,9 +581,9 @@
 	      type: 'DELETE', dataType: 'json',
 	      success: function(response){
 	        if(response && response.ok === true){ $row.remove(); }
-	        else{ alert((response && response.msg) ? response.msg : '해제 실패'); }
+	        else{ alert((response && response.msg) ? response.msg : '회원 배정 해제에 실패했습니다.'); }
 	      },
-	      error: function(){ alert('네트워크 오류'); }
+	      error: function(){ alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'); }
 	    });
 	  });
 	</script>

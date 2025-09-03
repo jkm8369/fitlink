@@ -169,9 +169,9 @@
 	        // 업로드 직후 달력 배경 즉시 갱신
 	        if (window.__photoCal) { refreshCalendar(window.__photoCal); }
 	      } else {
-	        alert('업로드 실패');
+	        alert('업로드에 실패했습니다.');
 	      }
-	    }).fail(function(){ alert('업로드 실패'); });
+	    }).fail(function(){ alert('업로드에 실패했습니다.'); });
 	  });
 	
 	  // ================= FullCalendar =================
@@ -230,7 +230,7 @@
 	  $(document).on('click', '.ph-remove', function(){
 	    const photoId = $(this).data('id');
 	    if (!photoId) return;
-	    if (!confirm('이 사진을 삭제할까요?')) return;
+	    if (!confirm('이 사진을 삭제하시겠습니까?')) return;
 	
 	    // 이 버튼이 속한 그리드의 타입(body/meal) 결정
 	    const $grid = $(this).closest('ul.photo-grid');
@@ -250,12 +250,12 @@
 	        load(type, selectedDate);                 // 현재 선택 날짜 그대로 다시 로딩
 	        if (window.__photoCal) refreshCalendar(window.__photoCal); // 달력 배경 갱신
 	      } else {
-	        alert((res && res.message) ? res.message : '삭제 실패');
+	        alert((res && res.message) ? res.message : '삭제에 실패했습니다.');
 	      }
 	    })
 	    .fail(function(xhr){
 	      const msg = xhr && xhr.responseJSON && xhr.responseJSON.message;
-	      alert(msg || '삭제 실패');
+	      alert(msg || '삭제에 실패했습니다.');
 	    });
 	  });
 	

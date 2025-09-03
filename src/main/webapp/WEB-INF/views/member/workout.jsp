@@ -189,7 +189,7 @@
         const currentMemberId = Number("${currentMember.userId}" || 0);
         
         // [주석] F12 개발자 도구의 'Console' 탭에서 이 값이 올바르게 나오는지 확인해주세요.
-        console.log("페이지 로딩 완료. 현재 보고 있는 회원 ID:", currentMemberId);
+        //console.log("페이지 로딩 완료. 현재 보고 있는 회원 ID:", currentMemberId);
 
         let state = { y: null, m: null, selected: null };
         let userExerciseList = [];

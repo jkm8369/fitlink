@@ -52,7 +52,7 @@ public class PhotoApiController {
 			return ResponseEntity.badRequest().body(Map.of("ok", false, "message", e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(Map.of("ok", false, "message", "업로드 실패"));
+					.body(Map.of("ok", false, "message", "업로드에 실패했습니다."));
 		}
 	}
 	
@@ -81,11 +81,11 @@ public class PhotoApiController {
             } else {
                 // 내가 가진 사진이 아니거나 이미 삭제된 경우
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("ok", false, "message", "대상이 없거나 권한이 없습니다."));
+                        .body(Map.of("ok", false, "message", "대상을 찾을 수 없거나 권한이 없습니다."));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("ok", false, "message", "삭제 실패"));
+                    .body(Map.of("ok", false, "message", "삭제에 실패했습니다."));
         }
     }
     

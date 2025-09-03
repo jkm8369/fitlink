@@ -537,50 +537,6 @@ $(document).ready(function() {
     fetchInbodyList(1);
 
 
-    // =================================================
-    // 체중조절 로직 검증
-    // =================================================
-    function verifyWeightControlLogic() {
-        const testCases = [
-            { name: "Case 1: 일반 남성 (과체중)", gender: "male", height: 175, weight: 85, muscleMass: 34, fatMass: 25 },
-            { name: "Case 2: 마른 여성 (근육 부족)", gender: "female", height: 165, weight: 48, muscleMass: 18, fatMass: 12 },
-            { name: "Case 3: 근육형 남성 (표준)", gender: "male", height: 180, weight: 80, muscleMass: 40, fatMass: 14 }
-        ];
-
-        let resultsHtml = '<ul>';
-        console.log("===== 체중조절 로직 검증 시작 =====");
-
-        testCases.forEach(tc => {
-            const heightM = tc.height / 100.0;
-            const idealBmi = (tc.gender === "male") ? 22 : 21;
-            const idealMuscleRatio = (tc.gender === "male") ? 0.45 : 0.40;
-            const idealFatRatio = (tc.gender === "male") ? 0.15 : 0.23;
-
-            const idealWeight = idealBmi * (heightM * heightM);
-            const stdMuscle = idealWeight * idealMuscleRatio;
-            const stdFat = idealWeight * idealFatRatio;
-            
-            const fatControl = tc.fatMass - stdFat;
-            const muscleControl = stdMuscle - tc.muscleMass;
-
-            const fatControlRounded = Math.round(fatControl * 10.0) / 10.0;
-            const muscleControlRounded = Math.round(Math.max(0, muscleControl) * 10.0) / 10.0;
-
-            // 콘솔 출력
-            console.log(`[${tc.name}]`);
-            console.log(`  - 입력값: 키=${tc.height}cm, 체중=${tc.weight}kg, 골격근량=${tc.muscleMass}kg, 체지방량=${tc.fatMass}kg`);
-            console.log(`  - 표준값: 표준체중=${idealWeight.toFixed(1)}kg, 표준근육량=${stdMuscle.toFixed(1)}kg, 표준지방량=${stdFat.toFixed(1)}kg`);
-            console.log(`  - 계산결과: 지방조절=${fatControlRounded}kg, 근육조절=${muscleControlRounded}kg`);
-            
-            
-        });
-        
-        console.log("===== 체중조절 로직 검증 종료 =====");
-        resultsHtml += '</ul>';
-        
-    }
-
-    verifyWeightControlLogic();
 });
 </script>
 

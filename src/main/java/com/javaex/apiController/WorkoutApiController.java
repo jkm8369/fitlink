@@ -46,7 +46,7 @@ public class WorkoutApiController {
 		if(wVO != null) {
 			return JsonResult.success(wVO);
 		} else {
-			return JsonResult.fail("저장에 실패");
+			return JsonResult.fail("저장에 실패했습니다.");
 		}
 			
 	}
@@ -62,7 +62,7 @@ public class WorkoutApiController {
 		if(count == 1) {
 			return JsonResult.success(count);
 		} else {
-			return JsonResult.fail("삭제에 실패");
+			return JsonResult.fail("삭제에 실패했습니다.");
 		}
 		
 		

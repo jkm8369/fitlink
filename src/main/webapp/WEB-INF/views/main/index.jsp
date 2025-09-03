@@ -30,6 +30,10 @@
 				<h1 class="hero-title">Fit - Link</h1>
 				<p class="hero-subtitle">트레이너와 회원을 위한 종합 관리 플랫폼으로 효율적인 PT 관리를 경험하세요</p>
 				<a href="#" class="cta-button primary-button">가입하기</a>
+				<!-- QR 자체를 클릭해도 이동하게 감쌌어요 -->
+				<a href="http://3.36.204.92:8080/user/loginform/mobile" target="_blank" rel="noopener"> <img alt="로그인 링크 QR" width="240" height="240"
+					src="https://chart.googleapis.com/chart?chs=240x240&cht=qr&chld=Q|1&chl=http%3A%2F%2F3.36.204.92%3A8080%2Fuser%2Floginform%2Fmobile">
+				</a>
 			</section>
 
 			<section class="service-intro">
