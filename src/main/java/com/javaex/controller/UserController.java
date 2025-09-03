@@ -2,7 +2,9 @@ package com.javaex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -21,7 +23,7 @@ public class UserController {
 	 // -------------------------------
     // 1) 로그인 폼
     // -------------------------------
-    @RequestMapping(value = "/loginform", method = { RequestMethod.GET, RequestMethod.POST })
+    @GetMapping("/loginform")
     public String loginform(HttpSession session) {
 
         UserVO authUser = (UserVO) session.getAttribute("authUser");
@@ -45,7 +47,7 @@ public class UserController {
     }
 
     // 모바일용 로그인 폼
-    @RequestMapping(value = "/loginform/mobile", method = { RequestMethod.GET, RequestMethod.POST })
+    @GetMapping("/loginform/mobile")
     public String loginformMobile() {
     	
         return "user/loginform-mobile";
@@ -54,7 +56,7 @@ public class UserController {
     // -------------------------------
     // 2) 로그인 처리
     // -------------------------------
-    @RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST })
+    @PostMapping("/login")
     public String login(@ModelAttribute UserVO userVO, HttpSession session) {
 
         UserVO authUser = userService.exeLogin(userVO);
@@ -81,7 +83,7 @@ public class UserController {
         }
     }
     // -- 로그인처리 (모바일)
-    @RequestMapping(value = "/login/mobile", method = { RequestMethod.GET, RequestMethod.POST })
+    @PostMapping("/login/mobile")
     public String loginMobile(@ModelAttribute UserVO userVO, HttpSession session) {
 
         UserVO authUser = userService.exeLogin(userVO);
@@ -109,13 +111,13 @@ public class UserController {
     // -------------------------------
     // 3) 로그아웃
     // -------------------------------
-    @RequestMapping(value = "/logout", method = { RequestMethod.GET, RequestMethod.POST })
+    @PostMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/user/loginform";
     }
     
-    @RequestMapping(value = "/logout/mobile", method = { RequestMethod.GET, RequestMethod.POST })
+    @PostMapping("/logout/mobile")
     public String logoutMobile(HttpSession session) {
         session.invalidate();
         return "redirect:/user/loginform/mobile";
