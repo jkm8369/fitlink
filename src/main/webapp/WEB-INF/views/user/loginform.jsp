@@ -20,7 +20,7 @@
 	        </a>
 	
 	        <!-- 아이디 / 비밀번호 -->
-	        <form class="form-login" action="/user/login" method="get">
+	        <form class="form-login" action="${pageContext.request.contextPath}/user/login" method="post">
 	            <!-- 아이디 -->
 	            <div class="field-login field-box">
 	                <div class="icon"><i class="fa-regular fa-user"></i></div>
