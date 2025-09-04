@@ -175,10 +175,6 @@ public class InbodyService {
 		fullData.setFatControlKg(Math.max(0.0, fullData.getFatControlKg()));
 		fullData.setMuscleControlKg(Math.max(0.0, fullData.getMuscleControlKg()));
 
-		// 로그 확인 (개발 시만)
-		System.out.println("[INBODY] fatControlKg=" + fullData.getFatControlKg()
-		    + ", muscleControlKg=" + fullData.getMuscleControlKg());
-
 		// C형(비만) 판별을 D형(근육)보다 먼저 하도록 순서를 변경
 		// 이렇게 하면, 근육과 지방이 모두 많은 사용자가 D형이 아닌 C형으로 정확하게 분류되어
 		// '체지방 감량'이라는 더 시급한 목표를 제시받게 됩니다.
