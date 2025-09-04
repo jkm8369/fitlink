@@ -51,7 +51,8 @@
         select user_id as userId,
                user_name as userName,
                role,
-               birthdate as birthDate
+               birthdate as birthDate,
+               gender
         from users
         where user_id = #{userId}
     </select>
