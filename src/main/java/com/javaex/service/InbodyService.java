@@ -121,14 +121,6 @@ public class InbodyService {
 		UserVO fullUserVO = userRepository.selectUserByNo(targetUserId);
 		int age = java.time.LocalDate.now().getYear() - Integer.parseInt(fullUserVO.getBirthDate().substring(0, 4));
 		String gender = fullUserVO.getGender();
-		
-		// =======================================================================
-	    // [디버깅 코드 추가] 문제의 원인을 찾기 위해 주요 변수들을 콘솔에 출력합니다.
-	    // =======================================================================
-	    System.out.println("============== [디버깅 시작] ==============");
-	    // 1. DB에서 가져온 gender 값이 "male"이 맞는지 확인합니다. (가장 중요)
-	    System.out.println("▶ DB에서 가져온 성별(gender) 값: [" + gender + "]");
-		
 
 		InbodyVO fullData = new InbodyVO();
 		fullData.setUserId(targetUserId); // 결정된 targetUserId를 사용
@@ -156,25 +148,14 @@ public class InbodyService {
 		fullData.setPercentBodyFat(Math.round(pbf * 10.0) / 10.0);
 
 		double idealBmi = "male".equalsIgnoreCase(gender) ? 22 : 21;
-		// 2. 위 gender 값에 따라 idealBmi가 남성 기준(22)으로 잘 계산되었는지 확인합니다.
-	    System.out.println("▶ 적용된 idealBmi: " + idealBmi);
 
 		double idealMuscleRatio = "male".equalsIgnoreCase(gender) ? 0.45 : 0.40;
-		// 3. 근육 비율이 남성 기준(0.45)으로 잘 계산되었는지 확인합니다.
-	    System.out.println("▶ 적용된 근육 비율: " + idealMuscleRatio);
 	    
 		double idealFatRatio = "male".equalsIgnoreCase(gender) ? 0.15 : 0.23;
 
 		double idealWeight = idealBmi * (heightM * heightM);
 		double stdMuscle = idealWeight * idealMuscleRatio;
 		double stdFat = idealWeight * idealFatRatio;
-		
-		// 4. D형 판정의 기준이 되는 최종 경계값을 확인합니다.
-	    System.out.println("▶ 'D형' 판정 기준 근육량 (이 값 이상이면 D형): " + (stdMuscle * 1.1) + "kg");
-	    System.out.println("▶ 사용자가 입력한 실제 근육량: " + muscleMass + "kg");
-	    System.out.println("==========================================");
-	    // =======================================================================
-		
 
 		// ======================= 체성분 조절 계산 =======================
 
