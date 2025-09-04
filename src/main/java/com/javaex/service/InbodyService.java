@@ -105,8 +105,6 @@ public class InbodyService {
 	 * @return 저장된 전체 인바디 정보가 담긴 VO
 	 */
 	public InbodyVO exeManualAdd(InbodyVO inputVO, UserVO authUser) {
-		// System.out.println("InbodyService.exeManualAdd() - Final Data Consistency
-		// Version");
 
 		int targetUserId;
 		if ("trainer".equals(authUser.getRole()) && inputVO.getUserId() > 0) {
@@ -134,7 +132,7 @@ public class InbodyService {
 		fullData.setInbodyScore(inputVO.getInbodyScore());
 		fullData.setVisceralFatLevel(inputVO.getVisceralFatLevel());
 
-		// ... (2. 주요 지표 계산 ~ CID 유형 판단 코드는 이전과 동일)
+		// 주요 지표 계산 ~ CID 유형 판단
 		double height = fullData.getHeight();
 		double weight = fullData.getWeightKg();
 		double muscleMass = fullData.getMuscleMassKg();
@@ -177,12 +175,12 @@ public class InbodyService {
 
 		// C형(비만) 판별을 D형(근육)보다 먼저 하도록 순서를 변경
 		// 이렇게 하면, 근육과 지방이 모두 많은 사용자가 D형이 아닌 C형으로 정확하게 분류되어
-		// '체지방 감량'이라는 더 시급한 목표를 제시받게 됩니다.
+		// '체지방 감량'이라는 더 시급한 목표를 제시
 		// stdFat * 1.1: 표준 체지방량의 110%를 의미하는 경계값
 		if (fatMass >= stdFat * 1.1) {
 			fullData.setCidType("C"); // 1순위: 체지방이 표준의 110% 이상이면 'C형'
 
-			// ※ stdMuscle * 1.1: 표준 근육량의 110%를 의미하는 경계값입니다.
+			// ※ stdMuscle * 1.1: 표준 근육량의 110%를 의미하는 경계값
 		} else if (muscleMass >= stdMuscle * 1.1) {
 			fullData.setCidType("D"); // 2순위: (비만이 아니면서) 근육량이 표준의 110% 이상이면 'D형'
 
@@ -190,8 +188,8 @@ public class InbodyService {
 			fullData.setCidType("I"); // 3순위: 위 두 조건에 해당하지 않으면 'I형'
 		}
 
-		// ... (3. 목표 칼로리 및 비율 설정 코드는 이전과 동일)
-		double bmr;
+		// 목표 칼로리 및 비율 설정
+		double bmr;  // 기초대사량
 		if ("male".equalsIgnoreCase(gender)) {
 			bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
 		} else {
@@ -199,6 +197,7 @@ public class InbodyService {
 		}
 
 		double maintenanceCalories = bmr * 1.375;
+		
 		int targetCalories = 0;
 
 		fullData.setRequiredProteinG((int) (weight * 0.8));

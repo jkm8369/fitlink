@@ -2,10 +2,12 @@ package com.javaex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.javaex.service.UserService;
 import com.javaex.vo.UserVO;
@@ -47,7 +49,12 @@ public class UserController {
 
     // 모바일용 로그인 폼
     @GetMapping("/loginform/mobile")
-    public String loginformMobile() {
+    public String loginformMobile(@RequestParam(value = "loginId", required = false) String loginId,
+    							  @RequestParam(value = "password", required = false) String password,
+    							  Model model){
+    	
+    	model.addAttribute("loginId", loginId);
+    	model.addAttribute("password", password);
     	
         return "user/loginform-mobile";
     }

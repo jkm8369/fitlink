@@ -36,13 +36,13 @@
             <%-- 아이디 입력 필드 --%>
             <div class="input-group">
                 <i class="fa-regular fa-user input-icon"></i>
-                <input type="text" name="loginId" placeholder="아이디" required>
+                <input type="text" name="loginId" placeholder="아이디" required value="${loginId}">
             </div>
             
             <%-- 비밀번호 입력 필드 --%>
             <div class="input-group">
                 <i class="fa-solid fa-lock input-icon"></i>
-                <input type="password" name="password" placeholder="비밀번호" required>
+                <input type="password" name="password" placeholder="비밀번호" required value="${password}">
             </div>
             
             <%-- 로그인 버튼 --%>
