@@ -22,11 +22,8 @@ public class MemberExerciseApiController {
     @Autowired
     private MemberExerciseService memberExerciseService;
 
-    /**
-     * 새로운 운동 종류를 DB에 추가하는 API
-     * @param exerciseVO JSON으로 받은 운동 정보 (bodyPart, exerciseName, 트레이너가 추가 시 memberId 포함)
-     * @return 성공 여부와 추가된 운동 정보를 담은 JsonResult
-     */
+    
+    // 새로운 운동 종류를 db에 추가하는 api
     @PostMapping("/add")
     public JsonResult addExercise(@RequestBody MemberExerciseVO memberExerciseVO, HttpSession session) {
         //System.out.println("MemberExerciseApiController.addExercise()");

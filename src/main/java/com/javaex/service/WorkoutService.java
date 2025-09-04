@@ -97,7 +97,7 @@ public class WorkoutService {
 	public WorkoutVO exeGetWorkoutAddKey(WorkoutVO workoutVO) {
 		//System.out.println("WorkoutService.exeWorkoutAddKey()");
 		
-		int count = workoutRepository.workoutInsertKey(workoutVO);
+		workoutRepository.workoutInsertKey(workoutVO);
 		
 		int logId = workoutVO.getLogId();
 		

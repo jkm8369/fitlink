@@ -26,15 +26,15 @@ public class WorkoutApiController {
 	@Autowired
 	private WorkoutService workoutService;
 	
-	//-- 운동 추가 (AJAX)
+	//-- 운동 추가 (ajax)
 	@PostMapping(value="/add")
 	public JsonResult add(@RequestBody WorkoutVO workoutVO, HttpSession session) {
 		//System.out.println("WorkoutApiController.add()");
 		
 		UserVO authUser = (UserVO)session.getAttribute("authUser");
 		
-		// workoutVO에 userId가 없으면(회원이 직접 기록), 세션의 ID를 사용합니다.
-		// 만약 workoutVO에 userId가 있으면(트레이너가 대리 기록), 그 ID를 그대로 사용합니다.
+		// workoutVO에 userId가 없으면(회원이 직접 기록), 세션의 ID를 사용합
+		// 만약 workoutVO에 userId가 있으면(트레이너가 대리 기록), 그 ID를 그대로 사용
 		if (workoutVO.getUserId() == 0) {
 			workoutVO.setUserId(authUser.getUserId());
 		}
@@ -78,10 +78,10 @@ public class WorkoutApiController {
 		
 		int targetUserId;
 		if (memberId > 0) {
-			// [주석] memberId가 있으면(트레이너가 회원 조회) 그 회원의 ID를 사용합니다.
+			// memberId가 있으면(트레이너가 회원 조회) 그 회원의 ID를 사용
 			targetUserId = memberId;
 		} else {
-			// [주석] memberId가 없으면(회원 본인 조회) 로그인한 사용자의 ID를 사용합니다.
+			// memberId가 없으면(회원 본인 조회) 로그인한 사용자의 ID를 사용
 			targetUserId = authUser.getUserId();
 		}
 		

@@ -59,21 +59,16 @@ public class MemberExerciseController {
 		return getExercisePage(authUser, memberId, model);
 	}
 
-	/**
-	 * [추가] 운동 종류 페이지에 필요한 데이터를 준비하고 뷰를 반환하는 공통 헬퍼 메소드입니다.
-	 * @param authUser      현재 로그인한 사용자 정보 (회원 또는 트레이너)
-	 * @param targetUserId  데이터를 조회할 대상의 ID
-	 * @param model         JSP로 데이터를 전달할 모델 객체
-	 * @return              보여줄 JSP 뷰의 이름
-	 */
+	
+	// 운동 종류 페이지에 필요한 데이터를 준비하고 뷰를 반환하는 공통 헬퍼 메소드
 	private String getExercisePage(UserVO authUser, int targetUserId, Model model) {
 		
-		// 1. 서비스에서 운동 종류 데이터를 가져옵니다.
+		// 1. 서비스에서 운동 종류 데이터를 가져옴
 		Map<String, List<MemberExerciseVO>> exerciseMap = memberExerciseService.exeGetExerciseListGroup(targetUserId);
 		model.addAttribute("exerciseMap", exerciseMap);
 		
 		// 2. 만약 로그인한 사용자가 트레이너라면,
-		//    사이드 메뉴가 동적으로 바뀌도록 현재 보고 있는 회원의 정보를 모델에 추가합니다.
+		//    사이드 메뉴가 동적으로 바뀌도록 현재 보고 있는 회원의 정보를 모델에 추가
 		if ("trainer".equals(authUser.getRole())) {
 			UserVO currentMember = memberExerciseService.exeGetMemberInfo(targetUserId);
 			model.addAttribute("currentMember", currentMember);

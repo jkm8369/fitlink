@@ -178,8 +178,8 @@ public class MemberExerciseService {
 		System.out.println("MemberExerciseService.addExercise()");
 
 		/* * 트레이너가 특정 회원을 위해 운동을 추가하는 경우(memberId가 넘어옴),
-	     * 이 운동이 해당 회원을 위한 것임을 명시하기 위해 forUserId에 회원 ID를 설정합니다.
-	     * 회원이 직접 추가하거나 트레이너가 자신을 위해 추가하면 memberId가 없으므로 forUserId는 null이 됩니다.
+	     * 이 운동이 해당 회원을 위한 것임을 명시하기 위해 forUserId에 회원 ID를 설정
+	     * 회원이 직접 추가하거나 트레이너가 자신을 위해 추가하면 memberId가 없으므로 forUserId는 null이 됨
 	     */
 	    if (memberExerciseVO.getMemberId() != null) {
 	        memberExerciseVO.setForUserId(memberExerciseVO.getMemberId());
