@@ -10,8 +10,8 @@
 		</a>
 	</h1>
 	<!-- 오른쪽: 사용자 메뉴 -->
-	<form action="${pageContext.request.contextPath}/user/logout" method="post" style="display: inline;">
-		<button type="submit" class="logout-link" style="border: none; background: none; cursor: pointer;">
+	<form action="${pageContext.request.contextPath}/user/logout" class="btn-logout" method="post" style="display: inline;">
+		<button type="submit" class="logout-link" style="background: none; cursor: pointer;">
 			<i class="fa-solid fa-right-from-bracket"></i> 로그아웃
 		</button>
 	</form>
